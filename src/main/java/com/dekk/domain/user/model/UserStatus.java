@@ -1,4 +1,4 @@
-package com.dekk.domain.user.domain.model;
+package com.dekk.domain.user.model;
 
 public enum UserStatus {
     PENDING,   // 소셜 로그인 완료, 온보딩 미완료

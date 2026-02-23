@@ -1,4 +1,4 @@
-package com.dekk.domain.user.domain.model;
+package com.dekk.domain.user.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -2,10 +2,14 @@ package com.dekk.activelog.presentation.controller;
 
 import com.dekk.activelog.application.service.FeedService;
 import com.dekk.activelog.presentation.response.UnseenCardResponse;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -19,10 +23,14 @@ public class FeedController implements FeedApi {
     private final FeedService feedService;
 
     @Override
-    public ResponseEntity<List<UnseenCardResponse>> getUnseenCards(Long userId, int size) {
+    @GetMapping("/unseen")
+    public ResponseEntity<List<UnseenCardResponse>> getUnseenCards(
+        @RequestParam Long userId,
 
+        @RequestParam(defaultValue = "10")
+            @Min(1) @Max(30) int size
+        ) {
         List<UnseenCardResponse> responses = feedService.getUnseenCards(userId, size);
-
         return ResponseEntity.ok(responses);
     }
 }

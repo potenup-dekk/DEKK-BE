@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import com.dekk.global.common.entity.BaseTimeEntity;
+import com.dekk.common.entity.BaseTimeEntity;
 
 @Entity
 @Getter

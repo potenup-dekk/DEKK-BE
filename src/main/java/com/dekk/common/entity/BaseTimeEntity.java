@@ -1,4 +1,4 @@
-package com.dekk.global.common.entity;
+package com.dekk.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

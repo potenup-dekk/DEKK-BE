@@ -1,6 +1,5 @@
 package com.dekk.activelog.infrastructure.persistence.repository;
 
-import com.dekk.activelog.infrastructure.persistence.entity.ActiveLogEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

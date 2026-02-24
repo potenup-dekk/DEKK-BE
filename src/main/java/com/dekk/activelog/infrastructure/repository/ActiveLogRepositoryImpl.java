@@ -15,7 +15,7 @@ public class ActiveLogRepositoryImpl implements ActiveLogRepository {
 
     @Override
     public ActiveLog save(ActiveLog activeLog) {
-        return jpaRepository.save(ActiveLogEntity.from(activeLog)).toDomain();
+        return jpaRepository.save(activeLog)
     }
 
     @Override

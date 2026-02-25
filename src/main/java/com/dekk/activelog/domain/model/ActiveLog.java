@@ -2,7 +2,7 @@ package com.dekk.activelog.domain.model;
 
 import com.dekk.activelog.domain.exception.ActiveLogBusinessException;
 import com.dekk.activelog.domain.exception.ActiveLogErrorCode;
-import com.dekk.global.common.entity.BaseTimeEntity;
+import com.dekk.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

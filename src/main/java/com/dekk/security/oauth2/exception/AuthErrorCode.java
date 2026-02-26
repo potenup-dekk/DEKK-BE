@@ -2,10 +2,8 @@ package com.dekk.security.oauth2.exception;
 
 
 import com.dekk.common.error.ErrorCode;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-@RequiredArgsConstructor
 public enum AuthErrorCode implements ErrorCode {
 
     // 400 BAD REQUEST
@@ -18,7 +16,11 @@ public enum AuthErrorCode implements ErrorCode {
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
-
+    AuthErrorCode(HttpStatus httpStatus, String code, String message) {
+        this.httpStatus = httpStatus;
+        this.code = code;
+        this.message = message;
+    }
 
     @Override
     public HttpStatus status() {

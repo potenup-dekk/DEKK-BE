@@ -1,6 +1,5 @@
 package com.dekk.auth.application;
 
-import com.dekk.security.oauth2.exception.AuthErrorCode;
 import com.dekk.user.application.command.UserCreateCommand;
 import com.dekk.user.domain.model.User;
 import com.dekk.user.domain.model.enums.Provider;
@@ -8,7 +7,6 @@ import com.dekk.user.domain.repository.UserRepository;
 import com.dekk.security.oauth2.CustomUserDetails;
 import com.dekk.security.oauth2.OAuth2UserInfoFactory;
 import com.dekk.security.oauth2.dto.OAuth2UserInfo;
-import com.dekk.security.oauth2.exception.CustomOAuth2Exception;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -34,13 +32,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        Provider provider;
-        try {
-            provider = Provider.valueOf(registrationId.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new CustomOAuth2Exception(AuthErrorCode.UNSUPPORTED_PROVIDER);
-        }
-
+        Provider provider = Provider.from(registrationId);
 
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.of(provider, attributes);
 

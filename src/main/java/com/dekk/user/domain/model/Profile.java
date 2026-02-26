@@ -53,6 +53,7 @@ public class Profile {
 
     private Profile(User user, int height, int weight, String nickname, Gender gender) {
         validateNickname(nickname);
+        validatePhysicalInfo(height, weight);
         this.user = user;
         this.height = height;
         this.weight = weight;
@@ -74,9 +75,11 @@ public class Profile {
             this.nickname = command.nickname();
         }
         if (command.height() != null) {
+            validatePhysicalInfo(command.height(), this.weight);
             this.height = command.height();
         }
         if (command.weight() != null) {
+            validatePhysicalInfo(this.height, command.weight());
             this.weight = command.weight();
         }
         if (command.gender() != null) {
@@ -85,12 +88,22 @@ public class Profile {
     }
 
     private void validateNickname(String nickname) {
-        if (nickname == null || nickname.isBlank() || nickname.length() > 10) {
+        if (nickname == null || nickname.isBlank()) {
+            throw new UserBusinessException(UserErrorCode.INVALID_NICKNAME);
+        }
+
+        if (nickname.length() < 2 || nickname.length() > 10) {
             throw new UserBusinessException(UserErrorCode.INVALID_NICKNAME);
         }
 
         if (!NICKNAME_PATTERN.matcher(nickname).matches()) {
             throw new UserBusinessException(UserErrorCode.INVALID_NICKNAME);
+        }
+    }
+    // 신체 정보 검증
+    private void validatePhysicalInfo(int height, int weight) {
+        if (height < 100 || height > 220 || weight < 30 || weight > 150) {
+            throw new UserBusinessException(UserErrorCode.INVALID_PROFILE_PHYSICAL_INFO);
         }
     }
 }

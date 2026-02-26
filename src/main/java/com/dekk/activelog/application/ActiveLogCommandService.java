@@ -1,4 +1,3 @@
-// 📂 application/ActiveLogCommandService.java
 package com.dekk.activelog.application;
 
 import com.dekk.activelog.application.dto.command.SwipeCommand;

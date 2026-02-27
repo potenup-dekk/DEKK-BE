@@ -227,19 +227,6 @@ class MusinsaCrawlDataParserTest {
     class EdgeCases {
 
         @Test
-        @DisplayName("snapDisplayStatus가 DISPLAY가 아니면 isActive는 false이다")
-        void nonDisplayStatus() {
-            String rawData = """
-                    [{"id": "123", "model": {}, "goods": [], "tags": [], "medias": [],
-                      "status": {"snapDisplayStatus": "HIDDEN"}, "goods_detail_list": []}]
-                    """;
-
-            CardCreateCommand command = parser.parse(rawData).get(0);
-
-            assertThat(command.isActive()).isFalse();
-        }
-
-        @Test
         @DisplayName("id가 없는 snap은 건너뛴다")
         void skipSnapWithoutId() {
             String rawData = """

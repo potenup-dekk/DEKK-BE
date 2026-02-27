@@ -1,9 +1,9 @@
-package com.dekk.auth.jwt.exception;
+package com.dekk.auth.domain.exception;
 
 import com.dekk.common.error.ErrorCode;
 import org.springframework.http.HttpStatus;
 
-public enum JwtErrorCode implements ErrorCode {
+public enum AuthErrorCode implements ErrorCode {
 
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "EJ40101", "유효하지 않은 JWT 토큰입니다."),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "EJ40102", "만료된 JWT 토큰입니다."),
@@ -16,7 +16,7 @@ public enum JwtErrorCode implements ErrorCode {
     private final String code;
     private final String message;
 
-    JwtErrorCode(HttpStatus httpStatus, String code, String message) {
+    AuthErrorCode(HttpStatus httpStatus, String code, String message) {
         this.httpStatus = httpStatus;
         this.code = code;
         this.message = message;

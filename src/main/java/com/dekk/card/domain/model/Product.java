@@ -20,6 +20,9 @@ public class Product {
     private ProductImage productImage;
 
     @Column(nullable = false)
+    private String brand;
+
+    @Column(nullable = false)
     private String name;
 
     private Integer price;
@@ -40,6 +43,7 @@ public class Product {
 
     private Product(
             ProductImage productImage,
+            String brand,
             String name,
             Integer price,
             String originId,
@@ -48,6 +52,7 @@ public class Product {
             String productUrl
     ) {
         this.productImage = productImage;
+        this.brand = brand;
         this.name = name;
         this.price = price;
         this.originId = originId;
@@ -69,6 +74,7 @@ public class Product {
 
         Product product = new Product(
                 productImage,
+                command.brand(),
                 command.name(),
                 command.price(),
                 command.originId(),

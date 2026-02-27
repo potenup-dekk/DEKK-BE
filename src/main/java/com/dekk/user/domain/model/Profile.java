@@ -28,8 +28,14 @@ import java.util.regex.Pattern;
 @Table(name = "profiles")
 public class Profile {
 
-    // 닉네임 정규표현식 (한글, 영문, 숫자, 언더바(_) 허용)
     private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9가-힣_]+$");
+
+    private static final int MIN_NICKNAME_LENGTH = 2;
+    private static final int MAX_NICKNAME_LENGTH = 10;
+    private static final int MIN_HEIGHT = 100;
+    private static final int MAX_HEIGHT = 220;
+    private static final int MIN_WEIGHT = 30;
+    private static final int MAX_WEIGHT = 150;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,7 +59,8 @@ public class Profile {
 
     private Profile(User user, int height, int weight, String nickname, Gender gender) {
         validateNickname(nickname);
-        validatePhysicalInfo(height, weight);
+        validateHeight(height);
+        validateWeight(weight);
         this.user = user;
         this.height = height;
         this.weight = weight;
@@ -75,11 +82,11 @@ public class Profile {
             this.nickname = command.nickname();
         }
         if (command.height() != null) {
-            validatePhysicalInfo(command.height(), this.weight);
+            validateHeight(command.height());
             this.height = command.height();
         }
         if (command.weight() != null) {
-            validatePhysicalInfo(this.height, command.weight());
+            validateWeight(command.weight());
             this.weight = command.weight();
         }
         if (command.gender() != null) {
@@ -88,22 +95,24 @@ public class Profile {
     }
 
     private void validateNickname(String nickname) {
-        if (nickname == null || nickname.isBlank()) {
-            throw new UserBusinessException(UserErrorCode.INVALID_NICKNAME);
-        }
-
-        if (nickname.length() < 2 || nickname.length() > 10) {
-            throw new UserBusinessException(UserErrorCode.INVALID_NICKNAME);
-        }
-
-        if (!NICKNAME_PATTERN.matcher(nickname).matches()) {
+        if (nickname == null || nickname.isBlank() ||
+                nickname.length() < MIN_NICKNAME_LENGTH || nickname.length() > MAX_NICKNAME_LENGTH ||
+                !NICKNAME_PATTERN.matcher(nickname).matches()) {
             throw new UserBusinessException(UserErrorCode.INVALID_NICKNAME);
         }
     }
-    // 신체 정보 검증
-    private void validatePhysicalInfo(int height, int weight) {
-        if (height < 100 || height > 220 || weight < 30 || weight > 150) {
-            throw new UserBusinessException(UserErrorCode.INVALID_PROFILE_PHYSICAL_INFO);
+
+    private void validateHeight(int height) {
+        if (height < MIN_HEIGHT || height > MAX_HEIGHT) {
+            throw new UserBusinessException(UserErrorCode.INVALID_PROFILE_HEIGHT);
+        }
+    }
+
+
+    private void validateWeight(int weight) {
+        if (weight < MIN_WEIGHT || weight > MAX_WEIGHT) {
+            throw new UserBusinessException(UserErrorCode.INVALID_PROFILE_WEIGHT);
         }
     }
 }
+

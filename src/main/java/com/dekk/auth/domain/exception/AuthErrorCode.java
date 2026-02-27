@@ -4,7 +4,6 @@ import com.dekk.common.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-
 @RequiredArgsConstructor
 public enum AuthErrorCode implements ErrorCode {
 

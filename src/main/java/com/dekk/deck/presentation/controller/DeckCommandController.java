@@ -22,7 +22,10 @@ public class DeckCommandController implements DeckCommandApi {
     private final DeckCardCommandService deckCardCommandService;
 
     @PostMapping("/default")
-    public ResponseEntity<ApiResponse<Void>> createDefaultDeck(@RequestParam Long userId) {
+    public ResponseEntity<ApiResponse<Void>> createDefaultDeck(
+        // TODO: 향후 SecurityContextHolder에서 추출하도록 변경 예정
+        @RequestParam Long userId
+    ) {
         deckCommandService.createDefaultDeck(userId);
         return ResponseEntity.ok(ApiResponse.from(DeckResultCode.DEFAULT_DECK_CREATE_SUCCESS));
     }
@@ -30,6 +33,7 @@ public class DeckCommandController implements DeckCommandApi {
     @Override
     @PostMapping("/default/cards/{cardId}")
     public ResponseEntity<ApiResponse<Void>> addCardToDefaultDeck(
+        // TODO: 향후 SecurityContextHolder에서 추출하도록 변경 예정
         Long userId,
         @PathVariable Long cardId
     ) {
@@ -41,6 +45,7 @@ public class DeckCommandController implements DeckCommandApi {
     @Override
     @DeleteMapping("/default/cards/{cardId}")
     public ResponseEntity<ApiResponse<Void>> removeCardFromDefaultDeck(
+        // TODO: 향후 SecurityContextHolder에서 추출하도록 변경 예정
         @RequestParam Long userId,
         @PathVariable Long cardId
     ) {

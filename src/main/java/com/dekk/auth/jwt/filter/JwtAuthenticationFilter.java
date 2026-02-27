@@ -8,7 +8,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Slf4j
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -39,7 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt = resolveToken(request);
 
         if (!StringUtils.hasText(jwt)) {
-            log.debug("유효한 JWT 토큰이 없습니다, uri: {}", request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
@@ -48,10 +46,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwtTokenProvider.validateToken(jwt)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), request.getRequestURI());
             }
         } catch (AuthBusinessException e) {
-            log.debug("JWT 인증 실패 [{}]: {}, uri: {}", e.errorCode().code(), e.errorCode().message(), request.getRequestURI());
             handleAuthenticationException(response, e);
             return;
         }

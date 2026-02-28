@@ -3,7 +3,6 @@ package com.dekk.activelog.domain.model;
 import com.dekk.activelog.domain.exception.ActiveLogBusinessException;
 import com.dekk.activelog.domain.exception.ActiveLogErrorCode;
 import com.dekk.common.entity.BaseTimeEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,12 +13,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.SQLDelete;
+
 
 @Entity
 @Getter

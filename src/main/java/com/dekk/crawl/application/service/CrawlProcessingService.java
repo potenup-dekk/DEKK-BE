@@ -31,7 +31,7 @@ public class CrawlProcessingService {
         log.info("PENDING raw data {}건 처리 시작", pendingList.size());
 
         for (CrawlRawData rawData : pendingList) {
-            processor.process(rawData);
+            processor.process(rawData.getId());
         }
 
         log.info("raw data 처리 완료");

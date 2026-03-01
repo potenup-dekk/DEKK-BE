@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDER=HIGH
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;NON_KEYWORDS=USER,ROLE
     driver-class-name: org.h2.Driver
     username: sa
-    password:
+    password: ''
   jpa:
     hibernate:
       ddl-auto: create-drop

@@ -62,18 +62,19 @@ public class MusinsaCrawlDataParser implements CrawlDataParser {
         String tags = parseTags(snap);
         Integer height = parseNullableInt(snap.path("model").path("height"));
         Integer weight = parseNullableInt(snap.path("model").path("weight"));
-        ProductGender gender = parseGender(snap.path("model").path("gender"));
 
         Map<String, String> optionsByGoodsNo = parseOptions(snap);
         Map<String, Boolean> matchedByGoodsNo = parseMatchedFlags(snap);
-        List<ProductCreateCommand> products = parseProducts(snap, gender, optionsByGoodsNo, matchedByGoodsNo);
+        List<ProductCreateCommand> products = parseProducts(snap, optionsByGoodsNo, matchedByGoodsNo);
+
+        boolean isActive = cardImage.imageUrl() != null && cardImage.isUploaded();
 
         return new CardCreateCommand(
                 cardImage,
                 products,
                 tags,
                 originId,
-                true,
+                isActive,
                 Platform.MUSINSA,
                 height,
                 weight
@@ -82,8 +83,17 @@ public class MusinsaCrawlDataParser implements CrawlDataParser {
 
     private CardImageCreateCommand parseCardImage(JsonNode snap) {
         JsonNode medias = snap.path("medias");
-        String originUrl = medias.has(0) ? medias.get(0).path("path").asText(null) : null;
-        return new CardImageCreateCommand(originUrl, null, false);
+
+        if (!medias.isArray() || medias.isEmpty()) {
+            return new CardImageCreateCommand(null, null, false);
+        }
+
+        JsonNode first = medias.get(0);
+        String originUrl = first.path("originUrl").asText(null);
+        String imageUrl = first.path("imageUrl").asText(null);
+        boolean isUploaded = first.path("isUploaded").asBoolean(false);
+
+        return new CardImageCreateCommand(originUrl, imageUrl, isUploaded);
     }
 
     private String parseTags(JsonNode snap) {
@@ -167,7 +177,6 @@ public class MusinsaCrawlDataParser implements CrawlDataParser {
 
     private List<ProductCreateCommand> parseProducts(
             JsonNode snap,
-            ProductGender gender,
             Map<String, String> optionsByGoodsNo,
             Map<String, Boolean> matchedByGoodsNo
     ) {
@@ -199,8 +208,7 @@ public class MusinsaCrawlDataParser implements CrawlDataParser {
                     goodsNo,
                     option,
                     !isMatched,
-                    detail.path("linkUrl").asText(null),
-                    gender
+                    detail.path("linkUrl").asText(null)
             );
 
             products.add(product);

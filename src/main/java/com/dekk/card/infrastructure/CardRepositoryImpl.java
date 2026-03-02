@@ -5,6 +5,8 @@ import com.dekk.card.domain.model.enums.Platform;
 import com.dekk.card.domain.repository.CardRepository;
 import com.dekk.card.infrastructure.jpa.CardJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -27,5 +29,20 @@ public class CardRepositoryImpl implements CardRepository {
     @Override
     public boolean existsByPlatformAndOriginId(Platform platform, String originId) {
         return cardJpaRepository.existsByPlatformAndOriginId(platform, originId);
+    }
+
+    @Override
+    public Page<Card> findActiveCardsWithImage(Pageable pageable) {
+        return cardJpaRepository.findActiveCardsWithImage(pageable);
+    }
+
+    @Override
+    public Page<Card> findActiveCardsWithProducts(Pageable pageable) {
+        return cardJpaRepository.findActiveCardsWithProducts(pageable);
+    }
+
+    @Override
+    public List<Card> findAllByIdInWithProducts(List<Long> ids) {
+        return cardJpaRepository.findAllByIdInWithProducts(ids);
     }
 }

@@ -1,4 +1,4 @@
-package com.dekk.card.presentation.response;
+package com.dekk.card.presentation.dto.response;
 
 import com.dekk.card.application.dto.result.GuestCardResult;
 import io.swagger.v3.oas.annotations.media.Schema;

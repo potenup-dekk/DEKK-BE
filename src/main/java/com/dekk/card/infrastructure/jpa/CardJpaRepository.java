@@ -17,7 +17,7 @@ public interface CardJpaRepository extends JpaRepository<Card, Long> {
             countQuery = "SELECT COUNT(c) FROM Card c WHERE c.isActive = true")
     Page<Card> findActiveCardsWithImage(Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT c FROM Card c JOIN FETCH c.cardImage LEFT JOIN FETCH c.cardProducts cp LEFT JOIN FETCH cp.product p LEFT JOIN FETCH p.productImage WHERE c.isActive = true ORDER BY c.createdAt DESC",
+    @Query(value = "SELECT c FROM Card c JOIN FETCH c.cardImage WHERE c.isActive = true ORDER BY c.createdAt DESC",
             countQuery = "SELECT COUNT(c) FROM Card c WHERE c.isActive = true")
     Page<Card> findActiveCardsWithProducts(Pageable pageable);
 

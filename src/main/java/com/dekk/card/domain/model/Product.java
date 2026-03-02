@@ -38,7 +38,7 @@ public class Product extends BaseTimeEntity {
     @Column(name = "is_similar", nullable = false)
     private boolean isSimilar;
 
-    @Column(name = "product_url")
+    @Column(name = "product_url", columnDefinition = "text")
     private String productUrl;
 
     @Enumerated(EnumType.STRING)

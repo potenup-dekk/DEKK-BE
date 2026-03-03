@@ -34,7 +34,6 @@ public class UserCommandService {
         User user = userRepository.findWithProfileById(userId)
                 .orElseThrow(() -> new UserBusinessException(UserErrorCode.USER_NOT_FOUND));
 
-        // 닉네임이 변경되었을 경우에만 중복 검사 실행
         if (command.nickname() != null && !command.nickname().equals(user.getProfile().getNickname())) {
             if (profileRepository.existsByNickname(command.nickname())) {
                 throw new UserBusinessException(UserErrorCode.DUPLICATE_NICKNAME);

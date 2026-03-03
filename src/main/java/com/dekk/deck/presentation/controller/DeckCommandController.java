@@ -23,15 +23,6 @@ public class DeckCommandController implements DeckCommandApi {
     private final DeckCardCommandService deckCardCommandService;
 
     @Override
-    @PostMapping("/default")
-    public ResponseEntity<ApiResponse<Void>> createDefaultDeck(
-        @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        deckCommandService.createDefaultDeck(userDetails.getId());
-        return ResponseEntity.ok(ApiResponse.from(DeckResultCode.DEFAULT_DECK_CREATE_SUCCESS));
-    }
-
-    @Override
     @PostMapping("/default/cards/{cardId}")
     public ResponseEntity<ApiResponse<Void>> addCardToDefaultDeck(
         @AuthenticationPrincipal CustomUserDetails userDetails,

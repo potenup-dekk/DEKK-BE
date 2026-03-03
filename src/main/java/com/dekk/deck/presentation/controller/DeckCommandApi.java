@@ -14,11 +14,6 @@ import org.springframework.http.ResponseEntity;
 @Tag(name = "Deck Command", description = "보관함 조작 API (Command)")
 public interface DeckCommandApi {
 
-    @Operation(summary = "기본 보관함 생성")
-    ResponseEntity<ApiResponse<Void>> createDefaultDeck(
-        @Parameter(hidden = true) CustomUserDetails userDetails
-    );
-
     @Operation(summary = "기본 보관함에서 특정 카드 저장 취소 (Soft Delete)")
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "SD20004: 보관함 내 카드 저장 취소 성공"),

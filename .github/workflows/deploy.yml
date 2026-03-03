@@ -2,7 +2,7 @@ name: DEKK Project CD
 
 on:
   push:
-    branches: [ "develop", "main"]
+    branches: ["main"]
 
 jobs:
   deploy:

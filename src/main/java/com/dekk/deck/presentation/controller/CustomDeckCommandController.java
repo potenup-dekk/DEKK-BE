@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/w/v1/custom-decks")
+@RequestMapping("/w/v1/decks/custom")
 @RequiredArgsConstructor
 public class CustomDeckCommandController implements CustomDeckCommandApi {
 

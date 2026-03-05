@@ -1,6 +1,6 @@
 package com.dekk.deck.presentation.request;
 
-import com.dekk.deck.application.command.CustomDeckCreateCommand;
+import com.dekk.deck.application.dto.command.CustomDeckCreateCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

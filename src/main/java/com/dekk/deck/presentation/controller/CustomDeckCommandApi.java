@@ -7,11 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "커스텀 보관함 관리 API", description = "커스텀 보관함 생성, 수정, 삭제 및 내부 카드 관리 API")
 public interface CustomDeckCommandApi {
@@ -27,6 +26,6 @@ public interface CustomDeckCommandApi {
     })
     ResponseEntity<ApiResponse<Void>> createCustomDeck(
         @Parameter(hidden = true) CustomUserDetails userDetails,
-        @Valid @RequestBody CustomDeckCreateRequest request
+        @RequestBody(description = "생성할 커스텀 보관함 정보") CustomDeckCreateRequest request
     );
 }

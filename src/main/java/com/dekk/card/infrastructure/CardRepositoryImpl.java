@@ -1,6 +1,7 @@
 package com.dekk.card.infrastructure;
 
 import com.dekk.card.domain.model.Card;
+import com.dekk.card.domain.model.enums.CardStatus;
 import com.dekk.card.domain.model.enums.Platform;
 import com.dekk.card.domain.repository.CardRepository;
 import com.dekk.card.infrastructure.jpa.CardJpaRepository;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,17 +34,22 @@ public class CardRepositoryImpl implements CardRepository {
     }
 
     @Override
-    public Page<Card> findActiveCardsWithImage(Pageable pageable) {
-        return cardJpaRepository.findActiveCardsWithImage(pageable);
+    public Page<Card> findCardsWithImageByStatus(CardStatus status, Pageable pageable) {
+        return cardJpaRepository.findCardsWithImageByStatus(status, pageable);
     }
 
     @Override
-    public Page<Card> findActiveCardsWithProducts(Pageable pageable) {
-        return cardJpaRepository.findActiveCardsWithProducts(pageable);
+    public Page<Card> findCardsWithProductsByStatus(CardStatus status, Pageable pageable) {
+        return cardJpaRepository.findCardsWithProductsByStatus(status, pageable);
     }
 
     @Override
     public List<Card> findAllByIdInWithProducts(List<Long> ids) {
         return cardJpaRepository.findAllByIdInWithProducts(ids);
+    }
+
+    @Override
+    public Optional<Card> findById(Long id) {
+        return cardJpaRepository.findById(id);
     }
 }

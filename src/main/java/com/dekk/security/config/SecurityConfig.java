@@ -35,6 +35,9 @@ public class SecurityConfig {
     @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
 
+    @Value("${app.oauth2.login-page}")
+    private String loginPageUrl;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -50,11 +53,16 @@ public class SecurityConfig {
                             "/v3/api-docs/**",
                             "/v3/api-docs",
                             "/i/v1/crawl/**",
-                            "/w/v1/cards"
+                            "/w/v1/cards",
+                            "/w/v1/auth/refresh"
                         ).permitAll()
+                        .requestMatchers(
+                                "/adm/v1/cards/**"
+                        ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
+                        .loginPage(loginPageUrl)
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)
                         )

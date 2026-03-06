@@ -9,10 +9,12 @@ import com.dekk.deck.domain.model.Deck;
 import com.dekk.deck.domain.model.DeckCard;
 import com.dekk.deck.domain.repository.DeckCardRepository;
 import com.dekk.deck.domain.repository.DeckRepository;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,7 +49,7 @@ public class DeckQueryService {
             MemberCardResult cardInfo = cardMap.get(deckCard.getCardId());
 
             if (cardInfo == null) {
-                    return MyDeckCardResult.empty(deckCard.getCardId());
+                return MyDeckCardResult.empty(deckCard.getCardId());
             }
 
             List<MyDeckCardResult.ProductDetail> productDetails = cardInfo.products().stream()

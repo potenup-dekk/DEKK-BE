@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DeckCardCommandService {
 
+    private static final int MAX_CUSTOM_DECK_CARD_COUNT = 50;
+
     private final DeckRepository deckRepository;
     private final DeckCardRepository deckCardRepository;
 
@@ -34,6 +36,32 @@ public class DeckCardCommandService {
             .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_NOT_FOUND));
 
         DeckCard deckCard = deckCardRepository.findByDeckIdAndCardId(defaultDeck.getId(), cardId)
+            .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CARD_NOT_FOUND_IN_DECK));
+
+        deckCardRepository.delete(deckCard);
+    }
+
+    public void saveToCustomDeck(Long userId, Long customDeckId, Long cardId) {
+        Deck customDeck = deckRepository.findByIdAndUserId(customDeckId, userId)
+            .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
+
+        if (deckCardRepository.existsByDeckIdAndCardId(customDeck.getId(), cardId)) {
+            return;
+        }
+
+        long currentCardCount = deckCardRepository.countByDeckId(customDeck.getId());
+        if (currentCardCount >= MAX_CUSTOM_DECK_CARD_COUNT) {
+            throw new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_CARD_LIMIT_EXCEEDED);
+        }
+
+        deckCardRepository.save(DeckCard.create(customDeck.getId(), cardId));
+    }
+
+    public void removeFromCustomDeck(Long userId, Long customDeckId, Long cardId) {
+        Deck customDeck = deckRepository.findByIdAndUserId(customDeckId, userId)
+            .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
+
+        DeckCard deckCard = deckCardRepository.findByDeckIdAndCardId(customDeck.getId(), cardId)
             .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CARD_NOT_FOUND_IN_DECK));
 
         deckCardRepository.delete(deckCard);

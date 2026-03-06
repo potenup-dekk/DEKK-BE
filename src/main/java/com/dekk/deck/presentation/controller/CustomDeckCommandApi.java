@@ -66,7 +66,7 @@ public interface CustomDeckCommandApi {
         )
     })
     ResponseEntity<ApiResponse<Void>> deleteCustomDeck(
-        @Parameter(description = "삭제할 커스텀 보관함 ID", in = ParameterIn.PATH) Long customDeckId,
-        @Parameter(hidden = true) CustomUserDetails userDetails
+        @Parameter(hidden = true) CustomUserDetails userDetails,
+        @Parameter(description = "삭제할 커스텀 보관함 ID", in = ParameterIn.PATH) Long customDeckId
     );
 }

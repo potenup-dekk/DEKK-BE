@@ -61,6 +61,10 @@ public class Deck extends BaseTimeEntity {
         this.name = newName;
     }
 
+    public void deleteCustom() {
+        validateCustomModifiable();
+    }
+
     private static void validateEmpty(Long userId, String name) {
         if (userId == null) {
             throw new DeckBusinessException(DeckErrorCode.USER_ID_IS_REQUIRED_TO_CREATE);
@@ -76,7 +80,7 @@ public class Deck extends BaseTimeEntity {
         }
     }
 
-    public void validateCustomModifiable() {
+    private void validateCustomModifiable() {
         if (this.isDefault) {
             throw new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_CANNOT_BE_MODIFIED);
         }

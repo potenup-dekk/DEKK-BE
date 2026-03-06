@@ -47,7 +47,7 @@ public class CustomDeckCommandService {
     public void deleteCustomDeck(Long userId, Long deckId) {
         Deck deck = getDeckByUserId(deckId, userId);
 
-        deck.validateCustomModifiable();
+        deck.deleteCustom();
 
         deckCardRepository.deleteAllByDeckId(deck.getId());
 

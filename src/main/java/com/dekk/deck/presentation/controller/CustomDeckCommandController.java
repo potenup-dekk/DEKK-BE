@@ -51,8 +51,8 @@ public class CustomDeckCommandController implements CustomDeckCommandApi {
     @Override
     @DeleteMapping("/{customDeckId}")
     public ResponseEntity<ApiResponse<Void>> deleteCustomDeck(
-        @PathVariable("customDeckId") Long customDeckId,
-        @AuthenticationPrincipal CustomUserDetails userDetails
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @PathVariable("customDeckId") Long customDeckId
     ) {
         customDeckCommandService.deleteCustomDeck(userDetails.getId(), customDeckId);
 

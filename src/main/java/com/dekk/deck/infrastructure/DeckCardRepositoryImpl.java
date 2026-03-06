@@ -2,13 +2,19 @@ package com.dekk.deck.infrastructure;
 
 import com.dekk.deck.domain.model.DeckCard;
 import com.dekk.deck.domain.repository.DeckCardRepository;
+import com.dekk.deck.infrastructure.jpa.DeckCardCountProjection;
 import com.dekk.deck.infrastructure.jpa.DeckCardJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyMap;
 
 @Repository
 @RequiredArgsConstructor
@@ -44,5 +50,18 @@ public class DeckCardRepositoryImpl implements DeckCardRepository {
     @Override
     public void deleteAllByDeckId(Long deckId) {
         deckCardJpaRepository.deleteAllByDeckId(deckId);
+    }
+
+    @Override
+    public Map<Long, Long> countCardsByDeckIds(List<Long> deckIds) {
+        if (deckIds == null || deckIds.isEmpty()) {
+            return emptyMap();
+        }
+
+        return deckCardJpaRepository.countCardsByDeckIds(deckIds).stream()
+            .collect(Collectors.toMap(
+                DeckCardCountProjection::getDeckId,
+                DeckCardCountProjection::getCardCount
+            ));
     }
 }

@@ -23,7 +23,18 @@ public enum DeckErrorCode implements ErrorCode {
     private final String code;
     private final String message;
 
-    @Override public HttpStatus status() { return httpStatus; }
-    @Override public String code() { return code; }
-    @Override public String message() { return message; }
+    @Override
+    public HttpStatus status() {
+        return httpStatus;
+    }
+
+    @Override
+    public String code() {
+        return code;
+    }
+
+    @Override
+    public String message() {
+        return message;
+    }
 }

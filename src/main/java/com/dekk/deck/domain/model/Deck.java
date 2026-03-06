@@ -54,13 +54,6 @@ public class Deck extends BaseTimeEntity {
         return new Deck(userId, name, false);
     }
 
-    public void updateCustomName(String newName) {
-        validateCustomModifiable();
-        validateEmpty(this.userId, newName);
-        validateCustomNameLength(newName);
-        this.name = newName;
-    }
-
     public void deleteCustom() {
         validateCustomModifiable();
     }
@@ -78,6 +71,13 @@ public class Deck extends BaseTimeEntity {
         if (name.length() < 1 || name.length() > 15) {
             throw new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NAME_LENGTH_INVALID);
         }
+    }
+
+    public void updateCustomName(String newName) {
+        validateCustomModifiable();
+        validateEmpty(this.userId, newName);
+        validateCustomNameLength(newName);
+        this.name = newName;
     }
 
     private void validateCustomModifiable() {

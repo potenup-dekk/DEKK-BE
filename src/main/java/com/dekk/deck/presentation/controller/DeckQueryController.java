@@ -32,8 +32,8 @@ public class DeckQueryController implements DeckQueryApi {
         Page<MyDeckCardResult> pageResult = deckQueryService.getMyDefaultDeckCards(userDetails.getId(), pageable);
 
         return ResponseEntity.ok(ApiResponse.of(
-           DeckResultCode.DECK_CARD_LIST_SUCCESS,
-           PageResponse.from(pageResult)
+            DeckResultCode.DECK_CARD_LIST_SUCCESS,
+            PageResponse.from(pageResult)
         ));
     }
 }

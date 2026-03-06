@@ -46,9 +46,9 @@ public interface CustomDeckCommandApi {
         )
     })
     ResponseEntity<ApiResponse<Void>> updateCustomDeckName(
+        @Parameter(hidden = true) CustomUserDetails userDetails,
         @Parameter(description = "수정할 커스텀 보관함 ID", in = ParameterIn.PATH) Long customDeckId,
-        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "수정할 보관함 이름 정보") CustomDeckUpdateRequest request,
-        @Parameter(hidden = true) CustomUserDetails userDetails
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "수정할 보관함 이름 정보") CustomDeckUpdateRequest request
     );
 
     @Operation(summary = "커스텀 보관함 삭제", description = "커스텀 보관함을 삭제합니다. 내부의 카드 정보도 함께 삭제 처리됩니다.")

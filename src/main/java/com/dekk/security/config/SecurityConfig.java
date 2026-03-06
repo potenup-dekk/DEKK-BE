@@ -53,6 +53,9 @@ public class SecurityConfig {
                             "/w/v1/cards",
                             "/w/v1/auth/refresh"
                         ).permitAll()
+                        .requestMatchers(
+                                "/adm/v1/cards/**"
+                        ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

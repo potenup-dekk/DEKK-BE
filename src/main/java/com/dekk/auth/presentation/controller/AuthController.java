@@ -6,11 +6,14 @@ import com.dekk.auth.presentation.request.TokenRefreshRequest;
 import com.dekk.auth.presentation.response.AuthResultCode;
 import com.dekk.auth.presentation.response.TokenResponse;
 import com.dekk.common.response.ApiResponse;
+import com.dekk.security.oauth2.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController implements AuthApi {
 
     private final AuthCommandService authCommandService;
+    private static final String BEARER_PREFIX = "Bearer ";
 
     @Override
     @PostMapping("/refresh")
@@ -28,12 +32,19 @@ public class AuthController implements AuthApi {
     ) {
         TokenRefreshResult result = authCommandService.refreshToken(request.toCommand());
 
-        return ResponseEntity.ok(ApiResponse.of(AuthResultCode.TOKEN_REFRESH_SUCCESS, TokenResponse.from(result)));
+        return ResponseEntity.ok(ApiResponse.of(AuthResultCode.REISSUE_SUCCESS, TokenResponse.from(result)));
     }
 
     @Override
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout() {
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        String accessToken = authorizationHeader.substring(BEARER_PREFIX.length());
+
+        authCommandService.logout(userDetails.getId(), accessToken);
+
         return ResponseEntity.ok(ApiResponse.from(AuthResultCode.LOGOUT_SUCCESS));
     }
 }

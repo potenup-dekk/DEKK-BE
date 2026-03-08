@@ -24,11 +24,12 @@ import java.util.stream.Stream;
 @Transactional(readOnly = true)
 public class DeckQueryService {
 
+    private static final int MAX_PREVIEW_CARD_COUNT = 3;
+
     private final DeckRepository deckRepository;
     private final DeckCardRepository deckCardRepository;
     private final CardQueryService cardQueryService;
 
-    private static final int MAX_PREVIEW_CARD_COUNT = 3;
 
     public List<DeckResult> getDecks(Long userId) {
         List<Deck> allDecks = getAllDecks(userId);

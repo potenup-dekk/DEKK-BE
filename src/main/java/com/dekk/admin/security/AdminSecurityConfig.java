@@ -31,13 +31,13 @@ public class AdminSecurityConfig {
     @Order(1)
     public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/adm/v1/**")
+                .securityMatcher("/adm/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/adm/v1/auth/login").permitAll()
-                        .requestMatchers("/adm/v1/admins/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/adm/auth/login").permitAll()
+                        .requestMatchers("/adm/admins/**").hasRole("SUPER_ADMIN")
                         .anyRequest().hasAnyRole("SUPER_ADMIN", "ADMIN")
                 )
                 .addFilterBefore(new AdminJwtAuthenticationFilter(adminJwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class);

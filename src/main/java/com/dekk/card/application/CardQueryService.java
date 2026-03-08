@@ -1,7 +1,9 @@
 package com.dekk.card.application;
 
+import com.dekk.card.application.dto.query.RecommendCandidateQuery;
 import com.dekk.card.application.dto.result.GuestCardResult;
 import com.dekk.card.application.dto.result.MemberCardResult;
+import com.dekk.card.domain.model.Card;
 import com.dekk.card.domain.model.enums.CardStatus;
 import com.dekk.card.domain.repository.CardRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +38,9 @@ public class CardQueryService {
         return cardRepository.findAllByIdInWithProducts(ids).stream()
             .map(MemberCardResult::from)
             .toList();
+    }
+
+    public List<Card> getRecommendCandidates(RecommendCandidateQuery query) {
+        return cardRepository.findRecommendCandidates(query);
     }
 }

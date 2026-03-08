@@ -1,6 +1,7 @@
 package com.dekk.card.infrastructure;
 
 import com.dekk.card.domain.model.Card;
+import com.dekk.card.application.dto.query.RecommendCandidateQuery;
 import com.dekk.card.domain.model.enums.CardStatus;
 import com.dekk.card.domain.model.enums.Platform;
 import com.dekk.card.domain.repository.CardRepository;
@@ -46,6 +47,18 @@ public class CardRepositoryImpl implements CardRepository {
     @Override
     public List<Card> findAllByIdInWithProducts(List<Long> ids) {
         return cardJpaRepository.findAllByIdInWithProducts(ids);
+    }
+
+    @Override
+    public List<Card> findRecommendCandidates(RecommendCandidateQuery query) {
+        return cardJpaRepository.findRecommendCandidates(
+                query.excludedCardIdsOrNull(),
+                query.genders(),
+                query.minHeight(),
+                query.maxHeight(),
+                query.minWeight(),
+                query.maxWeight()
+        );
     }
 
     @Override

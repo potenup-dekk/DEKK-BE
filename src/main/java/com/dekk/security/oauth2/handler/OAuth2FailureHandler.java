@@ -1,14 +1,12 @@
 package com.dekk.security.oauth2.handler;
 
-import com.dekk.auth.domain.exception.AuthErrorCode;
+import com.dekk.security.oauth2.dto.ErrorQueryParam;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -20,9 +18,14 @@ import java.io.IOException;
 public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
     private final String redirectUri;
+    private final OAuth2ErrorMapper errorMapper;
 
-    public OAuth2FailureHandler(@Value("${app.oauth2.redirect-uri}") String redirectUri) {
+    public OAuth2FailureHandler(
+            @Value("${app.oauth2.redirect-uri}") String redirectUri,
+            OAuth2ErrorMapper errorMapper
+    ) {
         this.redirectUri = redirectUri;
+        this.errorMapper = errorMapper;
     }
 
     @Override
@@ -32,18 +35,11 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(redirectUri);
 
-        if (exception instanceof OAuth2AuthenticationException oAuthException) {
-            OAuth2Error error = oAuthException.getError();
+        ErrorQueryParam queryParam = errorMapper.mapError(exception);
 
-            if (AuthErrorCode.DUPLICATE_EMAIL.code().equals(error.getErrorCode())) {
-                String provider = error.getDescription() != null ? error.getDescription() : "unknown";
-                builder.queryParam("error", AuthErrorCode.DUPLICATE_EMAIL.name())
-                        .queryParam("provider", provider);
-            } else {
-                builder.queryParam("error", error.getErrorCode());
-            }
-        } else {
-            builder.queryParam("error", exception.getLocalizedMessage());
+        builder.queryParam("error", queryParam.error());
+        if (queryParam.provider() != null && !queryParam.provider().isBlank()) {
+            builder.queryParam("provider", queryParam.provider());
         }
 
         String targetUrl = builder.build().toUriString();

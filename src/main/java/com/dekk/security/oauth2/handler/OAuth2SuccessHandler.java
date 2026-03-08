@@ -2,10 +2,10 @@ package com.dekk.security.oauth2.handler;
 
 import com.dekk.auth.jwt.JwtTokenProvider;
 import com.dekk.auth.presentation.util.CookieUtil;
+import com.dekk.security.oauth2.repository.InMemoryOAuth2AuthorizationRequestRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Slf4j
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final String redirectUri;
+    private final InMemoryOAuth2AuthorizationRequestRepository inMemoryRepository;
+    private final String defaultRedirectUri;
 
     private final int accessTokenMaxAge;
     private final int refreshTokenMaxAge;
@@ -35,8 +35,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     }
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        log.info("OAuth2 authentication successful. Generating JWT token...");
-
+        log.info("OAuth2 authentication successful. Generating JWT token...");  
+      
         String accessToken = jwtTokenProvider.createAccessToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 

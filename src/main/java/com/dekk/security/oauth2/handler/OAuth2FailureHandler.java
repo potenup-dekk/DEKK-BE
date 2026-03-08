@@ -1,5 +1,6 @@
 package com.dekk.security.oauth2.handler;
 
+import com.dekk.auth.domain.exception.AuthErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,14 +31,20 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(redirectUri);
 
         String message = exception.getMessage();
-        if (message != null && message.startsWith("EA40901:")) {
-            String existingProvider = message.split(":")[1];
-            builder.queryParam("error", "DUPLICATE_EMAIL")
+        String errorCodePrefix = AuthErrorCode.DUPLICATE_EMAIL.code() + ":";
+
+        if (message != null && message.startsWith(errorCodePrefix)) {
+            String existingProvider = "unknown";
+            String[] parts = message.split(":");
+
+            if (parts.length > 1 && !parts[1].trim().isEmpty()) {
+                existingProvider = parts[1].trim();
+            }
+
+            builder.queryParam("error", AuthErrorCode.DUPLICATE_EMAIL.name())
                     .queryParam("provider", existingProvider);
         } else {
             builder.queryParam("error", exception.getLocalizedMessage());
         }
-
-        getRedirectStrategy().sendRedirect(request, response, builder.build().toUriString());
     }
 }

@@ -1,5 +1,6 @@
 package com.dekk.admin.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class AdminSecurityConfig {
 
     private final AdminJwtTokenProvider adminJwtTokenProvider;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,7 +40,7 @@ public class AdminSecurityConfig {
                         .requestMatchers("/adm/v1/admins/**").hasRole("SUPER_ADMIN")
                         .anyRequest().hasAnyRole("SUPER_ADMIN", "ADMIN")
                 )
-                .addFilterBefore(new AdminJwtAuthenticationFilter(adminJwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new AdminJwtAuthenticationFilter(adminJwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

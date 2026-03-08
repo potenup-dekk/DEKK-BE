@@ -1,5 +1,7 @@
 package com.dekk.admin.security;
 
+import com.dekk.admin.domain.exception.AdminBusinessException;
+import com.dekk.admin.domain.exception.AdminErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -19,6 +21,9 @@ import java.util.Date;
 @Component
 public class AdminJwtTokenProvider {
 
+    private static final String CLAIM_ADMIN_ID = "adminId";
+    private static final String CLAIM_ROLE = "role";
+
     private final SecretKey key;
     private final long accessTokenValidityInMilliseconds;
 
@@ -35,8 +40,8 @@ public class AdminJwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(adminUserDetails.email())
-                .claim("adminId", adminUserDetails.adminId())
-                .claim("role", adminUserDetails.role())
+                .claim(CLAIM_ADMIN_ID, adminUserDetails.adminId())
+                .claim(CLAIM_ROLE, adminUserDetails.role())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -44,27 +49,22 @@ public class AdminJwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        Long adminId = claims.get("adminId", Long.class);
-        String email = claims.getSubject();
-        String role = claims.get("role", String.class);
-
-        AdminUserDetails principal = new AdminUserDetails(adminId, email, role);
-        return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
-    }
-
-    public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            Long adminId = claims.get(CLAIM_ADMIN_ID, Long.class);
+            String email = claims.getSubject();
+            String role = claims.get(CLAIM_ROLE, String.class);
+
+            AdminUserDetails principal = new AdminUserDetails(adminId, email, role);
+            return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
         } catch (JwtException | IllegalArgumentException e) {
             log.error("Invalid Admin JWT token: {}", e.getMessage());
-            return false;
+            throw new AdminBusinessException(AdminErrorCode.INVALID_TOKEN);
         }
     }
 }

@@ -28,4 +28,19 @@ public interface DeckCardJpaRepository extends JpaRepository<DeckCard, Long> {
     List<DeckCardCountProjection> countCardsByDeckIds(@Param("deckIds") List<Long> deckIds);
 
     long countByDeckId(Long deckId);
+
+    List<DeckCard> findAllByDeckIdIn(List<Long> deckIds);
+
+    @Query(value = """
+        SELECT * FROM (
+            SELECT dc.*, ROW_NUMBER() OVER(PARTITION BY dc.deck_id ORDER BY dc.created_at DESC) as rn 
+            FROM deck_cards dc 
+            WHERE dc.deck_id IN (:deckIds) AND dc.deleted_at IS NULL
+        ) sub 
+        WHERE sub.rn <= :limit
+        """, nativeQuery = true)
+    List<DeckCard> findTopCardsByDeckIdsIn(
+        @Param("deckIds") List<Long> deckIds,
+        @Param("limit") int limit
+    );
 }

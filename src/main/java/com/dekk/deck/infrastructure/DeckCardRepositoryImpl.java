@@ -69,4 +69,20 @@ public class DeckCardRepositoryImpl implements DeckCardRepository {
     public long countByDeckId(Long deckId) {
         return deckCardJpaRepository.countByDeckId(deckId);
     }
+
+    @Override
+    public List<DeckCard> findAllByDeckIdIn(List<Long> deckIds) {
+        if (deckIds == null || deckIds.isEmpty()) {
+            return List.of();
+        }
+        return deckCardJpaRepository.findAllByDeckIdIn(deckIds);
+    }
+
+    @Override
+    public List<DeckCard> findTopCardsByDeckIdsIn(List<Long> deckIds, int limit) {
+        if (deckIds == null || deckIds.isEmpty()) {
+            return List.of();
+        }
+        return deckCardJpaRepository.findTopCardsByDeckIdsIn(deckIds, limit);
+    }
 }

@@ -45,30 +45,36 @@ public class DefaultDeckQueryService {
         Map<Long, MemberCardResult> cardMap = cardResults.stream()
             .collect(Collectors.toMap(MemberCardResult::cardId, Function.identity()));
 
-        return deckCards.map(deckCard -> {
-            MemberCardResult cardInfo = cardMap.get(deckCard.getCardId());
+        return deckCards.map(deckCard -> mapToMyDeckCardResult(deckCard, cardMap));
+    }
 
-            if (cardInfo == null) {
-                return MyDeckCardResult.empty(deckCard.getCardId());
-            }
+    private MyDeckCardResult mapToMyDeckCardResult(DeckCard deckCard, Map<Long, MemberCardResult> cardMap) {
+        MemberCardResult cardInfo = cardMap.get(deckCard.getCardId());
 
-            List<MyDeckCardResult.ProductDetail> productDetails = cardInfo.products().stream()
-                .map(p -> new MyDeckCardResult.ProductDetail(
-                    p.brand(),
-                    p.productUrl(),
-                    p.name(),
-                    p.productImageUrl()
-                ))
-                .toList();
+        if (cardInfo == null) {
+            return MyDeckCardResult.empty(deckCard.getCardId());
+        }
 
-            return new MyDeckCardResult(
-                cardInfo.cardId(),
-                cardInfo.cardImageUrl(),
-                cardInfo.height(),
-                cardInfo.weight(),
-                cardInfo.tags(),
-                productDetails
-            );
-        });
+        return convertToMyDeckCardResult(cardInfo);
+    }
+
+    private MyDeckCardResult convertToMyDeckCardResult(MemberCardResult cardInfo) {
+        List<MyDeckCardResult.ProductDetail> productDetails = cardInfo.products().stream()
+            .map(p -> new MyDeckCardResult.ProductDetail(
+                p.brand(),
+                p.productUrl(),
+                p.name(),
+                p.productImageUrl()
+            ))
+            .toList();
+
+        return new MyDeckCardResult(
+            cardInfo.cardId(),
+            cardInfo.cardImageUrl(),
+            cardInfo.height(),
+            cardInfo.weight(),
+            cardInfo.tags(),
+            productDetails
+        );
     }
 }

@@ -14,11 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -29,15 +28,16 @@ public class DeckQueryService {
     private final DeckCardRepository deckCardRepository;
     private final CardQueryService cardQueryService;
 
-    public List<DeckResult> getDecks(Long userId) {
+    private static final int MAX_PREVIEW_CARD_COUNT = 3;
 
+    public List<DeckResult> getDecks(Long userId) {
         List<Deck> allDecks = getAllDecks(userId);
         List<Long> deckIds = allDecks.stream().map(Deck::getId).toList();
 
         Map<Long, Long> cardCountMap = deckCardRepository.countCardsByDeckIds(deckIds);
 
-        List<DeckCard> allDeckCards = deckCardRepository.findAllByDeckIdIn(deckIds);
-        Map<Long, List<Long>> topCardIdsPerDeck = extractTopCardIdsPerDeck(allDecks, allDeckCards);
+        List<DeckCard> topDeckCards = deckCardRepository.findTopCardsByDeckIdsIn(deckIds, MAX_PREVIEW_CARD_COUNT);
+        Map<Long, List<Long>> topCardIdsPerDeck = extractTopCardIdsPerDeck(topDeckCards);
 
         Map<Long, String> cardImageUrlMap = getCardImageUrlMap(topCardIdsPerDeck);
 
@@ -52,27 +52,15 @@ public class DeckQueryService {
 
         List<Deck> customDecks = deckRepository.findAllByUserIdAndIsDefaultFalseOrderByCreatedAtDesc(userId);
 
-        List<Deck> allDecks = new ArrayList<>();
-        allDecks.add(defaultDeck);
-        allDecks.addAll(customDecks);
-
-        return allDecks;
+        return Stream.concat(Stream.of(defaultDeck), customDecks.stream()).toList();
     }
 
-    private Map<Long, List<Long>> extractTopCardIdsPerDeck(List<Deck> allDecks, List<DeckCard> allDeckCards) {
-        Map<Long, List<Long>> deckTopCardIdsMap = allDecks.stream()
-            .collect(Collectors.toMap(Deck::getId, deck -> new ArrayList<>()));
-
-        allDeckCards.stream()
-            .sorted(Comparator.comparing(DeckCard::getId).reversed())
-            .forEach(dc -> {
-                List<Long> topCards = deckTopCardIdsMap.get(dc.getDeckId());
-                if (topCards != null && topCards.size() < 3) {
-                    topCards.add(dc.getCardId());
-                }
-            });
-
-        return deckTopCardIdsMap;
+    private Map<Long, List<Long>> extractTopCardIdsPerDeck(List<DeckCard> topDeckCards) {
+        return topDeckCards.stream()
+            .collect(Collectors.groupingBy(
+                DeckCard::getDeckId,
+                Collectors.mapping(DeckCard::getCardId, Collectors.toList())
+            ));
     }
 
     private Map<Long, String> getCardImageUrlMap(Map<Long, List<Long>> topCardIdsPerDeck) {

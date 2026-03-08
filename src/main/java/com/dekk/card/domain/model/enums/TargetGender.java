@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum TargetGender {
     WOMEN("여성"),
     MEN("남성"),
-    UNISEX("남녀공용"),
+    OTHER("남녀공용"),
     UNDEFINED("미정");
 
     private final String description;
@@ -21,7 +21,7 @@ public enum TargetGender {
         return switch (value.trim().toUpperCase()) {
             case "WOMEN" -> TargetGender.WOMEN;
             case "MEN" -> TargetGender.MEN;
-            case "ALL" -> TargetGender.UNISEX;
+            case "ALL" -> TargetGender.OTHER;
             default -> TargetGender.UNDEFINED;
         };
     }

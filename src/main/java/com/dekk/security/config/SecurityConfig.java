@@ -60,7 +60,8 @@ public class SecurityConfig {
                             "/w/v1/auth/refresh"
                         ).permitAll()
                         .requestMatchers(
-                                "/adm/v1/cards/**"
+                                "/adm/v1/cards/**",
+                                "/adm/v1/categories/**"
                         ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 public enum CategoryResultCode implements ResultCode {
+    CATEGORY_TREE_FETCHED(HttpStatus.OK, "SCT20001", "카테고리 트리 조회 성공"),
+
     CATEGORY_CREATED(HttpStatus.CREATED, "SCT20101", "카테고리 생성 성공")
     ;
 

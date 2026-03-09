@@ -18,7 +18,7 @@ public enum AuthErrorCode implements ErrorCode {
 
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "EA40901", "이미 다른 소셜 계정으로 가입된 이메일입니다.");
 
-    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "EA40901", "이미 다른 소셜 계정으로 가입된 이메일입니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;

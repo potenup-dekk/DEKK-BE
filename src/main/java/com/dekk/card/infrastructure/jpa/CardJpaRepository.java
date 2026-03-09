@@ -19,25 +19,28 @@ public interface CardJpaRepository extends JpaRepository<Card, Long> {
             countQuery = "SELECT COUNT(c) FROM Card c WHERE c.status = :status")
     Page<Card> findCardsWithImageByStatus(@Param("status") CardStatus status, Pageable pageable);
 
-    @Query(value = "SELECT c FROM Card c JOIN FETCH c.cardImage WHERE c.status = :status ORDER BY c.createdAt DESC",
+    @Query(value = "SELECT c.id FROM Card c WHERE c.status = :status ORDER BY c.createdAt DESC",
             countQuery = "SELECT COUNT(c) FROM Card c WHERE c.status = :status")
-    Page<Card> findCardsWithProductsByStatus(@Param("status") CardStatus status, Pageable pageable);
+    Page<Long> findCardIdsByStatus(@Param("status") CardStatus status, Pageable pageable);
 
-    @Query("SELECT DISTINCT c FROM Card c JOIN FETCH c.cardImage LEFT JOIN FETCH c.cardProducts cp LEFT JOIN FETCH cp.product p LEFT JOIN FETCH p.productImage WHERE c.id IN :ids ORDER BY c.createdAt DESC")
+    @Query("SELECT DISTINCT c FROM Card c " +
+            "JOIN FETCH c.cardImage " +
+            "LEFT JOIN FETCH c.cardProducts cp " +
+            "LEFT JOIN FETCH cp.product p " +
+            "LEFT JOIN FETCH p.productImage " +
+            "WHERE c.id IN :ids ORDER BY c.createdAt DESC")
     List<Card> findAllByIdInWithProducts(@Param("ids") List<Long> ids);
 
     @Query("SELECT DISTINCT c FROM Card c " +
             "JOIN FETCH c.cardImage " +
-            "JOIN c.cardProducts cp " +
-            "JOIN cp.product p " +
+            "JOIN FETCH c.cardProducts cp " +
+            "LEFT JOIN FETCH cp.product p " +
+            "LEFT JOIN FETCH p.productImage " +
             "WHERE c.status = 'APPROVED' " +
-            "AND p.isSimilar = false " +
             "AND c.targetGender IN :genders " +
             "AND (c.height IS NULL OR c.height BETWEEN :minHeight AND :maxHeight) " +
-            "AND (c.weight IS NULL OR c.weight BETWEEN :minWeight AND :maxWeight) " +
-            "AND (:excludedCardIds IS NULL OR c.id NOT IN :excludedCardIds)")
+            "AND (c.weight IS NULL OR c.weight BETWEEN :minWeight AND :maxWeight)")
     List<Card> findRecommendCandidates(
-            @Param("excludedCardIds") List<Long> excludedCardIds,
             @Param("genders") List<TargetGender> genders,
             @Param("minHeight") int minHeight,
             @Param("maxHeight") int maxHeight,

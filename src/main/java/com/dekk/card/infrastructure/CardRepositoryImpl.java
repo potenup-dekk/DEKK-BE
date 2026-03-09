@@ -8,6 +8,7 @@ import com.dekk.card.domain.repository.CardRepository;
 import com.dekk.card.infrastructure.jpa.CardJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -41,7 +42,16 @@ public class CardRepositoryImpl implements CardRepository {
 
     @Override
     public Page<Card> findCardsWithProductsByStatus(CardStatus status, Pageable pageable) {
-        return cardJpaRepository.findCardsWithProductsByStatus(status, pageable);
+        Page<Long> idPage = cardJpaRepository.findCardIdsByStatus(status, pageable);
+
+        List<Long> cardIds = idPage.getContent();
+        if (cardIds.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, idPage.getTotalElements());
+        }
+
+        List<Card> cardsWithProducts = cardJpaRepository.findAllByIdInWithProducts(cardIds);
+
+        return new PageImpl<>(cardsWithProducts, pageable, idPage.getTotalElements());
     }
 
     @Override
@@ -52,7 +62,6 @@ public class CardRepositoryImpl implements CardRepository {
     @Override
     public List<Card> findRecommendCandidates(RecommendCandidateQuery query) {
         return cardJpaRepository.findRecommendCandidates(
-                query.excludedCardIdsOrNull(),
                 query.genders(),
                 query.minHeight(),
                 query.maxHeight(),

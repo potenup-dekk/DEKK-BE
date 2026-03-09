@@ -1,6 +1,7 @@
 package com.dekk.category.presentation.controller;
 
 import com.dekk.category.presentation.request.CreateCategoryRequest;
+import com.dekk.category.presentation.request.UpdateCategoryNameRequest;
 import com.dekk.category.presentation.response.CreateCategoryResponse;
 import com.dekk.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +15,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "관리자 카테고리 관리 API", description = "관리자가 카테고리를 생성하고 조회하는 API")
 @Tag(name = "관리자 카테고리 관리 API", description = "관리자가 카테고리를 생성, 수정, 삭제하는 API")
 public interface CategoryCommandApi {
 
@@ -118,4 +118,67 @@ public interface CategoryCommandApi {
             @Parameter(description = "카테고리 ID", in = ParameterIn.PATH) Long categoryId,
             @Valid UpdateCategoryNameRequest request
     );
+
+    @Operation(summary = "상위 카테고리 삭제", description = "상위 카테고리를 삭제합니다. 하위 카테고리와 관련 카드 매핑도 함께 삭제됩니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "카테고리 삭제 성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "code": "SCT20012",
+                                      "message": "카테고리 삭제 성공"
+                                    }""")
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "카테고리를 찾을 수 없음",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "code": "ECT40401",
+                                      "message": "카테고리를 찾을 수 없습니다"
+                                    }""")
+                    )
+            )
+    })
+    ResponseEntity<ApiResponse<Void>> deleteParentCategory(
+            @Parameter(description = "상위 카테고리 ID", in = ParameterIn.PATH) Long categoryId
+    );
+
+    @Operation(summary = "하위 카테고리 삭제", description = "하위 카테고리를 삭제합니다. 관련 카드 매핑도 함께 삭제됩니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "카테고리 삭제 성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "code": "SCT20012",
+                                      "message": "카테고리 삭제 성공"
+                                    }""")
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "카테고리를 찾을 수 없음",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "code": "ECT40401",
+                                      "message": "카테고리를 찾을 수 없습니다"
+                                    }""")
+                    )
+            )
+    })
+    ResponseEntity<ApiResponse<Void>> deleteChildCategory(
+            @Parameter(description = "하위 카테고리 ID", in = ParameterIn.PATH) Long categoryId
+    );
+
 }

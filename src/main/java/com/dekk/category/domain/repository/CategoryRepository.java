@@ -9,4 +9,6 @@ public interface CategoryRepository {
     Category save(Category category);
     Optional<Category> findById(Long id);
     List<Category> findAllParentsWithChildren();
+    void delete(Category category);
+    void softDeleteAllByParentId(Long parentId);
 }

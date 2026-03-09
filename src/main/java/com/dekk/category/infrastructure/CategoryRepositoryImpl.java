@@ -29,4 +29,14 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     public List<Category> findAllParentsWithChildren() {
         return categoryJpaRepository.findAllParentsWithChildren();
     }
+
+    @Override
+    public void delete(Category category) {
+        categoryJpaRepository.delete(category);
+    }
+
+    @Override
+    public void softDeleteAllByParentId(Long parentId) {
+        categoryJpaRepository.softDeleteAllByParentId(parentId);
+    }
 }

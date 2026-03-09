@@ -29,8 +29,11 @@ public class JwtTokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String TOKEN_TYPE_KEY = "type";
+    private static final String CLAIM_USER_ID = "userId";
+    private static final String CLAIM_STATUS = "status";
     private static final String ACCESS_TOKEN_TYPE = "ACCESS";
     private static final String REFRESH_TOKEN_TYPE = "REFRESH";
+
 
     private final Key key;
     private final long accessTokenValidityTime;
@@ -71,8 +74,8 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(email)
                 .claim(AUTHORITIES_KEY, authorities)
-                .claim("userId", userId)
-                .claim("status", status)
+                .claim(CLAIM_USER_ID, userId)
+                .claim(CLAIM_STATUS, status)
                 .claim(TOKEN_TYPE_KEY, tokenType)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(validity)
@@ -97,11 +100,11 @@ public class JwtTokenProvider {
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(role.split(","))
                         .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                        .toList();
 
         String email = claims.getSubject();
-        Long userId = ((Number) claims.get("userId")).longValue();
-        String status = claims.get("status", String.class);
+        Long userId = ((Number) claims.get(CLAIM_USER_ID)).longValue();
+        String status = claims.get(CLAIM_STATUS, String.class);
 
         CustomUserDetails principal = new CustomUserDetails(userId, email, role, status);
 
@@ -120,17 +123,6 @@ public class JwtTokenProvider {
             throw new AuthBusinessException(AuthErrorCode.UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
             throw new AuthBusinessException(AuthErrorCode.EMPTY_CLAIMS);
-        }
-    }
-
-    public long getRemainingExpirationTime(String token) {
-        try {
-            Date expiration = getClaims(token).getExpiration();
-            long now = (new Date()).getTime();
-            long remainingMillis = expiration.getTime() - now;
-            return remainingMillis > 0 ? remainingMillis / 1000 : 0;
-        } catch (ExpiredJwtException e) {
-            return 0;
         }
     }
 

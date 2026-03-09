@@ -61,7 +61,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(
                                 "/adm/v1/cards/**",
-                                "/adm/categories/**"
+                                "/adm/v1/categories/**"
                         ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

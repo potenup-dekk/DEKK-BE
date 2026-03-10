@@ -25,6 +25,6 @@ public class ActiveLogQueryService {
     }
 
     public List<Long> getSwipedCardIds(Long userId, SwipeType swipeType) {
-        return activeLogRepository.findCardIdsByUserIdAndSwipeType(userId, swipeType);
+        return activeLogRepository.findCardIdsByUserIdAndSwipeTypes(userId, List.of(swipeType));
     }
 }

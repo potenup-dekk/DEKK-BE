@@ -28,7 +28,7 @@ public interface CategoryCommandApi {
                             examples = @ExampleObject(value = """
                                     {
                                       "code": "SCT20101",
-                                      "message": "카테고리 생성 성공",
+                                      "message": "카테고리 생성에 성공했습니다.",
                                       "data": {
                                         "categoryId": 1
                                       }
@@ -56,13 +56,13 @@ public interface CategoryCommandApi {
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "201",
-                    description = "카테고리 생성 성공",
+                    description = "카테고리 생성에 성공했습니다.",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(value = """
                                     {
                                       "code": "SCT20101",
-                                      "message": "카테고리 생성 성공",
+                                      "message": "카테고리 생성에 성공했습니다.",
                                       "data": {
                                         "categoryId": 2
                                       }
@@ -96,8 +96,8 @@ public interface CategoryCommandApi {
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(value = """
                                     {
-                                      "code": "SCT20011",
-                                      "message": "카테고리명 수정 성공"
+                                      "code": "SCT20002",
+                                      "message": "카테고리명 수정에 성공했습니다."
                                     }""")
                     )
             ),
@@ -128,8 +128,8 @@ public interface CategoryCommandApi {
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(value = """
                                     {
-                                      "code": "SCT20012",
-                                      "message": "카테고리 삭제 성공"
+                                      "code": "SCT20003",
+                                      "message": "카테고리 삭제에 성공했습니다."
                                     }""")
                     )
             ),
@@ -159,8 +159,8 @@ public interface CategoryCommandApi {
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(value = """
                                     {
-                                      "code": "SCT20012",
-                                      "message": "카테고리 삭제 성공"
+                                      "code": "SCT20003",
+                                      "message": "카테고리 삭제에 성공했습니다."
                                     }""")
                     )
             ),

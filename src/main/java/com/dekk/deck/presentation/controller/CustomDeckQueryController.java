@@ -1,7 +1,6 @@
 package com.dekk.deck.presentation.controller;
 
 import com.dekk.common.response.ApiResponse;
-import com.dekk.common.response.PageResponse;
 import com.dekk.deck.application.CustomDeckQueryService;
 import com.dekk.deck.application.dto.result.CustomDeckResult;
 import com.dekk.deck.application.dto.result.MyDeckCardResult;
@@ -11,9 +10,6 @@ import com.dekk.security.oauth2.CustomUserDetails;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,16 +39,15 @@ public class CustomDeckQueryController implements CustomDeckQueryApi {
 
     @Override
     @GetMapping("/{customDeckId}/cards")
-    public ResponseEntity<ApiResponse<PageResponse<MyDeckCardResult>>> getCustomDeckCards(
+    public ResponseEntity<ApiResponse<List<MyDeckCardResult>>> getCustomDeckCards(
         @AuthenticationPrincipal CustomUserDetails userDetails,
-        @PathVariable("customDeckId") Long customDeckId,
-        @ParameterObject Pageable pageable
+        @PathVariable("customDeckId") Long customDeckId
     ) {
-        Page<MyDeckCardResult> result = customDeckQueryService.getCustomDeckCards(userDetails.getId(), customDeckId, pageable);
+        List<MyDeckCardResult> result = customDeckQueryService.getCustomDeckCards(userDetails.getId(), customDeckId);
 
         return ResponseEntity.ok(ApiResponse.of(
             DeckResultCode.CUSTOM_DECK_CARD_LIST_SUCCESS,
-            PageResponse.from(result)
+            result
         ));
     }
 }

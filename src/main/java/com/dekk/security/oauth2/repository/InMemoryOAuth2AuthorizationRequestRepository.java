@@ -53,7 +53,6 @@ public class InMemoryOAuth2AuthorizationRequestRepository implements Authorizati
     public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request, HttpServletResponse response) {
         String state = request.getParameter("state");
         if (state != null) {
-            redirectUris.remove(state);
             return authRequests.remove(state);
         }
         return null;

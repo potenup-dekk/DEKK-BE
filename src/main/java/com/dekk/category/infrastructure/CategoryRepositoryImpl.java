@@ -6,6 +6,7 @@ import com.dekk.category.infrastructure.jpa.CategoryJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,5 +23,20 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     @Override
     public Optional<Category> findById(Long id) {
         return categoryJpaRepository.findById(id);
+    }
+
+    @Override
+    public List<Category> findAllParentsWithChildren() {
+        return categoryJpaRepository.findAllParentsWithChildren();
+    }
+
+    @Override
+    public void delete(Category category) {
+        categoryJpaRepository.delete(category);
+    }
+
+    @Override
+    public void softDeleteAllByParentId(Long parentId) {
+        categoryJpaRepository.softDeleteAllByParentId(parentId);
     }
 }

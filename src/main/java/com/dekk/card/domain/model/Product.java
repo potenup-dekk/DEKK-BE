@@ -41,9 +41,6 @@ public class Product extends BaseTimeEntity {
     @Column(name = "product_url", columnDefinition = "text")
     private String productUrl;
 
-    @Enumerated(EnumType.STRING)
-    private TargetGender gender;
-
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
 

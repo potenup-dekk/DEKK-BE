@@ -43,4 +43,6 @@ public interface DeckCardJpaRepository extends JpaRepository<DeckCard, Long> {
         @Param("deckIds") List<Long> deckIds,
         @Param("limit") int limit
     );
+
+    List<DeckCard> findAllByDeckIdOrderByCreatedAtDesc(Long deckId);
 }

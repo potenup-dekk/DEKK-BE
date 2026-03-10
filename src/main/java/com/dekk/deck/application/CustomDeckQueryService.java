@@ -17,8 +17,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,13 +51,17 @@ public class CustomDeckQueryService {
             .toList();
     }
 
-    public Page<MyDeckCardResult> getCustomDeckCards(Long userId, Long deckId, Pageable pageable) {
+    public List<MyDeckCardResult> getCustomDeckCards(Long userId, Long deckId) {
         Deck deck = deckRepository.findByIdAndUserId(deckId, userId)
             .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
 
-        Page<DeckCard> deckCards = deckCardRepository.findAllByDeckId(deck.getId(), pageable);
+        List<DeckCard> deckCards = deckCardRepository.findAllByDeckIdOrderByCreatedAtDesc(deck.getId());
 
-        List<Long> cardIds = deckCards.getContent().stream()
+        if (deckCards.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> cardIds = deckCards.stream()
             .map(DeckCard::getCardId)
             .toList();
 
@@ -68,7 +70,9 @@ public class CustomDeckQueryService {
         Map<Long, MemberCardResult> cardMap = cardResults.stream()
             .collect(Collectors.toMap(MemberCardResult::cardId, Function.identity()));
 
-        return deckCards.map(deckCard -> mapToMyDeckCardResult(deckCard, cardMap));
+        return deckCards.stream()
+            .map(deckCard -> mapToMyDeckCardResult(deckCard, cardMap))
+            .toList();
     }
 
     private MyDeckCardResult mapToMyDeckCardResult(DeckCard deckCard, Map<Long, MemberCardResult> cardMap) {

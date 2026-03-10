@@ -85,4 +85,9 @@ public class DeckCardRepositoryImpl implements DeckCardRepository {
         }
         return deckCardJpaRepository.findTopCardsByDeckIdsIn(deckIds, limit);
     }
+
+    @Override
+    public List<DeckCard> findAllByDeckIdOrderByCreatedAtDesc(Long deckId) {
+        return deckCardJpaRepository.findAllByDeckIdOrderByCreatedAtDesc(deckId);
+    }
 }

@@ -40,14 +40,14 @@ class ActiveLogJpaRepositoryTest {
     }
 
     @Test
-    @DisplayName("단일 타입 조회 시 요청한 타입의 카드 ID만 정확히 반환한다")
-    void findCardIdsByUserIdAndSwipeType_Success() {
+    @DisplayName("단일 타입 조회 시 IN 절을 통해 요청한 타입의 카드 ID만 정확히 반환한다")
+    void findCardIdsByUserIdAndSingleSwipeType_Success() {
 
         Long userId = 1L;
         activeLogJpaRepository.save(ActiveLog.create(userId, 101L, SwipeType.LIKE));
         activeLogJpaRepository.save(ActiveLog.create(userId, 102L, SwipeType.DISLIKE));
 
-        List<Long> result = activeLogJpaRepository.findCardIdsByUserIdAndSwipeType(userId, SwipeType.LIKE);
+        List<Long> result = activeLogJpaRepository.findCardIdsByUserIdAndSwipeTypes(userId, List.of(SwipeType.LIKE));
 
         assertThat(result).hasSize(1);
         assertThat(result).containsOnly(101L);

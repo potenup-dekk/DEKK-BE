@@ -46,19 +46,21 @@ class ActiveLogQueryServiceTest {
     }
 
     @Test
-    @DisplayName("특정 타입 조회 시 요청한 타입에 맞는 카드 ID 리스트를 반환한다")
+    @DisplayName("특정 타입 조회 시 내부적으로 IN 절 메서드를 호출하여 리스트를 반환한다")
     void getSwipedCardIds_ReturnList() {
 
         Long userId = 1L;
         SwipeType type = SwipeType.LIKE;
         List<Long> mockList = List.of(10L, 20L);
-        given(activeLogRepository.findCardIdsByUserIdAndSwipeType(userId, type))
+
+        given(activeLogRepository.findCardIdsByUserIdAndSwipeTypes(userId, List.of(type)))
             .willReturn(mockList);
 
         List<Long> result = activeLogQueryService.getSwipedCardIds(userId, type);
 
         assertThat(result).hasSize(2);
         assertThat(result).isEqualTo(mockList);
-        verify(activeLogRepository).findCardIdsByUserIdAndSwipeType(userId, type);
+
+        verify(activeLogRepository).findCardIdsByUserIdAndSwipeTypes(userId, List.of(type));
     }
 }

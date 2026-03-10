@@ -3,6 +3,7 @@ package com.dekk.auth.jwt;
 import com.dekk.auth.domain.exception.AuthBusinessException;
 import com.dekk.auth.domain.exception.AuthErrorCode;
 import com.dekk.security.oauth2.CustomUserDetails;
+import com.dekk.user.domain.model.enums.UserStatus;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -60,7 +61,7 @@ public class JwtTokenProvider {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername();
         Long userId = userDetails.getId();
-        String status = userDetails.getStatus();
+        UserStatus status = userDetails.getStatus();
 
         long now = (new Date()).getTime();
         Date validity = new Date(now + tokenValidTime);
@@ -93,7 +94,7 @@ public class JwtTokenProvider {
         Long userId = ((Number) claims.get("userId")).longValue();
         String status = claims.get("status", String.class);
 
-        CustomUserDetails principal = new CustomUserDetails(userId, email, role, status);
+        CustomUserDetails principal = new CustomUserDetails(userId, email, role, UserStatus.valueOf(status));
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }

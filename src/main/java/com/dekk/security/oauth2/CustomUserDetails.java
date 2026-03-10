@@ -1,6 +1,7 @@
 package com.dekk.security.oauth2;
 
 import com.dekk.user.domain.model.User;
+import com.dekk.user.domain.model.enums.UserStatus;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,7 +20,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
     private final String role;
 
     @Getter
-    private final String status;
+    private final UserStatus status;
 
     private final Map<String, Object> attributes;
 
@@ -27,10 +28,10 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
         this.id = user.getId();
         this.email = user.getEmail();
         this.role = user.getRole().getKey();
-        this.status = user.getStatus().name();
+        this.status = user.getStatus();
         this.attributes = attributes;
     }
-    public CustomUserDetails(Long id, String email, String role, String status) {
+    public CustomUserDetails(Long id, String email, String role, UserStatus status) {
         this.id = id;
         this.email = email;
         this.role = role;

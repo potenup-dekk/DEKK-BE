@@ -14,12 +14,6 @@ public interface ActiveLogJpaRepository extends JpaRepository<ActiveLog, Long> {
 
     Optional<ActiveLog> findByUserIdAndCardId(Long userId, Long cardId);
 
-    @Query("SELECT a.cardId FROM ActiveLog a WHERE a.userId = :userId AND a.swipeType = :swipeType")
-    List<Long> findCardIdsByUserIdAndSwipeType(
-        @Param("userId") Long userId,
-        @Param("swipeType") SwipeType swipeType
-    );
-
     @Query("SELECT a.cardId FROM ActiveLog a WHERE a.userId = :userId AND a.swipeType IN :swipeTypes")
     List<Long> findCardIdsByUserIdAndSwipeTypes(
         @Param("userId") Long userId,

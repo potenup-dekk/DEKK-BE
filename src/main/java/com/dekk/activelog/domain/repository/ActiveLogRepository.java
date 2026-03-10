@@ -15,7 +15,6 @@ public interface ActiveLogRepository {
 
     void delete(ActiveLog activeLog);
 
-    List<Long> findCardIdsByUserIdAndSwipeType(Long userId, SwipeType swipeType);
 
     List<Long> findCardIdsByUserIdAndSwipeTypes(Long userId, List<SwipeType> swipeTypes);
 }

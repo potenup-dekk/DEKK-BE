@@ -37,11 +37,6 @@ public class ActiveLogRepositoryImpl implements ActiveLogRepository {
     }
 
     @Override
-    public List<Long> findCardIdsByUserIdAndSwipeType(Long userId, SwipeType swipeType) {
-        return jpaRepository.findCardIdsByUserIdAndSwipeType(userId, swipeType);
-    }
-
-    @Override
     public List<Long> findCardIdsByUserIdAndSwipeTypes(Long userId, List<SwipeType> swipeTypes) {
         return jpaRepository.findCardIdsByUserIdAndSwipeTypes(userId, swipeTypes);
     }

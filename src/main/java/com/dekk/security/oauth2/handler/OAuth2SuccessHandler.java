@@ -31,7 +31,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     public OAuth2SuccessHandler(
             JwtTokenProvider jwtTokenProvider,
-            UserRepository userRepository,
             @Value("${app.oauth2.redirect-uri}") String defaultRedirectUri,
             @Value("${app.oauth2.join-page}") String joinPageUri,
             @Value("${jwt.access-token-validity-in-seconds}") int accessTokenMaxAge,

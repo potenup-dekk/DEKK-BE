@@ -5,6 +5,7 @@ import com.dekk.common.error.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +17,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 public class AdminJwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String BEARER_PREFIX = "Bearer ";
+    private static final String ADMIN_TOKEN_COOKIE_NAME = "admin_access_token";
 
     private final AdminJwtTokenProvider adminJwtTokenProvider;
     private final ObjectMapper objectMapper;
@@ -49,11 +50,15 @@ public class AdminJwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(BEARER_PREFIX.length());
+        if (request.getCookies() == null) {
+            return null;
         }
-        return null;
+
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> ADMIN_TOKEN_COOKIE_NAME.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
     private void handleException(HttpServletResponse response, AdminBusinessException e) throws IOException {

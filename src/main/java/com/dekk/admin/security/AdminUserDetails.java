@@ -13,9 +13,11 @@ public record AdminUserDetails(
         String role
 ) implements UserDetails {
 
+    private static final String ROLE_PREFIX = "Role_";
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(role));
+        return Collections.singleton(new SimpleGrantedAuthority(ROLE_PREFIX + this.role));
     }
 
     @Override

@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 @Tag(name = "커스텀 보관함 조회 API", description = "커스텀 보관함 목록 및 상태 조회 API")
 public interface CustomDeckQueryApi {
 
-    @Operation(summary = "내 커스텀 보관함 목록 조회", description = "사용자가 생성한 커스텀 보관함 목록과 각 보관함에 담긴 카드 개수를 최신순으로 조회합니다.")
+    @Operation(summary = "내 커스텀 보관함 목록 조회", description = "사용자가 생성한 커스텀 보관함 목록과 최신 카드 썸네일(imageUrl) 1장을 최신순으로 조회합니다.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공 (SD20008)")
     @ApiErrorExceptions({DeckErrorCode.class})
     ResponseEntity<ApiResponse<List<CustomDeckResult>>> getMyCustomDecks(

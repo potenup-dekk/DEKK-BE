@@ -38,10 +38,39 @@ public class CustomDeckQueryService {
 
         Map<Long, Long> cardCountMap = deckCardRepository.countCardsByDeckIds(deckIds);
 
+        Map<Long, String> imageUrlMap = getLatestImageUrlMap(deckIds);
+
         return myCustomDecks.stream()
-                .map(deck ->
-                        CustomDeckResult.of(deck.getId(), deck.getName(), cardCountMap.getOrDefault(deck.getId(), 0L)))
+                .map(deck -> CustomDeckResult.of(
+                        deck.getId(),
+                        deck.getName(),
+                        cardCountMap.getOrDefault(deck.getId(), 0L),
+                        imageUrlMap.get(deck.getId())))
                 .toList();
+    }
+
+    private Map<Long, String> getLatestImageUrlMap(List<Long> deckIds) {
+        List<DeckCard> latestCards = deckCardRepository.findTopCardsByDeckIdsIn(deckIds, 1);
+
+        if (latestCards.isEmpty()) {
+            return Map.of();
+        }
+
+        List<Long> cardIds =
+                latestCards.stream().map(DeckCard::getCardId).distinct().toList();
+
+        List<MemberCardResult> cardResults = cardQueryService.getCardsByIds(cardIds);
+
+        Map<Long, String> cardImageMap = cardResults.stream()
+                .filter(c -> c.cardImageUrl() != null)
+                .collect(Collectors.toMap(MemberCardResult::cardId, MemberCardResult::cardImageUrl));
+
+        return latestCards.stream()
+                .filter(deckCard -> cardImageMap.containsKey(deckCard.getCardId()))
+                .collect(Collectors.toMap(
+                        DeckCard::getDeckId,
+                        deckCard -> cardImageMap.get(deckCard.getCardId()),
+                        (existing, replacement) -> existing));
     }
 
     public List<MyDeckCardResult> getCustomDeckCards(Long userId, Long deckId) {

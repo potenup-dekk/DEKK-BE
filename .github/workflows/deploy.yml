@@ -39,8 +39,12 @@ jobs:
 
       - name: 6. S3에 빌드 결과물 업로드
         run: |
+          DATE=$(date +'%Y%m%d')
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          VERSION="${DATE}-${SHORT_SHA}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           zip -r deploy.zip appspec.yml scripts build/libs/*.jar
-          aws s3 cp deploy.zip s3://dekk-deploy-bucket/deploy.zip
+          aws s3 cp deploy.zip s3://dekk-deploy-bucket/deploy-$VERSION.zip
 
       - name: 7. CodeDeploy 실행
         run: |
@@ -48,4 +52,4 @@ jobs:
             --application-name dekk-api-server \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --deployment-group-name dekk-was-deploy-group \
-            --s3-location bucket=dekk-deploy-bucket,bundleType=zip,key=deploy.zip
+            --s3-location bucket=dekk-deploy-bucket,bundleType=zip,key=deploy-${{ env.VERSION }}.zip

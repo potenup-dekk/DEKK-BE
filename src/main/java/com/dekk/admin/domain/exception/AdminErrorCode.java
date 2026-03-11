@@ -12,6 +12,7 @@ public enum AdminErrorCode implements ErrorCode {
 
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "EADM40101", "비밀번호가 일치하지 않습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "EADM40102", "유효하지 않은 관리자 토큰입니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "EADM40103", "만료된 관리자 토큰입니다."),
 
     UNAUTHORIZED_ROLE(HttpStatus.FORBIDDEN, "EADM40301", "권한이 없습니다."),
 

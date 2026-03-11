@@ -29,15 +29,18 @@ public class AdminSecurityConfig {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain adminFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+    public SecurityFilterChain adminFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource)
+            throws Exception {
         http.securityMatcher("/adm/v1/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/adm/v1/auth/login").permitAll()
-                        .requestMatchers("/adm/v1/admins/**").hasRole("SUPER_ADMIN")
-                        .anyRequest().hasAnyRole("SUPER_ADMIN", "ADMIN"))
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/adm/v1/auth/login")
+                        .permitAll()
+                        .requestMatchers("/adm/v1/admins/**")
+                        .hasRole("SUPER_ADMIN")
+                        .anyRequest()
+                        .hasAnyRole("SUPER_ADMIN", "ADMIN"))
                 .addFilterBefore(
                         new AdminJwtAuthenticationFilter(adminJwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class);

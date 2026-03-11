@@ -33,29 +33,23 @@ public class AdminAuthController implements AdminAuthApi {
     @Override
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<Void>> login(
-            @Valid @RequestBody AdminLoginRequest request,
-            HttpServletResponse response) {
+            @Valid @RequestBody AdminLoginRequest request, HttpServletResponse response) {
 
         AdminLoginResult result = adminAuthService.login(request.toCommand());
 
         cookieUtil.addCookie(response, ADMIN_TOKEN_COOKIE_NAME, result.accessToken(), cookieMaxAge);
 
-        return ResponseEntity.ok(
-                ApiResponse.from(AdminResultCode.ADMIN_LOGIN_SUCCESS));
+        return ResponseEntity.ok(ApiResponse.from(AdminResultCode.ADMIN_LOGIN_SUCCESS));
     }
 
     @Override
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(
-            HttpServletRequest request,
-            HttpServletResponse response) {
+    public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request, HttpServletResponse response) {
 
         adminAuthService.logout();
 
         cookieUtil.deleteCookie(response, ADMIN_TOKEN_COOKIE_NAME);
 
-        return ResponseEntity.ok(
-                ApiResponse.from(AdminResultCode.ADMIN_LOGOUT_SUCCESS)
-        );
+        return ResponseEntity.ok(ApiResponse.from(AdminResultCode.ADMIN_LOGOUT_SUCCESS));
     }
 }

@@ -22,6 +22,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final CookieUtil cookieUtil;
 
     private final String defaultRedirectUri;
     private final String joinPageUri;
@@ -32,6 +33,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public OAuth2SuccessHandler(
             JwtTokenProvider jwtTokenProvider,
             RefreshTokenRepository refreshTokenRepository,
+            CookieUtil cookieUtil,
             @Value("${app.oauth2.redirect-uri}") String defaultRedirectUri,
             @Value("${app.oauth2.join-page}") String joinPageUri,
             @Value("${jwt.access-token-validity-in-seconds}") int accessTokenMaxAge,
@@ -39,6 +41,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         this.jwtTokenProvider = jwtTokenProvider;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.cookieUtil = cookieUtil;
         this.defaultRedirectUri = defaultRedirectUri;
         this.joinPageUri = joinPageUri;
         this.accessTokenMaxAge = accessTokenMaxAge;
@@ -53,8 +56,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken = jwtTokenProvider.createAccessToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 
-        CookieUtil.addCookie(response, CookieUtil.ACCESS_TOKEN_NAME, accessToken, accessTokenMaxAge);
-        CookieUtil.addCookie(response, CookieUtil.REFRESH_TOKEN_NAME, refreshToken, refreshTokenMaxAge);
+        cookieUtil.addCookie(response, CookieUtil.ACCESS_TOKEN_NAME, accessToken, accessTokenMaxAge);
+        cookieUtil.addCookie(response, CookieUtil.REFRESH_TOKEN_NAME, refreshToken, refreshTokenMaxAge);
 
         String targetUrl = defaultRedirectUri;
 

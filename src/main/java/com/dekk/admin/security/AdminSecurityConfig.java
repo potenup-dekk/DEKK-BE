@@ -32,7 +32,7 @@ public class AdminSecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/adm/v1/**")
+        http.securityMatcher("/adm/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

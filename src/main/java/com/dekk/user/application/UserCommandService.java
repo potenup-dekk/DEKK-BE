@@ -30,8 +30,6 @@ public class UserCommandService {
 
         user.completeOnboarding(command);
 
-        userRepository.save(user);
-
         deckCommandService.createDefaultDeck(user.getId());
     }
 

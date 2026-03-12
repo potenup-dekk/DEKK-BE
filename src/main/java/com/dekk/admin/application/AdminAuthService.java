@@ -41,6 +41,6 @@ public class AdminAuthService {
     }
 
     public void logout() {
-        // Todo Redis BlackList 도입 ?
+        // TODO: BlackList 도입 예정
     }
 }

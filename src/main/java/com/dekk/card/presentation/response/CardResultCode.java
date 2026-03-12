@@ -9,7 +9,8 @@ public enum CardResultCode implements ResultCode {
     GUEST_CARD_LIST_SUCCESS(HttpStatus.OK, "SC200001", "비회원 카드 목록 조회 성공"),
     MEMBER_CARD_LIST_SUCCESS(HttpStatus.OK, "SC200002", "회원 카드 목록 조회 성공"),
     CARD_APPROVE_SUCCESS(HttpStatus.OK, "SC200003", "카드 승인 성공"),
-    CARD_REJECT_SUCCESS(HttpStatus.OK, "SC200004", "카드 반려 성공");
+    CARD_REJECT_SUCCESS(HttpStatus.OK, "SC200004", "카드 반려 성공"),
+    ADMIN_CARD_LIST_SUCCESS(HttpStatus.OK, "SC200005", "관리자 카드 목록 조회 성공 했습니다.");
 
     private final HttpStatus status;
     private final String code;

@@ -1,4 +1,4 @@
-package com.dekk.security.config;
+package com.dekk.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,14 +20,20 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}")
     private int port;
 
+    @Value("${spring.data.redis.ssl.enabled}")
+    private boolean sslEnabled;
+
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration(host, port);
 
-        LettuceClientConfiguration clientConfig =
-                LettuceClientConfiguration.builder().useSsl().build();
+        LettuceClientConfiguration.LettuceClientConfigurationBuilder builder = LettuceClientConfiguration.builder();
 
-        return new LettuceConnectionFactory(serverConfig, clientConfig);
+        if (sslEnabled) {
+            builder.useSsl();
+        }
+
+        return new LettuceConnectionFactory(serverConfig, builder.build());
     }
 
     @Bean

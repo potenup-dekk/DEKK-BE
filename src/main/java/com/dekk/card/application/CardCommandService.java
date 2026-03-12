@@ -7,6 +7,7 @@ import com.dekk.card.domain.model.Card;
 import com.dekk.card.domain.model.CardCategory;
 import com.dekk.card.domain.repository.CardCategoryRepository;
 import com.dekk.card.domain.repository.CardRepository;
+import com.dekk.category.application.CategoryQueryService;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ public class CardCommandService {
 
     private final CardRepository cardRepository;
     private final CardCategoryRepository cardCategoryRepository;
+    private final CategoryQueryService categoryQueryService;
 
     public void approveCard(Long cardId) {
         Card card = findCardOrThrow(cardId);
@@ -35,12 +37,13 @@ public class CardCommandService {
     public void assignCategories(Long cardId, AssignCategoriesCommand command) {
         findCardOrThrow(cardId);
 
+        Set<Long> requestedIds = Set.copyOf(command.categoryIds());
+        validateCategoryIds(requestedIds);
+
         List<CardCategory> originCardCategories = cardCategoryRepository.findAllByCardId(cardId);
 
         Set<Long> originIds =
                 originCardCategories.stream().map(CardCategory::getCategoryId).collect(Collectors.toSet());
-
-        Set<Long> requestedIds = Set.copyOf(command.categoryIds());
         List<Long> categoryIdsToRemove =
                 originIds.stream().filter(id -> !requestedIds.contains(id)).toList();
 
@@ -51,6 +54,13 @@ public class CardCommandService {
 
         cardCategoryRepository.softDeleteByCardIdAndCategoryIdIn(cardId, categoryIdsToRemove);
         cardCategoryRepository.saveAll(newCardCategories);
+    }
+
+    private void validateCategoryIds(Set<Long> categoryIds) {
+        long count = categoryQueryService.countByIds(List.copyOf(categoryIds));
+        if (count != categoryIds.size()) {
+            throw new CardBusinessException(CardErrorCode.CATEGORY_NOT_FOUND);
+        }
     }
 
     private Card findCardOrThrow(Long cardId) {

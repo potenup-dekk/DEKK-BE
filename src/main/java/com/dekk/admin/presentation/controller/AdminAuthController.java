@@ -22,13 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AdminAuthController implements AdminAuthApi {
 
+    private static final String ADMIN_TOKEN_COOKIE_NAME = "admin_access_token";
+
     private final AdminAuthService adminAuthService;
     private final CookieUtil cookieUtil;
 
-    @Value("${jwt.admin-access-token-validity-in-seconds:3600}")
+    @Value("${jwt.admin-access-token-validity-in-seconds}")
     private int cookieMaxAge;
-
-    private static final String ADMIN_TOKEN_COOKIE_NAME = "admin_access_token";
 
     @Override
     @PostMapping("/login")

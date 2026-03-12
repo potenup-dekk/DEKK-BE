@@ -1,7 +1,6 @@
 package com.dekk.admin.security;
 
 import com.dekk.admin.domain.exception.AdminBusinessException;
-import com.dekk.admin.domain.exception.AdminErrorCode;
 import com.dekk.common.error.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -11,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -24,7 +24,7 @@ public class AdminJwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String ADMIN_TOKEN_COOKIE_NAME = "admin_access_token";
 
     private final AdminJwtTokenProvider adminJwtTokenProvider;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -43,13 +43,14 @@ public class AdminJwtAuthenticationFilter extends OncePerRequestFilter {
             String token = resolveTokenFromCookie(request);
 
             if (StringUtils.hasText(token)) {
-                if (!adminJwtTokenProvider.validateToken(token)) {
-                    throw new AdminBusinessException(AdminErrorCode.INVALID_TOKEN);
-                }
-
-                Authentication authentication = adminJwtTokenProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(request, response);
+                return;
             }
+
+            adminJwtTokenProvider.validateToken(token);
+
+            Authentication authentication = adminJwtTokenProvider.getAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);
 
@@ -60,14 +61,14 @@ public class AdminJwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String resolveTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (ADMIN_TOKEN_COOKIE_NAME.equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
+        if (cookies == null) {
+            return null;
         }
-        return null;
+        return Arrays.stream(cookies)
+                .filter(cookie -> ADMIN_TOKEN_COOKIE_NAME.equals(cookie.getName()))
+                .map((Cookie::getValue))
+                .findFirst()
+                .orElse(null);
     }
 
     private void handleException(HttpServletResponse response, AdminBusinessException e) throws IOException {

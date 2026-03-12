@@ -11,6 +11,8 @@ services:
       POSTGRES_DB: dekk
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - db-network
 
   redis:
     image: redis:7-alpine
@@ -21,6 +23,59 @@ services:
     volumes:
       - redis_data:/data
 
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: dekk-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-lifecycle
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - monitoring-network
+
+  loki:
+    image: grafana/loki:3.1.0
+    container_name: dekk-loki
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki-data:/loki
+    networks:
+      - monitoring-network
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - monitoring-network
+
 volumes:
   postgres_data:
   redis_data:
+  prometheus-data:
+  loki-data:
+  grafana-data:
+
+networks:
+  db-network:
+    driver: bridge
+  monitoring-network:
+    driver: bridge

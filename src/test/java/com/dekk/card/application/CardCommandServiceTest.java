@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.verify;
 
 import com.dekk.card.application.dto.command.AssignCategoriesCommand;
@@ -12,6 +13,7 @@ import com.dekk.card.domain.model.Card;
 import com.dekk.card.domain.model.CardCategory;
 import com.dekk.card.domain.repository.CardCategoryRepository;
 import com.dekk.card.domain.repository.CardRepository;
+import com.dekk.category.application.CategoryQueryService;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +33,9 @@ class CardCommandServiceTest {
     @Mock
     private CardCategoryRepository cardCategoryRepository;
 
+    @Mock
+    private CategoryQueryService categoryQueryService;
+
     @InjectMocks
     private CardCommandService cardCommandService;
 
@@ -45,6 +50,7 @@ class CardCommandServiceTest {
         void addAllWhenNoPreviousCategories() {
             // given
             given(cardRepository.findById(CARD_ID)).willReturn(Optional.of(mockCard()));
+            given(categoryQueryService.countChildCategoryByIds(anyList())).willReturn(3L);
             given(cardCategoryRepository.findAllByCardId(CARD_ID)).willReturn(List.of());
 
             AssignCategoriesCommand command = new AssignCategoriesCommand(List.of(1L, 2L, 3L));
@@ -62,6 +68,7 @@ class CardCommandServiceTest {
         void removeAllWhenEmptyRequest() {
             // given
             given(cardRepository.findById(CARD_ID)).willReturn(Optional.of(mockCard()));
+            given(categoryQueryService.countChildCategoryByIds(anyList())).willReturn(0L);
             given(cardCategoryRepository.findAllByCardId(CARD_ID))
                     .willReturn(List.of(
                             CardCategory.create(CARD_ID, 1L),
@@ -82,6 +89,7 @@ class CardCommandServiceTest {
         void noChangesWhenSameCategories() {
             // given
             given(cardRepository.findById(CARD_ID)).willReturn(Optional.of(mockCard()));
+            given(categoryQueryService.countChildCategoryByIds(anyList())).willReturn(2L);
             given(cardCategoryRepository.findAllByCardId(CARD_ID))
                     .willReturn(List.of(
                             CardCategory.create(CARD_ID, 1L),
@@ -102,6 +110,7 @@ class CardCommandServiceTest {
         void addAndRemoveCategories() {
             // given
             given(cardRepository.findById(CARD_ID)).willReturn(Optional.of(mockCard()));
+            given(categoryQueryService.countChildCategoryByIds(anyList())).willReturn(2L);
             given(cardCategoryRepository.findAllByCardId(CARD_ID))
                     .willReturn(List.of(
                             CardCategory.create(CARD_ID, 1L),

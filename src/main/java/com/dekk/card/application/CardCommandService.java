@@ -40,19 +40,29 @@ public class CardCommandService {
         Set<Long> requestedIds = Set.copyOf(command.categoryIds());
         validateCategoryIds(requestedIds);
 
-        List<CardCategory> originCardCategories = cardCategoryRepository.findAllByCardId(cardId);
+        Set<Long> originIds = getExistingCategoryIds(cardId);
 
-        Set<Long> originIds =
-                originCardCategories.stream().map(CardCategory::getCategoryId).collect(Collectors.toSet());
+        removeOldCategories(cardId, originIds, requestedIds);
+        addNewCategories(cardId, originIds, requestedIds);
+    }
+
+    private Set<Long> getExistingCategoryIds(Long cardId) {
+        return cardCategoryRepository.findAllByCardId(cardId).stream()
+                .map(CardCategory::getCategoryId)
+                .collect(Collectors.toSet());
+    }
+
+    private void removeOldCategories(Long cardId, Set<Long> originIds, Set<Long> requestedIds) {
         List<Long> categoryIdsToRemove =
                 originIds.stream().filter(id -> !requestedIds.contains(id)).toList();
+        cardCategoryRepository.softDeleteByCardIdAndCategoryIdIn(cardId, categoryIdsToRemove);
+    }
 
+    private void addNewCategories(Long cardId, Set<Long> originIds, Set<Long> requestedIds) {
         List<CardCategory> newCardCategories = requestedIds.stream()
                 .filter(id -> !originIds.contains(id))
                 .map(categoryId -> CardCategory.create(cardId, categoryId))
                 .toList();
-
-        cardCategoryRepository.softDeleteByCardIdAndCategoryIdIn(cardId, categoryIdsToRemove);
         cardCategoryRepository.saveAll(newCardCategories);
     }
 

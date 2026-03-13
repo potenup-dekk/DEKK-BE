@@ -27,33 +27,44 @@ public class AdminJwtAuthenticationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+
+        if (!path.startsWith("/adm/")) {
+            return true;
+        }
+        return path.matches("^/adm/v\\d+/auth/login$");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         try {
-            authenticate(request);
+            String token = resolveTokenFromCookie(request);
+            if (!StringUtils.hasText(token)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            adminJwtTokenProvider.validateToken(token);
+
+            Authentication authentication = adminJwtTokenProvider.getAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
             filterChain.doFilter(request, response);
+
         } catch (AdminBusinessException e) {
             handleException(response, e);
         }
     }
 
-    private void authenticate(HttpServletRequest request) {
-        String token = resolveToken(request);
-        if (!StringUtils.hasText(token)) {
-            return;
-        }
-
-        Authentication authentication = adminJwtTokenProvider.getAuthentication(token);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    private String resolveToken(HttpServletRequest request) {
-        if (request.getCookies() == null) {
+    private String resolveTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
             return null;
         }
-
-        return Arrays.stream(request.getCookies())
+        return Arrays.stream(cookies)
                 .filter(cookie -> ADMIN_TOKEN_COOKIE_NAME.equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()

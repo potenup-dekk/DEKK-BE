@@ -12,6 +12,22 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: dummy-client-id
+            client-secret: dummy-client-secret
+            scope:
+              - email
+              - profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
 
 cloud:
   aws:
@@ -22,7 +38,6 @@ cloud:
     stack:
       auto: false
 
-# CI 테스트 환경에서 에러 방지를 위한 더미(Dummy) 데이터
 app:
   oauth2:
     redirect-uri: "http://localhost:3000/oauth2/redirect"
@@ -38,4 +53,4 @@ jwt:
   secret: "dGhpcy1pcy1hLWR1bW15LXNlY3JldC1rZXktZm9yLXRlc3RpbmctcHVycG9zZXMtb25seS0xMjM="
   access-token-validity-in-seconds: 3600
   refresh-token-validity-in-seconds: 604800
-
+  admin-access-token-validity-in-seconds: 3600

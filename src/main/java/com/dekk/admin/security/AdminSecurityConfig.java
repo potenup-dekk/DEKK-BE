@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class AdminSecurityConfig {
 
     private final AdminJwtTokenProvider adminJwtTokenProvider;
+    private final CorsConfigurationSource corsConfigurationSource;
     private final ObjectMapper objectMapper;
 
     @Bean
@@ -32,11 +34,11 @@ public class AdminSecurityConfig {
     public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/adm/**")
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/adm/auth/login")
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/adm/v1/auth/login")
                         .permitAll()
-                        .requestMatchers("/adm/admins/**")
+                        .requestMatchers("/adm/v1/admins/**")
                         .hasRole("SUPER_ADMIN")
                         .anyRequest()
                         .hasAnyRole("SUPER_ADMIN", "ADMIN"))

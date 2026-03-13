@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public record AdminUserDetails(Long adminId, String email, String role) implements UserDetails {
 
-    private static final String ROLE_PREFIX = "Role_";
+    private static final String ROLE_PREFIX = "ROLE_";
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

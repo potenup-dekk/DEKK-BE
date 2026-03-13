@@ -1,5 +1,6 @@
 package com.dekk.card.domain.repository;
 
+import com.dekk.card.application.dto.query.AdminCardSearchQuery;
 import com.dekk.card.application.dto.query.RecommendCandidateQuery;
 import com.dekk.card.domain.model.Card;
 import com.dekk.card.domain.model.enums.CardStatus;
@@ -25,4 +26,6 @@ public interface CardRepository {
     List<Card> findRecommendCandidates(RecommendCandidateQuery query);
 
     Optional<Card> findById(Long id);
+
+    Page<Card> searchCards(AdminCardSearchQuery condition, Pageable pageable);
 }

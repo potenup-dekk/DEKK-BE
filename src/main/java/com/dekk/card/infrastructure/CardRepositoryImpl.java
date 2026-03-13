@@ -1,11 +1,13 @@
 package com.dekk.card.infrastructure;
 
+import com.dekk.card.application.dto.query.AdminCardSearchQuery;
 import com.dekk.card.application.dto.query.RecommendCandidateQuery;
 import com.dekk.card.domain.model.Card;
 import com.dekk.card.domain.model.enums.CardStatus;
 import com.dekk.card.domain.model.enums.Platform;
 import com.dekk.card.domain.repository.CardRepository;
 import com.dekk.card.infrastructure.jpa.CardJpaRepository;
+import com.dekk.card.infrastructure.jpa.CardSpecification;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -67,5 +69,10 @@ public class CardRepositoryImpl implements CardRepository {
     @Override
     public Optional<Card> findById(Long id) {
         return cardJpaRepository.findById(id);
+    }
+
+    @Override
+    public Page<Card> searchCards(AdminCardSearchQuery condition, Pageable pageable) {
+        return cardJpaRepository.findAll(CardSpecification.searchByCondition(condition), pageable);
     }
 }

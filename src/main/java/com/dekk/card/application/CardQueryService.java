@@ -1,6 +1,8 @@
 package com.dekk.card.application;
 
+import com.dekk.card.application.dto.query.AdminCardSearchQuery;
 import com.dekk.card.application.dto.query.RecommendCandidateQuery;
+import com.dekk.card.application.dto.result.AdminCardResult;
 import com.dekk.card.application.dto.result.GuestCardResult;
 import com.dekk.card.application.dto.result.MemberCardResult;
 import com.dekk.card.domain.model.Card;
@@ -39,6 +41,10 @@ public class CardQueryService {
         return cardRepository.findAllByIdInWithProducts(ids).stream()
                 .map(MemberCardResult::from)
                 .toList();
+    }
+
+    public Page<AdminCardResult> searchCardsForAdmin(AdminCardSearchQuery query, Pageable pageable) {
+        return cardRepository.searchCards(query, pageable).map(AdminCardResult::from);
     }
 
     public List<Card> getRecommendCandidates(RecommendCandidateQuery query) {

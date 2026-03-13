@@ -47,10 +47,8 @@ public final class CardSpecification {
                                 cardCategory.get("categoryId").in(condition.categoryIds()),
                                 cb.isNull(cardCategory.get("deletedAt")))
                         .groupBy(cardCategory.get("cardId"))
-                        .having(
-                                cb.equal(
-                                        cb.countDistinct(cardCategory.get("categoryId")),
-                                        (long) condition.categoryIds().size()));
+                        .having(cb.equal(cb.countDistinct(cardCategory.get("categoryId")), (long)
+                                condition.categoryIds().size()));
                 predicates.add(cb.exists(subquery));
             }
 

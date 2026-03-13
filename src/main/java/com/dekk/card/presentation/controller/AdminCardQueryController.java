@@ -44,8 +44,8 @@ public class AdminCardQueryController implements AdminCardQueryApi {
         Sort.Direction direction = Sort.Direction.fromString(sort);
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "createdAt"));
 
-        AdminCardSearchQuery condition = new AdminCardSearchQuery(
-                cardId, originId, status, startDate, endDate, categoryIds);
+        AdminCardSearchQuery condition =
+                new AdminCardSearchQuery(cardId, originId, status, startDate, endDate, categoryIds);
 
         PageResponse<AdminCardResponse> response = PageResponse.from(
                 cardQueryService.searchCardsForAdmin(condition, pageable).map(AdminCardResponse::from));

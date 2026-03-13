@@ -15,10 +15,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "image_inspections", indexes = {
-    @Index(name = "idx_image_inspections_product_image", columnList = "productImageId"),
-    @Index(name = "idx_image_inspections_status", columnList = "status")
-})
+@Table(
+        name = "image_inspections",
+        indexes = {
+            @Index(name = "idx_image_inspections_product_image", columnList = "productImageId"),
+            @Index(name = "idx_image_inspections_status", columnList = "status")
+        })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ImageInspection extends BaseTimeEntity {

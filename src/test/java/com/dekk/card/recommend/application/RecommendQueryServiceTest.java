@@ -2,10 +2,13 @@ package com.dekk.card.recommend.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.dekk.activelog.application.ActiveLogQueryService;
+import com.dekk.activelog.domain.model.SwipeType;
+import com.dekk.card.application.CardCategoryQueryService;
 import com.dekk.card.application.CardQueryService;
 import com.dekk.card.application.dto.result.MemberCardResult;
 import com.dekk.card.domain.model.Card;
@@ -34,6 +37,7 @@ class RecommendQueryServiceTest {
     @Mock private CardQueryService cardQueryService;
     @Mock private UserQueryService userQueryService;
     @Mock private ActiveLogQueryService activeLogQueryService;
+    @Mock private CardCategoryQueryService cardCategoryQueryService;
 
     @InjectMocks
     private RecommendQueryService recommendQueryService;
@@ -129,6 +133,50 @@ class RecommendQueryServiceTest {
                     .willReturn(List.of(card));
 
             assertThat(recommendQueryService.getRecommendCandidates(USER_ID)).hasSize(1);
+        }
+    }
+
+    @Nested
+    @DisplayName("LIKE 카드 기반 카테고리 ID 조회")
+    class GetLikedCategoryIds {
+
+        @Test
+        @DisplayName("LIKE한 카드가 있으면 해당 카드들의 카테고리 ID 목록을 반환한다")
+        void shouldReturnCategoryIds_whenLikedCardsExist() {
+            given(activeLogQueryService.getSwipedCardIds(USER_ID, SwipeType.LIKE))
+                    .willReturn(List.of(10L, 20L));
+            given(cardCategoryQueryService.getCategoryIdsByCardIds(List.of(10L, 20L)))
+                    .willReturn(List.of(1L, 2L, 1L));
+
+            List<Long> result = recommendQueryService.getLikedCategoryIds(USER_ID);
+
+            assertThat(result).containsExactly(1L, 2L, 1L);
+        }
+
+        @Test
+        @DisplayName("LIKE 이력이 없으면 빈 리스트를 반환한다")
+        void shouldReturnEmpty_whenNoLikeHistory() {
+            given(activeLogQueryService.getSwipedCardIds(USER_ID, SwipeType.LIKE))
+                    .willReturn(List.of());
+            given(cardCategoryQueryService.getCategoryIdsByCardIds(List.of()))
+                    .willReturn(List.of());
+
+            List<Long> result = recommendQueryService.getLikedCategoryIds(USER_ID);
+
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("LIKE한 카드에 카테고리 매핑이 없으면 빈 리스트를 반환한다")
+        void shouldReturnEmpty_whenLikedCardsHaveNoCategories() {
+            given(activeLogQueryService.getSwipedCardIds(USER_ID, SwipeType.LIKE))
+                    .willReturn(List.of(10L, 20L));
+            given(cardCategoryQueryService.getCategoryIdsByCardIds(eq(List.of(10L, 20L))))
+                    .willReturn(List.of());
+
+            List<Long> result = recommendQueryService.getLikedCategoryIds(USER_ID);
+
+            assertThat(result).isEmpty();
         }
     }
 

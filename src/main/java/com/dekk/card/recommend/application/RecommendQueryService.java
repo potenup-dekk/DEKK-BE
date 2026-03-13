@@ -1,6 +1,8 @@
 package com.dekk.card.recommend.application;
 
 import com.dekk.activelog.application.ActiveLogQueryService;
+import com.dekk.activelog.domain.model.SwipeType;
+import com.dekk.card.application.CardCategoryQueryService;
 import com.dekk.card.application.CardQueryService;
 import com.dekk.card.application.dto.query.RecommendCandidateQuery;
 import com.dekk.card.application.dto.result.MemberCardResult;
@@ -22,6 +24,7 @@ public class RecommendQueryService {
     private final CardQueryService cardQueryService;
     private final UserQueryService userQueryService;
     private final ActiveLogQueryService activeLogQueryService;
+    private final CardCategoryQueryService cardCategoryQueryService;
 
     public List<MemberCardResult> getRecommendCandidates(Long userId) {
         UserInfoResult userInfo = userQueryService.getMyInfo(userId);
@@ -36,6 +39,11 @@ public class RecommendQueryService {
                 .stream()
                 .map(MemberCardResult::from)
                 .toList();
+    }
+
+    public List<Long> getLikedCategoryIds(Long userId) {
+        List<Long> likedCardIds = activeLogQueryService.getSwipedCardIds(userId, SwipeType.LIKE);
+        return cardCategoryQueryService.getCategoryIdsByCardIds(likedCardIds);
     }
 
     private List<MemberCardResult> excludeSwiped(List<MemberCardResult> candidates, Long userId) {

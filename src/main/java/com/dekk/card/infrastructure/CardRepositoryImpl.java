@@ -72,6 +72,11 @@ public class CardRepositoryImpl implements CardRepository {
     }
 
     @Override
+    public boolean existsById(Long id) {
+        return cardJpaRepository.existsById(id);
+    }
+
+    @Override
     public Page<Card> searchCards(AdminCardSearchQuery condition, Pageable pageable) {
         return cardJpaRepository.findAll(CardSpecification.searchByCondition(condition), pageable);
     }

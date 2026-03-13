@@ -10,10 +10,8 @@ import com.dekk.card.domain.model.enums.TargetGender;
 import com.dekk.user.application.UserQueryService;
 import com.dekk.user.application.dto.result.UserInfoResult;
 import com.dekk.user.domain.model.enums.Gender;
-
 import java.util.List;
 import java.util.Set;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,6 +1,8 @@
 package com.dekk.card.recommend.application;
 
 import com.dekk.activelog.application.ActiveLogQueryService;
+import com.dekk.activelog.domain.model.SwipeType;
+import com.dekk.card.application.CardCategoryQueryService;
 import com.dekk.card.application.CardQueryService;
 import com.dekk.card.application.dto.query.RecommendCandidateQuery;
 import com.dekk.card.application.dto.result.MemberCardResult;
@@ -8,8 +10,10 @@ import com.dekk.card.domain.model.enums.TargetGender;
 import com.dekk.user.application.UserQueryService;
 import com.dekk.user.application.dto.result.UserInfoResult;
 import com.dekk.user.domain.model.enums.Gender;
+
 import java.util.List;
 import java.util.Set;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +26,7 @@ public class RecommendQueryService {
     private final CardQueryService cardQueryService;
     private final UserQueryService userQueryService;
     private final ActiveLogQueryService activeLogQueryService;
+    private final CardCategoryQueryService cardCategoryQueryService;
 
     public List<MemberCardResult> getRecommendCandidates(Long userId) {
         UserInfoResult userInfo = userQueryService.getMyInfo(userId);
@@ -36,6 +41,11 @@ public class RecommendQueryService {
                 .stream()
                 .map(MemberCardResult::from)
                 .toList();
+    }
+
+    public List<Long> getLikedCategoryIds(Long userId) {
+        List<Long> likedCardIds = activeLogQueryService.getSwipedCardIds(userId, SwipeType.LIKE);
+        return cardCategoryQueryService.getCategoryIdsByCardIds(likedCardIds);
     }
 
     private List<MemberCardResult> excludeSwiped(List<MemberCardResult> candidates, Long userId) {

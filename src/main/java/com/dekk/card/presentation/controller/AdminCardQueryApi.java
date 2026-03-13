@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,7 +33,9 @@ public interface AdminCardQueryApi {
             @Parameter(description = "조회 시작일 (yyyy-MM-dd)", example = "2026-01-01") @RequestParam(required = false)
                     LocalDate startDate,
             @Parameter(description = "조회 종료일 (yyyy-MM-dd)", example = "2026-12-31") @RequestParam(required = false)
-                    LocalDate endDate);
+                    LocalDate endDate,
+            @Parameter(description = "하위 카테고리 ID 목록 (AND 조건)") @RequestParam(required = false)
+                    List<Long> categoryIds);
 
     @Operation(summary = "관리자 카드 상세 조회", description = "관리자가 카드의 상세 정보를 조회합니다. 카드 이미지, 상품, 상품 이미지, 카테고리 정보를 포함합니다.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "관리자 카드 상세 조회 성공")

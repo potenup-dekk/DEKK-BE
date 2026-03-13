@@ -105,4 +105,58 @@ class RecommendScoringServiceTest {
             assertThat(result.get(3L)).isCloseTo(1.0 / 3, within(0.001));
         }
     }
+
+    @Nested
+    @DisplayName("calculateCategoryScore")
+    class CalculateCategoryScore {
+
+        @Test
+        @DisplayName("카드 카테고리가 없으면 0.0을 반환한다")
+        void shouldReturn0_whenCardHasNoCategories() {
+            Map<Long, Double> preferences = Map.of(1L, 0.6, 2L, 0.4);
+
+            double result = scoringService.calculateCategoryScore(List.of(), preferences);
+
+            assertThat(result).isEqualTo(0.0);
+        }
+
+        @Test
+        @DisplayName("유저 LIKE 이력이 없으면(빈 맵) 0.0을 반환한다")
+        void shouldReturn0_whenPreferencesIsEmpty() {
+            double result = scoringService.calculateCategoryScore(List.of(1L, 2L), Map.of());
+
+            assertThat(result).isEqualTo(0.0);
+        }
+
+        @Test
+        @DisplayName("카드 카테고리가 유저 선호 맵에 모두 존재하면 선호 비율의 평균을 반환한다")
+        void shouldReturnAverageOfPreferences_whenAllCategoriesMatched() {
+            // 카테고리 1 → 0.6, 카테고리 2 → 0.4 → 평균 = 0.5
+            Map<Long, Double> preferences = Map.of(1L, 0.6, 2L, 0.4);
+
+            double result = scoringService.calculateCategoryScore(List.of(1L, 2L), preferences);
+
+            assertThat(result).isCloseTo(0.5, within(0.001));
+        }
+
+        @Test
+        @DisplayName("카드 카테고리 일부가 유저 선호 맵에 없으면 매칭된 카테고리만 평균을 낸다")
+        void shouldAverageOnlyMatchedCategories() {
+            Map<Long, Double> preferences = Map.of(1L, 0.6, 2L, 0.4);
+
+            double result = scoringService.calculateCategoryScore(List.of(1L, 3L), preferences);
+
+            assertThat(result).isCloseTo(0.6, within(0.001));
+        }
+
+        @Test
+        @DisplayName("카드 카테고리가 유저 선호 맵에 전혀 없으면 0.0을 반환한다")
+        void shouldReturn0_whenNoCategoryMatched() {
+            Map<Long, Double> preferences = Map.of(1L, 0.6, 2L, 0.4);
+
+            double result = scoringService.calculateCategoryScore(List.of(3L, 4L), preferences);
+
+            assertThat(result).isEqualTo(0.0);
+        }
+    }
 }

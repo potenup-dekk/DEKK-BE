@@ -46,4 +46,16 @@ public class RecommendScoringService {
                 .stream()
                 .collect(toMap(Map.Entry::getKey, e -> (double) e.getValue() / total));
     }
+
+    public double calculateCategoryScore(List<Long> cardCategoryIds, Map<Long, Double> preferences) {
+        if (cardCategoryIds.isEmpty() || preferences.isEmpty()) {
+            return MIN_SCORE;
+        }
+
+        return cardCategoryIds.stream()
+                .filter(preferences::containsKey)
+                .mapToDouble(preferences::get)
+                .average()
+                .orElse(MIN_SCORE);
+    }
 }

@@ -25,4 +25,7 @@ public interface CardCategoryJpaRepository extends JpaRepository<CardCategory, L
     void softDeleteByCardIdAndCategoryIdIn(@Param("cardId") Long cardId, @Param("categoryIds") List<Long> categoryIds);
 
     List<CardCategory> findAllByCardId(Long cardId);
+
+    @Query("SELECT cc.categoryId FROM CardCategory cc WHERE cc.cardId IN :cardIds")
+    List<Long> findCategoryIdsByCardIdIn(@Param("cardIds") List<Long> cardIds);
 }

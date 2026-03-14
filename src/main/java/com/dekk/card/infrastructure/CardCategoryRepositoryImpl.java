@@ -45,10 +45,10 @@ public class CardCategoryRepositoryImpl implements CardCategoryRepository {
     }
 
     @Override
-    public List<Long> findCategoryIdsByCardIds(List<Long> cardIds) {
+    public List<CardCategory> findByCardIdIn(List<Long> cardIds) {
         if (cardIds.isEmpty()) {
             return List.of();
         }
-        return cardCategoryJpaRepository.findCategoryIdsByCardIdIn(cardIds);
+        return cardCategoryJpaRepository.findByCardIdIn(cardIds);
     }
 }

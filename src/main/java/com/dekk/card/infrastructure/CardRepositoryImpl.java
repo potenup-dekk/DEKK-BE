@@ -72,6 +72,11 @@ public class CardRepositoryImpl implements CardRepository {
     }
 
     @Override
+    public Optional<Card> findByIdWithDetails(Long id) {
+        return cardJpaRepository.findByIdWithDetails(id);
+    }
+
+    @Override
     public boolean existsById(Long id) {
         return cardJpaRepository.existsById(id);
     }

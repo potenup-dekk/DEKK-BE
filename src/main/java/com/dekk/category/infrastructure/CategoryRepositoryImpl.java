@@ -44,4 +44,9 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     public long countChildCategoryByIdIn(List<Long> ids) {
         return categoryJpaRepository.countByIdInAndDepth(ids, PARENT_DEPTH);
     }
+
+    @Override
+    public List<Category> findAllByIdInWithParent(List<Long> ids) {
+        return categoryJpaRepository.findAllByIdInWithParent(ids);
+    }
 }

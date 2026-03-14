@@ -40,6 +40,11 @@ public class CardCategoryRepositoryImpl implements CardCategoryRepository {
     }
 
     @Override
+    public List<Long> findCategoryIdsByCardId(Long cardId) {
+        return cardCategoryJpaRepository.findCategoryIdsByCardId(cardId);
+    }
+
+    @Override
     public List<CardCategory> saveAll(List<CardCategory> cardCategories) {
         return cardCategoryJpaRepository.saveAll(cardCategories);
     }

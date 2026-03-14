@@ -20,4 +20,7 @@ public interface CategoryJpaRepository extends JpaRepository<Category, Long> {
     void softDeleteAllByParentId(@Param("parentId") Long parentId);
 
     long countByIdInAndDepth(List<Long> ids, int depth);
+
+    @Query("SELECT c FROM Category c LEFT JOIN FETCH c.parent WHERE c.id IN :ids")
+    List<Category> findAllByIdInWithParent(@Param("ids") List<Long> ids);
 }

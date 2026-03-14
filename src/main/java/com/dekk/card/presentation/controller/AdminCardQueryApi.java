@@ -1,6 +1,7 @@
 package com.dekk.card.presentation.controller;
 
 import com.dekk.card.domain.model.enums.CardStatus;
+import com.dekk.card.presentation.dto.response.AdminCardDetailResponse;
 import com.dekk.card.presentation.dto.response.AdminCardResponse;
 import com.dekk.common.response.ApiResponse;
 import com.dekk.common.response.PageResponse;
@@ -9,9 +10,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Tag(name = "관리자 카드 목록 조회 API", description = "관리자가 카드 목록을 조회하는 API")
+@Tag(name = "관리자 카드 조회 API", description = "관리자가 카드를 조회하는 API")
 public interface AdminCardQueryApi {
 
     @Operation(
@@ -31,4 +33,9 @@ public interface AdminCardQueryApi {
                     LocalDate startDate,
             @Parameter(description = "조회 종료일 (yyyy-MM-dd)", example = "2026-12-31") @RequestParam(required = false)
                     LocalDate endDate);
+
+    @Operation(summary = "관리자 카드 상세 조회", description = "관리자가 카드의 상세 정보를 조회합니다. 카드 이미지, 상품, 상품 이미지, 카테고리 정보를 포함합니다.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "관리자 카드 상세 조회 성공")
+    ResponseEntity<ApiResponse<AdminCardDetailResponse>> getAdminCardDetail(
+            @Parameter(description = "카드 ID", example = "1") @PathVariable Long cardId);
 }

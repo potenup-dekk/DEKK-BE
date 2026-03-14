@@ -3,6 +3,7 @@ package com.dekk.card.presentation.controller;
 import com.dekk.card.application.CardQueryService;
 import com.dekk.card.application.dto.query.AdminCardSearchQuery;
 import com.dekk.card.domain.model.enums.CardStatus;
+import com.dekk.card.presentation.dto.response.AdminCardDetailResponse;
 import com.dekk.card.presentation.dto.response.AdminCardResponse;
 import com.dekk.card.presentation.response.CardResultCode;
 import com.dekk.common.response.ApiResponse;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,5 +54,12 @@ public class AdminCardQueryController implements AdminCardQueryApi {
                 cardQueryService.searchCardsForAdmin(condition, pageable).map(AdminCardResponse::from));
 
         return ResponseEntity.ok(ApiResponse.of(CardResultCode.ADMIN_CARD_LIST_SUCCESS, response));
+    }
+
+    @Override
+    @GetMapping("/{cardId}")
+    public ResponseEntity<ApiResponse<AdminCardDetailResponse>> getAdminCardDetail(@PathVariable Long cardId) {
+        AdminCardDetailResponse response = AdminCardDetailResponse.from(cardQueryService.getCardDetailForAdmin(cardId));
+        return ResponseEntity.ok(ApiResponse.of(CardResultCode.ADMIN_CARD_DETAIL_SUCCESS, response));
     }
 }

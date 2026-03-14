@@ -5,6 +5,7 @@ import com.dekk.card.domain.model.enums.CardStatus;
 import com.dekk.card.domain.model.enums.Platform;
 import com.dekk.card.domain.model.enums.TargetGender;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,6 +32,14 @@ public interface CardJpaRepository extends JpaRepository<Card, Long>, JpaSpecifi
             + "LEFT JOIN FETCH p.productImage "
             + "WHERE c.id IN :ids ORDER BY c.createdAt DESC")
     List<Card> findAllByIdInWithProducts(@Param("ids") List<Long> ids);
+
+    @Query("SELECT DISTINCT c FROM Card c "
+            + "JOIN FETCH c.cardImage "
+            + "LEFT JOIN FETCH c.cardProducts cp "
+            + "LEFT JOIN FETCH cp.product p "
+            + "LEFT JOIN FETCH p.productImage "
+            + "WHERE c.id = :id")
+    Optional<Card> findByIdWithDetails(@Param("id") Long id);
 
     @Query("SELECT DISTINCT c FROM Card c " + "JOIN FETCH c.cardImage "
             + "JOIN FETCH c.cardProducts cp "

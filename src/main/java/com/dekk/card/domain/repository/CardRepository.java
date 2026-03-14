@@ -27,6 +27,8 @@ public interface CardRepository {
 
     Optional<Card> findById(Long id);
 
+    Optional<Card> findByIdWithDetails(Long id);
+
     boolean existsById(Long id);
 
     Page<Card> searchCards(AdminCardSearchQuery condition, Pageable pageable);

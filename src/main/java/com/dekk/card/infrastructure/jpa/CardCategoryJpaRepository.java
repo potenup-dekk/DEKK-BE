@@ -26,6 +26,9 @@ public interface CardCategoryJpaRepository extends JpaRepository<CardCategory, L
 
     List<CardCategory> findAllByCardId(Long cardId);
 
+    @Query("SELECT cc.categoryId FROM CardCategory cc WHERE cc.cardId = :cardId")
+    List<Long> findCategoryIdsByCardId(@Param("cardId") Long cardId);
+
     @Query("SELECT cc.categoryId FROM CardCategory cc WHERE cc.cardId IN :cardIds")
     List<Long> findCategoryIdsByCardIdIn(@Param("cardIds") List<Long> cardIds);
 }

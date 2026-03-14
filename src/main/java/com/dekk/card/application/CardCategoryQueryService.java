@@ -16,4 +16,8 @@ public class CardCategoryQueryService {
     public List<Long> getCategoryIdsByCardIds(List<Long> cardIds) {
         return cardCategoryRepository.findCategoryIdsByCardIds(cardIds);
     }
+
+    public List<Long> getCategoryIdsByCardId(Long cardId) {
+        return cardCategoryRepository.findCategoryIdsByCardId(cardId);
+    }
 }

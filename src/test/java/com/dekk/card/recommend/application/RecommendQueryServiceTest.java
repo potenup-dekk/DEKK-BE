@@ -2,7 +2,6 @@ package com.dekk.card.recommend.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -18,6 +17,7 @@ import com.dekk.user.application.dto.result.UserInfoResult;
 import com.dekk.user.domain.model.enums.Gender;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +38,7 @@ class RecommendQueryServiceTest {
     @Mock private UserQueryService userQueryService;
     @Mock private ActiveLogQueryService activeLogQueryService;
     @Mock private CardCategoryQueryService cardCategoryQueryService;
+    @Mock private RecommendScoringService recommendScoringService;
 
     @InjectMocks
     private RecommendQueryService recommendQueryService;
@@ -50,6 +51,14 @@ class RecommendQueryServiceTest {
         void setUp() {
             given(userQueryService.getMyInfo(USER_ID))
                     .willReturn(userInfo(Gender.MALE, 175, 70));
+            given(activeLogQueryService.getSwipedCardIds(USER_ID, SwipeType.LIKE))
+                    .willReturn(List.of());
+            given(cardCategoryQueryService.getCardCategoryMap(any()))
+                    .willReturn(Map.of());
+            given(recommendScoringService.calculateCategoryPreferenceRatios(any()))
+                    .willReturn(Map.of());
+            given(recommendScoringService.rank(any(), any(), any(), any(), any()))
+                    .willAnswer(inv -> inv.getArgument(2));
         }
 
         @Test
@@ -111,6 +120,11 @@ class RecommendQueryServiceTest {
         void setUp() {
             given(cardQueryService.getRecommendCandidates(any())).willReturn(List.of());
             given(activeLogQueryService.getAllSwipedCardIds(USER_ID)).willReturn(Set.of());
+            given(activeLogQueryService.getSwipedCardIds(USER_ID, SwipeType.LIKE)).willReturn(List.of());
+            given(cardCategoryQueryService.getCardCategoryMap(any())).willReturn(Map.of());
+            given(recommendScoringService.calculateCategoryPreferenceRatios(any())).willReturn(Map.of());
+            given(recommendScoringService.rank(any(), any(), any(), any(), any()))
+                    .willAnswer(inv -> inv.getArgument(2));
         }
 
         @Test
@@ -137,44 +151,49 @@ class RecommendQueryServiceTest {
     }
 
     @Nested
-    @DisplayName("LIKE 카드 기반 카테고리 ID 조회")
-    class GetLikedCategoryIds {
+    @DisplayName("LIKE 카드 기반 카테고리 선호도 반영")
+    class CategoryPreference {
 
-        @Test
-        @DisplayName("LIKE한 카드가 있으면 해당 카드들의 카테고리 ID 목록을 반환한다")
-        void shouldReturnCategoryIds_whenLikedCardsExist() {
-            given(activeLogQueryService.getSwipedCardIds(USER_ID, SwipeType.LIKE))
-                    .willReturn(List.of(10L, 20L));
-            given(cardCategoryQueryService.getCategoryIdsByCardIds(List.of(10L, 20L)))
-                    .willReturn(List.of(1L, 2L, 1L));
-
-            List<Long> result = recommendQueryService.getLikedCategoryIds(USER_ID);
-
-            assertThat(result).containsExactly(1L, 2L, 1L);
+        @BeforeEach
+        void setUp() {
+            given(userQueryService.getMyInfo(USER_ID))
+                    .willReturn(userInfo(Gender.MALE, 175, 70));
+            given(cardQueryService.getRecommendCandidates(any())).willReturn(List.of());
+            given(activeLogQueryService.getAllSwipedCardIds(USER_ID)).willReturn(Set.of());
         }
 
         @Test
-        @DisplayName("LIKE 이력이 없으면 빈 리스트를 반환한다")
-        void shouldReturnEmpty_whenNoLikeHistory() {
+        @DisplayName("LIKE 이력이 없으면 빈 선호 맵으로 랭킹을 수행한다")
+        void shouldRankWithEmptyPreferences_whenNoLikeHistory() {
             given(activeLogQueryService.getSwipedCardIds(USER_ID, SwipeType.LIKE))
                     .willReturn(List.of());
-            given(cardCategoryQueryService.getCategoryIdsByCardIds(List.of()))
-                    .willReturn(List.of());
+            given(cardCategoryQueryService.getCardCategoryMap(List.of()))
+                    .willReturn(Map.of());
+            given(recommendScoringService.calculateCategoryPreferenceRatios(List.of()))
+                    .willReturn(Map.of());
+            given(recommendScoringService.rank(any(), any(), any(), any(), any()))
+                    .willAnswer(inv -> inv.getArgument(2));
 
-            List<Long> result = recommendQueryService.getLikedCategoryIds(USER_ID);
+            List<MemberCardResult> result = recommendQueryService.getRecommendCandidates(USER_ID);
 
             assertThat(result).isEmpty();
         }
 
         @Test
-        @DisplayName("LIKE한 카드에 카테고리 매핑이 없으면 빈 리스트를 반환한다")
-        void shouldReturnEmpty_whenLikedCardsHaveNoCategories() {
+        @DisplayName("LIKE한 카드에 카테고리 매핑이 없으면 빈 선호 맵으로 랭킹을 수행한다")
+        void shouldRankWithEmptyPreferences_whenLikedCardsHaveNoCategories() {
             given(activeLogQueryService.getSwipedCardIds(USER_ID, SwipeType.LIKE))
                     .willReturn(List.of(10L, 20L));
-            given(cardCategoryQueryService.getCategoryIdsByCardIds(eq(List.of(10L, 20L))))
-                    .willReturn(List.of());
+            given(cardCategoryQueryService.getCardCategoryMap(List.of(10L, 20L)))
+                    .willReturn(Map.of());
+            given(recommendScoringService.calculateCategoryPreferenceRatios(List.of()))
+                    .willReturn(Map.of());
+            given(cardCategoryQueryService.getCardCategoryMap(List.of()))
+                    .willReturn(Map.of());
+            given(recommendScoringService.rank(any(), any(), any(), any(), any()))
+                    .willAnswer(inv -> inv.getArgument(2));
 
-            List<Long> result = recommendQueryService.getLikedCategoryIds(USER_ID);
+            List<MemberCardResult> result = recommendQueryService.getRecommendCandidates(USER_ID);
 
             assertThat(result).isEmpty();
         }

@@ -10,8 +10,12 @@ import org.springframework.data.repository.query.Param;
 
 public interface DeckMemberJpaRepository extends JpaRepository<DeckMember, Long> {
 
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE DeckMember dm SET dm.deletedAt = CURRENT_TIMESTAMP "
+            + "WHERE dm.deckId = :deckId AND dm.deletedAt IS NULL")
     void deleteAllByDeckId(Long deckId);
 
+    @Query("SELECT COUNT(dm) FROM DeckMember dm WHERE dm.userId = :userId AND dm.deletedAt IS NULL")
     long countByUserId(Long userId);
 
     Optional<DeckMember> findByDeckIdAndUserId(Long deckId, Long userId);

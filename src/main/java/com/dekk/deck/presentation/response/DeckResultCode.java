@@ -21,6 +21,7 @@ public enum DeckResultCode implements ResultCode {
     SHARE_DECK_ON_SUCCESS(HttpStatus.OK, "SD20013", "쉐어덱 공유 상태 켜기 및 토큰 발급 성공"),
     SHARE_DECK_OFF_SUCCESS(HttpStatus.OK, "SD20014", "쉐어덱 공유 상태 끄기 성공"),
     SHARE_DECK_JOIN_SUCCESS(HttpStatus.OK, "SD20015", "초대 링크를 통한 쉐어덱 참여 성공"),
+    SHARE_DECK_LEAVE_SUCCESS(HttpStatus.OK, "SD20016", "쉐어덱 자진 퇴장 성공"),
     ;
 
     private final HttpStatus status;

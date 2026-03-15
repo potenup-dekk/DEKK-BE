@@ -43,4 +43,14 @@ public interface ShareDeckCommandApi {
     ResponseEntity<ApiResponse<Void>> joinSharedDeck(
             @Parameter(hidden = true) CustomUserDetails userDetails,
             @RequestBody(description = "참여용 토큰 정보") SharedDeckJoinRequest request);
+
+    @Operation(
+            summary = "쉐어덱 자진 퇴장 (게스트 전용)",
+            description =
+                    "GUEST 권한을 가진 사용자가 쉐어덱에서 자진 퇴장(Soft Delete)합니다. HOST는 이 API를 사용할 수 없으며 '공유 끄기' 또는 '보관함 삭제'를 이용해야 합니다.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공 (SD20016)")
+    @ApiErrorExceptions({DeckErrorCode.class})
+    ResponseEntity<ApiResponse<Void>> leaveSharedDeck(
+            @Parameter(hidden = true) CustomUserDetails userDetails,
+            @Parameter(description = "퇴장할 쉐어덱 보관함 ID", in = ParameterIn.PATH) Long sharedDeckId);
 }

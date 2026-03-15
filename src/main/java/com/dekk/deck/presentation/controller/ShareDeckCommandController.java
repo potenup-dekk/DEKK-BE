@@ -47,4 +47,12 @@ public class ShareDeckCommandController implements ShareDeckCommandApi {
         shareDeckCommandService.joinSharedDeck(userDetails.getId(), request.token());
         return ResponseEntity.ok(ApiResponse.from(DeckResultCode.SHARE_DECK_JOIN_SUCCESS));
     }
+
+    @Override
+    @DeleteMapping("/shared/{sharedDeckId}/leave")
+    public ResponseEntity<ApiResponse<Void>> leaveSharedDeck(
+            @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable("sharedDeckId") Long sharedDeckId) {
+        shareDeckCommandService.leaveSharedDeck(userDetails.getId(), sharedDeckId);
+        return ResponseEntity.ok(ApiResponse.from(DeckResultCode.SHARE_DECK_LEAVE_SUCCESS));
+    }
 }

@@ -46,6 +46,18 @@ public class Deck extends BaseTimeEntity {
         this.deckType = deckType;
     }
 
+    public boolean isShared() {
+        return this.deckType == DeckType.SHARED;
+    }
+
+    public boolean isCustom() {
+        return this.deckType == DeckType.CUSTOM;
+    }
+
+    public boolean isDefault() {
+        return this.deckType == DeckType.DEFAULT;
+    }
+
     public static Deck createDefault(Long userId) {
         String defaultName = "나의 기본 덱";
         validateEmpty(userId, defaultName);
@@ -95,7 +107,7 @@ public class Deck extends BaseTimeEntity {
     }
 
     private void validateCustomModifiable() {
-        if (this.deckType == DeckType.DEFAULT) {
+        if (this.isDefault()) {
             throw new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_CANNOT_BE_MODIFIED);
         }
     }

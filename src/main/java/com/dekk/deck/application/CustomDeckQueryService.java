@@ -92,31 +92,7 @@ public class CustomDeckQueryService {
                 cardResults.stream().collect(Collectors.toMap(MemberCardResult::cardId, Function.identity()));
 
         return deckCards.stream()
-                .map(deckCard -> mapToMyDeckCardResult(deckCard, cardMap))
+                .map(deckCard -> MyDeckCardResult.from(deckCard.getCardId(), cardMap.get(deckCard.getCardId())))
                 .toList();
-    }
-
-    private MyDeckCardResult mapToMyDeckCardResult(DeckCard deckCard, Map<Long, MemberCardResult> cardMap) {
-        MemberCardResult cardInfo = cardMap.get(deckCard.getCardId());
-
-        if (cardInfo == null) {
-            return MyDeckCardResult.empty(deckCard.getCardId());
-        }
-
-        return convertToMyDeckCardResult(cardInfo);
-    }
-
-    private MyDeckCardResult convertToMyDeckCardResult(MemberCardResult cardInfo) {
-        List<MyDeckCardResult.ProductDetail> productDetails = cardInfo.products().stream()
-                .map(p -> new MyDeckCardResult.ProductDetail(p.brand(), p.productUrl(), p.name(), p.productImageUrl()))
-                .toList();
-
-        return new MyDeckCardResult(
-                cardInfo.cardId(),
-                cardInfo.cardImageUrl(),
-                cardInfo.height(),
-                cardInfo.weight(),
-                cardInfo.tags(),
-                productDetails);
     }
 }

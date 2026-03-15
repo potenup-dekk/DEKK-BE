@@ -62,4 +62,8 @@ public class DeckMember extends BaseTimeEntity {
     public void promoteToHost() {
         this.role = DeckRole.HOST;
     }
+
+    public boolean isHost() {
+        return this.role == DeckRole.HOST;
+    }
 }

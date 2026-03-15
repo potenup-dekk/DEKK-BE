@@ -6,7 +6,6 @@ import com.dekk.deck.domain.exception.DeckErrorCode;
 import com.dekk.deck.domain.model.Deck;
 import com.dekk.deck.domain.model.DeckMember;
 import com.dekk.deck.domain.model.enums.DeckRole;
-import com.dekk.deck.domain.model.enums.DeckType;
 import com.dekk.deck.domain.repository.DeckCardRepository;
 import com.dekk.deck.domain.repository.DeckMemberRepository;
 import com.dekk.deck.domain.repository.DeckRepository;
@@ -36,7 +35,7 @@ public class ShareDeckCommandService {
     public ShareTokenResult turnOnShareAndGetToken(Long userId, Long deckId) {
         Deck deck = getDeckAsHost(deckId, userId);
 
-        if (deck.getDeckType() == DeckType.CUSTOM) {
+        if (deck.isCustom()) {
             deck.changeToShared();
         }
 
@@ -46,7 +45,7 @@ public class ShareDeckCommandService {
     public void turnOffShare(Long userId, Long deckId) {
         Deck deck = getDeckAsHost(deckId, userId);
 
-        if (deck.getDeckType() == DeckType.SHARED) {
+        if (deck.isShared()) {
             deck.changeToCustom();
         }
 
@@ -73,7 +72,7 @@ public class ShareDeckCommandService {
     public void leaveSharedDeck(Long userId, Long deckId) {
         DeckMember member = getDeckMemberOrThrow(deckId, userId);
 
-        if (member.getRole() == DeckRole.HOST) {
+        if (member.isHost()) {
             throw new DeckBusinessException(DeckErrorCode.HOST_CANNOT_LEAVE_DECK);
         }
 
@@ -90,17 +89,12 @@ public class ShareDeckCommandService {
         Optional<DeckMember> oldestGuest =
                 deckMemberRepository.findFirstByDeckIdAndRoleOrderByCreatedAtAsc(deckId, DeckRole.GUEST);
 
-        if (oldestGuest.isPresent()) {
-            oldestGuest.get().promoteToHost();
-            deckMemberRepository.delete(hostMember);
-        } else {
-            Deck deck = getDeckOrThrow(deckId);
-
-            deckCardRepository.deleteAllByDeckId(deckId);
-            deckMemberRepository.deleteAllByDeckId(deckId);
-            deckRepository.delete(deck);
-            clearShareToken(deckId);
-        }
+        oldestGuest.ifPresentOrElse(
+                guest -> {
+                    guest.promoteToHost();
+                    deckMemberRepository.delete(hostMember);
+                },
+                () -> deleteSharedDeck(deckId));
     }
 
     private Deck getDeckAsHost(Long deckId, Long userId) {
@@ -110,7 +104,7 @@ public class ShareDeckCommandService {
 
         Deck deck = getDeckOrThrow(deckId);
 
-        if (deck.getDeckType() == DeckType.DEFAULT) {
+        if (deck.isDefault()) {
             throw new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_CANNOT_BE_MODIFIED);
         }
 
@@ -137,7 +131,7 @@ public class ShareDeckCommandService {
     }
 
     private void validateSharedDeck(Deck deck) {
-        if (deck.getDeckType() != DeckType.SHARED) {
+        if (!deck.isShared()) {
             throw new DeckBusinessException(DeckErrorCode.DECK_IS_NOT_SHARED);
         }
     }
@@ -163,7 +157,7 @@ public class ShareDeckCommandService {
     }
 
     private void validateHostRole(DeckMember member) {
-        if (member.getRole() != DeckRole.HOST) {
+        if (!member.isHost()) {
             throw new DeckBusinessException(DeckErrorCode.GUEST_CANNOT_GENERATE_TOKEN);
         }
     }
@@ -178,5 +172,14 @@ public class ShareDeckCommandService {
         return deckRepository
                 .findById(deckId)
                 .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
+    }
+
+    private void deleteSharedDeck(Long deckId) {
+        Deck deck = getDeckOrThrow(deckId);
+
+        deckCardRepository.deleteAllByDeckId(deckId);
+        deckMemberRepository.deleteAllByDeckId(deckId);
+        deckRepository.delete(deck);
+        clearShareToken(deckId);
     }
 }

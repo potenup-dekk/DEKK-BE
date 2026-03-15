@@ -1,6 +1,7 @@
 package com.dekk.deck.infrastructure.redis;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -41,9 +42,13 @@ public class DeckInviteRedisRepository {
     }
 
     public void deleteTokens(Long deckId, String currentToken) {
-        redisTemplate.delete(DECK_KEY_PREFIX + deckId);
+        List<String> keysToDelete = new java.util.ArrayList<>();
+        keysToDelete.add(DECK_KEY_PREFIX + deckId);
+
         if (currentToken != null) {
-            redisTemplate.delete(TOKEN_KEY_PREFIX + currentToken);
+            keysToDelete.add(TOKEN_KEY_PREFIX + currentToken);
         }
+
+        redisTemplate.delete(keysToDelete);
     }
 }

@@ -1,6 +1,6 @@
 package com.dekk.card.application;
 
-import com.dekk.card.domain.model.CardCategoryProjection;
+import com.dekk.card.domain.repository.CardCategoryProjection;
 import com.dekk.card.domain.repository.CardCategoryRepository;
 import java.util.List;
 import java.util.Map;

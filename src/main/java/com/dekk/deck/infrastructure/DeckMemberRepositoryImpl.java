@@ -38,4 +38,19 @@ public class DeckMemberRepositoryImpl implements DeckMemberRepository {
     public void deleteAllGuestsByDeckId(Long deckId, DeckRole role) {
         jpaRepository.deleteAllGuestsByDeckId(deckId, role);
     }
+
+    @Override
+    public long countByDeckIdAndRole(Long deckId, DeckRole role) {
+        return jpaRepository.countByDeckIdAndRole(deckId, role);
+    }
+
+    @Override
+    public Optional<DeckMember> findFirstByDeckIdAndRoleOrderByCreatedAtAsc(Long deckId, DeckRole role) {
+        return jpaRepository.findFirstByDeckIdAndRoleOrderByCreatedAtAsc(deckId, role);
+    }
+
+    @Override
+    public void delete(DeckMember deckMember) {
+        jpaRepository.delete(deckMember);
+    }
 }

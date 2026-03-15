@@ -14,4 +14,10 @@ public interface DeckMemberRepository {
     Optional<DeckMember> findByDeckIdAndUserId(Long deckId, Long userId);
 
     void deleteAllGuestsByDeckId(Long deckId, DeckRole role);
+
+    long countByDeckIdAndRole(Long deckId, DeckRole role);
+
+    Optional<DeckMember> findFirstByDeckIdAndRoleOrderByCreatedAtAsc(Long deckId, DeckRole role);
+
+    void delete(DeckMember deckMember);
 }

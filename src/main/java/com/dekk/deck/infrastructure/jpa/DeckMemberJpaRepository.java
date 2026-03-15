@@ -22,6 +22,10 @@ public interface DeckMemberJpaRepository extends JpaRepository<DeckMember, Long>
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE DeckMember dm SET dm.deletedAt = CURRENT_TIMESTAMP "
-            + "WHERE dm.deckId = :deckId AND dm.role = :role")
+            + "WHERE dm.deckId = :deckId AND dm.role = :role AND dm.deletedAt IS NULL")
     void deleteAllGuestsByDeckId(@Param("deckId") Long deckId, @Param("role") DeckRole role);
+
+    long countByDeckIdAndRole(Long deckId, DeckRole role);
+
+    Optional<DeckMember> findFirstByDeckIdAndRoleOrderByCreatedAtAsc(Long deckId, DeckRole role);
 }

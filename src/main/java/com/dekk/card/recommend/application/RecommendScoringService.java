@@ -49,8 +49,9 @@ public class RecommendScoringService {
             Map<Long, Double> preferences) {
 
         return candidates.stream()
-                .sorted(Comparator.comparingDouble(
-                        card -> -totalScore(userHeight, userWeight, card, cardCategoryMap, preferences)))
+                .map(card -> Map.entry(card, totalScore(userHeight, userWeight, card, cardCategoryMap, preferences)))
+                .sorted(Comparator.comparingDouble(e -> -e.getValue()))
+                .map(Map.Entry::getKey)
                 .toList();
     }
 

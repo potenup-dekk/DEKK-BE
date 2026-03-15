@@ -28,7 +28,7 @@ public interface CardCategoryJpaRepository extends JpaRepository<CardCategory, L
     List<CardCategory> findAllByCardId(Long cardId);
 
     @Query(
-            "SELECT new com.dekk.card.domain.model.CardCategoryProjection(cc.cardId, cc.categoryId) FROM CardCategory cc WHERE cc.cardId IN :cardIds")
+            "SELECT new com.dekk.card.domain.repository.CardCategoryProjection(cc.cardId, cc.categoryId) FROM CardCategory cc WHERE cc.cardId IN :cardIds")
     List<CardCategoryProjection> findCardCategoryProjectionsByCardIdIn(@Param("cardIds") List<Long> cardIds);
 
     @Query("SELECT cc.categoryId FROM CardCategory cc WHERE cc.cardId = :cardId")

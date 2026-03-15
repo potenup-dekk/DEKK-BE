@@ -67,9 +67,15 @@ public class DeckCardCommandService {
     }
 
     private Deck getCustomDeckByUserId(Long deckId, Long userId) {
-        return deckRepository
+        Deck deck = deckRepository
                 .findByIdAndMemberUserId(deckId, userId)
                 .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
+
+        if (deck.isDefault()) {
+            throw new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_CANNOT_BE_MODIFIED);
+        }
+
+        return deck;
     }
 
     private DeckCard getDeckCardByDeckIdAndCardId(Long deckId, Long cardId) {

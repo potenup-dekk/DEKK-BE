@@ -76,9 +76,7 @@ public class ShareDeckCommandService {
     public void leaveSharedDeck(Long userId, Long deckId) {
         DeckMember member = getDeckMemberOrThrow(deckId, userId);
 
-        if (member.isHost()) {
-            throw new DeckBusinessException(DeckErrorCode.HOST_CANNOT_LEAVE_DECK);
-        }
+        validateNotHost(member);
 
         deckMemberRepository.delete(member);
     }
@@ -86,19 +84,19 @@ public class ShareDeckCommandService {
     public void handleHostWithdrawal(Long deckId, Long hostUserId) {
         DeckMember hostMember = getDeckMemberOrThrow(deckId, hostUserId);
 
-        if (hostMember.getRole() != DeckRole.HOST) {
+        if (!hostMember.isHost()) {
             return;
         }
 
         Optional<DeckMember> oldestGuest =
                 deckMemberRepository.findFirstByDeckIdAndRoleOrderByCreatedAtAsc(deckId, DeckRole.GUEST);
 
-        oldestGuest.ifPresentOrElse(
-                guest -> {
-                    guest.promoteToHost();
-                    deckMemberRepository.delete(hostMember);
-                },
-                () -> deleteSharedDeck(deckId));
+        oldestGuest.ifPresentOrElse(guest -> succeedHost(guest, hostMember), () -> deleteSharedDeck(deckId));
+    }
+
+    private void succeedHost(DeckMember guest, DeckMember hostMember) {
+        guest.promoteToHost();
+        deckMemberRepository.delete(hostMember);
     }
 
     private Deck getDeckAsHost(Long deckId, Long userId) {
@@ -163,7 +161,7 @@ public class ShareDeckCommandService {
     private DeckMember getDeckMemberOrThrow(Long deckId, Long userId) {
         return deckMemberRepository
                 .findByDeckIdAndUserId(deckId, userId)
-                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
+                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.DECK_MEMBER_NOT_FOUND));
     }
 
     private Deck getDeckOrThrow(Long deckId) {
@@ -184,6 +182,12 @@ public class ShareDeckCommandService {
     private void validateNotDefaultDeck(Deck deck) {
         if (deck.isDefault()) {
             throw new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_CANNOT_BE_MODIFIED);
+        }
+    }
+
+    private void validateNotHost(DeckMember member) {
+        if (member.isHost()) {
+            throw new DeckBusinessException(DeckErrorCode.HOST_CANNOT_LEAVE_DECK);
         }
     }
 }

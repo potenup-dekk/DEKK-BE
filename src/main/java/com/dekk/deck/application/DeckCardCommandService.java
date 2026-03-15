@@ -38,8 +38,8 @@ public class DeckCardCommandService {
     }
 
     public void saveToCustomDeck(Long userId, Long customDeckId, Long cardId) {
-        Deck customDeck = getCustomDeckByUserId(customDeckId, userId);
-
+        Deck customDeck = getDeckByUserId(customDeckId, userId);
+        validateNotDefaultDeck(customDeck);
         if (isCardAlreadyInDeck(customDeck.getId(), cardId)) {
             return;
         }
@@ -50,7 +50,9 @@ public class DeckCardCommandService {
     }
 
     public void removeFromCustomDeck(Long userId, Long customDeckId, Long cardId) {
-        Deck customDeck = getCustomDeckByUserId(customDeckId, userId);
+        Deck customDeck = getDeckByUserId(customDeckId, userId);
+
+        validateNotDefaultDeck(customDeck);
         DeckCard deckCard = getDeckCardByDeckIdAndCardId(customDeck.getId(), cardId);
 
         deckCardRepository.delete(deckCard);
@@ -66,16 +68,16 @@ public class DeckCardCommandService {
                 .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_NOT_FOUND));
     }
 
-    private Deck getCustomDeckByUserId(Long deckId, Long userId) {
-        Deck deck = deckRepository
+    private Deck getDeckByUserId(Long deckId, Long userId) {
+        return deckRepository
                 .findByIdAndMemberUserId(deckId, userId)
                 .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
+    }
 
+    private void validateNotDefaultDeck(Deck deck) {
         if (deck.isDefault()) {
             throw new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_CANNOT_BE_MODIFIED);
         }
-
-        return deck;
     }
 
     private DeckCard getDeckCardByDeckIdAndCardId(Long deckId, Long cardId) {

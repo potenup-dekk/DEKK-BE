@@ -4,9 +4,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -18,20 +17,22 @@ public class DeckInviteRedisRepository {
     private static final String DECK_KEY_PREFIX = "DECK_INVITE:";
     private static final String TOKEN_KEY_PREFIX = "INVITE_TOKEN:";
 
+    private static final RedisScript<Long> SAVE_TOKEN_SCRIPT = RedisScript.of(
+            "redis.call('SET', KEYS[1], ARGV[1], 'EX', ARGV[3]) "
+                    + "redis.call('SET', KEYS[2], ARGV[2], 'EX', ARGV[3]) "
+                    + "return 1",
+            Long.class);
+
     public void saveToken(Long deckId, String token, Duration ttl) {
         String deckKey = DECK_KEY_PREFIX + deckId;
         String tokenKey = TOKEN_KEY_PREFIX + token;
 
-        redisTemplate.execute(new SessionCallback<List<Object>>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public List<Object> execute(RedisOperations operations) {
-                operations.multi();
-                operations.opsForValue().set(deckKey, token, ttl);
-                operations.opsForValue().set(tokenKey, String.valueOf(deckId), ttl);
-                return operations.exec();
-            }
-        });
+        redisTemplate.execute(
+                SAVE_TOKEN_SCRIPT,
+                List.of(deckKey, tokenKey),
+                token,
+                String.valueOf(deckId),
+                String.valueOf(ttl.getSeconds()));
     }
 
     public Optional<String> getTokenByDeckId(Long deckId) {

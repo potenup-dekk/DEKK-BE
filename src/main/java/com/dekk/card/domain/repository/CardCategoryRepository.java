@@ -1,6 +1,7 @@
 package com.dekk.card.domain.repository;
 
 import com.dekk.card.domain.model.CardCategory;
+import com.dekk.card.domain.model.CardCategoryProjection;
 import java.util.List;
 
 public interface CardCategoryRepository {
@@ -14,5 +15,5 @@ public interface CardCategoryRepository {
 
     List<CardCategory> saveAll(List<CardCategory> cardCategories);
 
-    List<CardCategory> findByCardIdIn(List<Long> cardIds);
+    List<CardCategoryProjection> findCardCategoryProjectionsByCardIdIn(List<Long> cardIds);
 }

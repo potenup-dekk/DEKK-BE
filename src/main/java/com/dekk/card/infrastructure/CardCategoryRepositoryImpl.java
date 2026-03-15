@@ -1,6 +1,7 @@
 package com.dekk.card.infrastructure;
 
 import com.dekk.card.domain.model.CardCategory;
+import com.dekk.card.domain.model.CardCategoryProjection;
 import com.dekk.card.domain.repository.CardCategoryRepository;
 import com.dekk.card.infrastructure.jpa.CardCategoryJpaRepository;
 import java.util.List;
@@ -45,10 +46,10 @@ public class CardCategoryRepositoryImpl implements CardCategoryRepository {
     }
 
     @Override
-    public List<CardCategory> findByCardIdIn(List<Long> cardIds) {
+    public List<CardCategoryProjection> findCardCategoryProjectionsByCardIdIn(List<Long> cardIds) {
         if (cardIds.isEmpty()) {
             return List.of();
         }
-        return cardCategoryJpaRepository.findByCardIdIn(cardIds);
+        return cardCategoryJpaRepository.findCardCategoryProjectionsByCardIdIn(cardIds);
     }
 }

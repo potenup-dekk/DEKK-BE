@@ -10,11 +10,9 @@ import com.dekk.deck.domain.repository.DeckCardRepository;
 import com.dekk.deck.domain.repository.DeckMemberRepository;
 import com.dekk.deck.domain.repository.DeckRepository;
 import com.dekk.deck.infrastructure.redis.DeckInviteRedisRepository;
-
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,8 +59,8 @@ public class ShareDeckCommandService {
 
     public void joinSharedDeck(Long userId, String token) {
         Long deckId = deckInviteRedisRepository
-            .getDeckIdByToken(token)
-            .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.SHARE_TOKEN_EXPIRED));
+                .getDeckIdByToken(token)
+                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.SHARE_TOKEN_EXPIRED));
 
         Deck deck = getDeckOrThrow(deckId);
 
@@ -93,14 +91,14 @@ public class ShareDeckCommandService {
         }
 
         Optional<DeckMember> oldestGuest =
-            deckMemberRepository.findFirstByDeckIdAndRoleOrderByCreatedAtAsc(deckId, DeckRole.GUEST);
+                deckMemberRepository.findFirstByDeckIdAndRoleOrderByCreatedAtAsc(deckId, DeckRole.GUEST);
 
         oldestGuest.ifPresentOrElse(
-            guest -> {
-                guest.promoteToHost();
-                deckMemberRepository.delete(hostMember);
-            },
-            () -> deleteSharedDeck(deckId));
+                guest -> {
+                    guest.promoteToHost();
+                    deckMemberRepository.delete(hostMember);
+                },
+                () -> deleteSharedDeck(deckId));
     }
 
     private Deck getDeckAsHost(Long deckId, Long userId) {
@@ -164,14 +162,14 @@ public class ShareDeckCommandService {
 
     private DeckMember getDeckMemberOrThrow(Long deckId, Long userId) {
         return deckMemberRepository
-            .findByDeckIdAndUserId(deckId, userId)
-            .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
+                .findByDeckIdAndUserId(deckId, userId)
+                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
     }
 
     private Deck getDeckOrThrow(Long deckId) {
         return deckRepository
-            .findById(deckId)
-            .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
+                .findById(deckId)
+                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
     }
 
     private void deleteSharedDeck(Long deckId) {

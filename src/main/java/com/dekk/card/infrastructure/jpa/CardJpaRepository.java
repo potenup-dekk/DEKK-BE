@@ -55,7 +55,7 @@ public interface CardJpaRepository extends JpaRepository<Card, Long>, JpaSpecifi
     List<Card> findAllByIdInWithProductsOrderByUpdatedAt(@Param("ids") List<Long> ids);
 
     @Query("SELECT DISTINCT c FROM Card c " + "JOIN FETCH c.cardImage "
-            + "JOIN FETCH c.cardProducts cp "
+            + "LEFT JOIN FETCH c.cardProducts cp "
             + "LEFT JOIN FETCH cp.product p "
             + "LEFT JOIN FETCH p.productImage "
             + "WHERE c.status = 'APPROVED' "

@@ -16,9 +16,11 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -50,7 +52,7 @@ public class ShareDeckQueryService {
 
         Deck deck = deckRepository
                 .findById(deckId)
-                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
+                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.SHARED_DECK_NOT_FOUND));
 
         if (!deck.isShared()) {
             throw new DeckBusinessException(DeckErrorCode.DECK_IS_NOT_SHARED);
@@ -66,7 +68,16 @@ public class ShareDeckQueryService {
                 cardResults.stream().collect(Collectors.toMap(MemberCardResult::cardId, Function.identity()));
 
         return deckCards.stream()
-                .map(deckCard -> cardMap.get(deckCard.getCardId()))
+                .map(deckCard -> {
+                    MemberCardResult cardResult = cardMap.get(deckCard.getCardId());
+                    if (cardResult == null) {
+                        log.warn(
+                                "쉐어덱 조회 중 유효하지 않은 카드 누락 발생 (Graceful Degradation) - DeckId: {}, CardId: {}",
+                                deckCard.getDeckId(),
+                                deckCard.getCardId());
+                    }
+                    return cardResult;
+                })
                 .filter(Objects::nonNull)
                 .map(this::createGuestResult)
                 .toList();

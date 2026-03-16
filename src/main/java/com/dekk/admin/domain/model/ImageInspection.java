@@ -15,6 +15,8 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(
@@ -23,6 +25,8 @@ import lombok.NoArgsConstructor;
             @Index(name = "idx_image_inspections_card_image", columnList = "cardImageId"),
             @Index(name = "idx_image_inspections_status", columnList = "status")
         })
+@SQLDelete(sql = "UPDATE image_inspections SET deleted = true WHERE id = ?")
+@Where(clause = "deleted = false")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ImageInspection extends BaseTimeEntity {
@@ -37,9 +41,6 @@ public class ImageInspection extends BaseTimeEntity {
     @Column(nullable = false, columnDefinition = "text")
     private String imageUrl;
 
-    @Column(nullable = false, length = 255)
-    private String productTitle;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private InspectionStatus status = InspectionStatus.PENDING;
@@ -47,21 +48,43 @@ public class ImageInspection extends BaseTimeEntity {
     @Column(name = "ai_comment", length = 500)
     private String aiComment;
 
-    private ImageInspection(Long cardImageId, String imageUrl, String productTitle) {
+    @Column(name = "admin_id")
+    private Long adminId;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    private ImageInspection(Long cardImageId, String imageUrl) {
         this.cardImageId = cardImageId;
         this.imageUrl = imageUrl;
-        this.productTitle = productTitle;
     }
 
-    public static ImageInspection create(Long cardImageId, String imageUrl, String productTitle) {
-        return new ImageInspection(cardImageId, imageUrl, productTitle);
+    public static ImageInspection create(Long cardImageId, String imageUrl) {
+        return new ImageInspection(cardImageId, imageUrl);
     }
 
-    public void updateAiResult(InspectionStatus status, String aiComment) {
-        if (this.status != InspectionStatus.PENDING && this.status != InspectionStatus.WORKER_ERROR) {
+    public void updateAiResult(InspectionStatus targetStatus, String aiComment) {
+        if (this.status == targetStatus) {
+            return;
+        }
+        if (!this.status.isProcessableByAi()) {
             throw new AdminBusinessException(AdminErrorCode.INVALID_INSPECTION_STATUS_TRANSITION);
         }
-        this.status = status;
+        this.status = targetStatus;
         this.aiComment = aiComment;
+    }
+
+    public void updateAdminStatus(InspectionStatus targetStatus, Long adminId) {
+        if (this.status == targetStatus) {
+            return;
+        }
+        if (!this.status.isProcessableByAdmin()) {
+            throw new AdminBusinessException(AdminErrorCode.INVALID_INSPECTION_STATUS_TRANSITION);
+        }
+        if (!this.status.canTransitionToAdminStatus(targetStatus)) {
+            throw new AdminBusinessException(AdminErrorCode.INVALID_TARGET_INSPECTION_STATUS);
+        }
+        this.status = targetStatus;
+        this.adminId = adminId;
     }
 }

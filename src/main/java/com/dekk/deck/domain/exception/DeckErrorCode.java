@@ -30,6 +30,7 @@ public enum DeckErrorCode implements ErrorCode {
     DECK_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "ED40404", "보관함의 참여자 정보를 찾을 수 없습니다"),
 
     ALREADY_JOINED_DECK(HttpStatus.CONFLICT, "ED40901", "이미 참여 중인 보관함입니다"),
+    DECK_CARD_DUPLICATED(HttpStatus.CONFLICT, "ED40902", "이미 보관함에 존재하는 카드입니다"),
     ;
 
     private final HttpStatus httpStatus;

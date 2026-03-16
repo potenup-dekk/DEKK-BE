@@ -1,5 +1,6 @@
 package com.dekk.deck.application;
 
+import com.dekk.common.lock.DistributedLock;
 import com.dekk.deck.domain.exception.DeckBusinessException;
 import com.dekk.deck.domain.exception.DeckErrorCode;
 import com.dekk.deck.domain.model.Deck;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class DeckCardCommandService {
 
@@ -20,16 +20,18 @@ public class DeckCardCommandService {
     private final DeckRepository deckRepository;
     private final DeckCardRepository deckCardRepository;
 
+    @Transactional
     public void saveToDefaultDeck(Long userId, Long cardId) {
         Deck defaultDeck = getDefaultDeckByUserId(userId);
 
         if (isCardAlreadyInDeck(defaultDeck.getId(), cardId)) {
-            return;
+            throw new DeckBusinessException(DeckErrorCode.DECK_CARD_DUPLICATED);
         }
 
         deckCardRepository.save(DeckCard.create(defaultDeck.getId(), cardId));
     }
 
+    @Transactional
     public void removeFromDefaultDeck(Long userId, Long cardId) {
         Deck defaultDeck = getDefaultDeckByUserId(userId);
         DeckCard deckCard = getDeckCardByDeckIdAndCardId(defaultDeck.getId(), cardId);
@@ -37,11 +39,12 @@ public class DeckCardCommandService {
         deckCardRepository.delete(deckCard);
     }
 
+    @DistributedLock(key = "#customDeckId")
     public void saveToCustomDeck(Long userId, Long customDeckId, Long cardId) {
-        Deck customDeck = getDeckByUserId(customDeckId, userId);
-        validateNotDefaultDeck(customDeck);
+        Deck customDeck = getCustomDeckByUserId(customDeckId, userId);
+
         if (isCardAlreadyInDeck(customDeck.getId(), cardId)) {
-            return;
+            throw new DeckBusinessException(DeckErrorCode.DECK_CARD_DUPLICATED);
         }
 
         validateCustomDeckCardLimit(customDeck.getId());
@@ -49,10 +52,9 @@ public class DeckCardCommandService {
         deckCardRepository.save(DeckCard.create(customDeck.getId(), cardId));
     }
 
+    @Transactional
     public void removeFromCustomDeck(Long userId, Long customDeckId, Long cardId) {
-        Deck customDeck = getDeckByUserId(customDeckId, userId);
-
-        validateNotDefaultDeck(customDeck);
+        Deck customDeck = getCustomDeckByUserId(customDeckId, userId);
         DeckCard deckCard = getDeckCardByDeckIdAndCardId(customDeck.getId(), cardId);
 
         deckCardRepository.delete(deckCard);
@@ -68,16 +70,16 @@ public class DeckCardCommandService {
                 .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_NOT_FOUND));
     }
 
-    private Deck getDeckByUserId(Long deckId, Long userId) {
-        return deckRepository
+    private Deck getCustomDeckByUserId(Long deckId, Long userId) {
+        Deck deck = deckRepository
                 .findByIdAndMemberUserId(deckId, userId)
                 .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
-    }
 
-    private void validateNotDefaultDeck(Deck deck) {
         if (deck.isDefault()) {
             throw new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_CANNOT_BE_MODIFIED);
         }
+
+        return deck;
     }
 
     private DeckCard getDeckCardByDeckIdAndCardId(Long deckId, Long cardId) {

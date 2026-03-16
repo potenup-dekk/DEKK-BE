@@ -25,7 +25,7 @@ public class DeckCardCommandService {
         Deck defaultDeck = getDefaultDeckByUserId(userId);
 
         if (isCardAlreadyInDeck(defaultDeck.getId(), cardId)) {
-            throw new DeckBusinessException(DeckErrorCode.DECK_CARD_DUPLICATED);
+            return;
         }
 
         deckCardRepository.save(DeckCard.create(defaultDeck.getId(), cardId));

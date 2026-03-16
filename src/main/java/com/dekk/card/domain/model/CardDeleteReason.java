@@ -29,7 +29,7 @@ public class CardDeleteReason extends BaseTimeEntity {
     @Column(name = "admin_id", nullable = false)
     private Long adminId;
 
-    @Column(name = "reason", nullable = false, length = 500)
+    @Column(name = "reason", nullable = false, length = 100)
     private String reason;
 
     private CardDeleteReason(Long cardId, Long adminId, String reason) {

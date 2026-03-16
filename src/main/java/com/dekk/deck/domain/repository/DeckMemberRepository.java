@@ -20,4 +20,6 @@ public interface DeckMemberRepository {
     Optional<DeckMember> findFirstByDeckIdAndRoleOrderByCreatedAtAsc(Long deckId, DeckRole role);
 
     void delete(DeckMember deckMember);
+
+    void reactivateOrSave(Long deckId, Long userId, DeckRole role);
 }

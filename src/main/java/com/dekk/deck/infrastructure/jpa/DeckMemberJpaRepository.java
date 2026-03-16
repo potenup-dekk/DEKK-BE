@@ -28,4 +28,11 @@ public interface DeckMemberJpaRepository extends JpaRepository<DeckMember, Long>
     long countByDeckIdAndRole(Long deckId, DeckRole role);
 
     Optional<DeckMember> findFirstByDeckIdAndRoleOrderByCreatedAtAsc(Long deckId, DeckRole role);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+            value = "UPDATE deck_members SET deleted_at = NULL, role = :role, updated_at = CURRENT_TIMESTAMP "
+                    + "WHERE deck_id = :deckId AND user_id = :userId AND deleted_at IS NOT NULL",
+            nativeQuery = true)
+    int reactivateIfDeleted(@Param("deckId") Long deckId, @Param("userId") Long userId, @Param("role") String role);
 }

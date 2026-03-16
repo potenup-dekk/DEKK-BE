@@ -66,14 +66,14 @@ public class DeckCardCommandService {
 
     private Deck getDefaultDeckByUserId(Long userId) {
         return deckRepository
-            .findDefaultDeckByUserId(userId)
-            .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_NOT_FOUND));
+                .findDefaultDeckByUserId(userId)
+                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_NOT_FOUND));
     }
 
     private Deck getCustomDeckByUserId(Long deckId, Long userId) {
         Deck deck = deckRepository
-            .findByIdAndMemberUserId(deckId, userId)
-            .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
+                .findByIdAndMemberUserId(deckId, userId)
+                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
 
         if (deck.isDefault()) {
             throw new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_CANNOT_BE_MODIFIED);
@@ -84,8 +84,8 @@ public class DeckCardCommandService {
 
     private DeckCard getDeckCardByDeckIdAndCardId(Long deckId, Long cardId) {
         return deckCardRepository
-            .findByDeckIdAndCardId(deckId, cardId)
-            .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CARD_NOT_FOUND_IN_DECK));
+                .findByDeckIdAndCardId(deckId, cardId)
+                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CARD_NOT_FOUND_IN_DECK));
     }
 
     private void validateCustomDeckCardLimit(Long deckId) {

@@ -28,6 +28,7 @@ public enum DeckErrorCode implements ErrorCode {
     CARD_NOT_FOUND_IN_DECK(HttpStatus.NOT_FOUND, "ED40402", "보관함에 해당 카드가 존재하지 않습니다"),
     CUSTOM_DECK_NOT_FOUND(HttpStatus.NOT_FOUND, "ED40403", "커스텀 보관함을 찾을 수 없습니다"),
     DECK_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "ED40404", "보관함의 참여자 정보를 찾을 수 없습니다"),
+    SHARED_DECK_NOT_FOUND(HttpStatus.NOT_FOUND, "ED40405", "공유된 보관함을 찾을 수 없습니다"),
 
     ALREADY_JOINED_DECK(HttpStatus.CONFLICT, "ED40901", "이미 참여 중인 보관함입니다"),
     ;

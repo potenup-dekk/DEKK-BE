@@ -174,7 +174,7 @@ public class ShareDeckCommandService {
     private Deck getDeckOrThrow(Long deckId) {
         return deckRepository
                 .findById(deckId)
-                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
+                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.SHARED_DECK_NOT_FOUND));
     }
 
     private void deleteSharedDeck(Long deckId) {

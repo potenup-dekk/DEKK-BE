@@ -1,5 +1,6 @@
 package com.dekk.deck.application;
 
+import com.dekk.common.lock.DistributedLock;
 import com.dekk.deck.application.dto.result.ShareTokenResult;
 import com.dekk.deck.domain.exception.DeckBusinessException;
 import com.dekk.deck.domain.exception.DeckErrorCode;
@@ -57,6 +58,7 @@ public class ShareDeckCommandService {
         clearShareToken(deckId);
     }
 
+    @DistributedLock(key = "'join_deck:' + #userId")
     public void joinSharedDeck(Long userId, String token) {
         Long deckId = deckInviteRedisRepository
                 .getDeckIdByToken(token)

@@ -75,22 +75,27 @@ class DeckCardCommandServiceConcurrencyTest {
         AtomicInteger successOrIgnoredCount = new AtomicInteger();
         AtomicInteger lockExceptionCount = new AtomicInteger();
 
-        for (int i = 0; i < threadCount; i++) {
-            executorService.submit(() -> {
-                try {
-                    deckCardCommandService.saveToCustomDeck(userId, customDeckId, targetCardId);
-                    successOrIgnoredCount.incrementAndGet();
-                } catch (BusinessException e) {
-                    if (e.errorCode() == GlobalErrorCode.LOCK_ACQUISITION_FAILED) {
-                        lockExceptionCount.incrementAndGet();
+        try {
+            for (int i = 0; i < threadCount; i++) {
+                executorService.submit(() -> {
+                    try {
+                        deckCardCommandService.saveToCustomDeck(userId, customDeckId, targetCardId);
+                        successOrIgnoredCount.incrementAndGet();
+                    } catch (BusinessException e) {
+                        if (e.errorCode() == GlobalErrorCode.LOCK_ACQUISITION_FAILED) {
+                            lockExceptionCount.incrementAndGet();
+                        }
+                    } finally {
+                        latch.countDown();
                     }
-                } finally {
-                    latch.countDown();
-                }
-            });
-        }
+                });
+            }
 
-        latch.await();
+            latch.await();
+
+        } finally {
+            executorService.shutdown();
+        }
 
         long savedCardCount = deckCardRepository.countByDeckId(customDeckId);
         assertThat(savedCardCount).isEqualTo(1L);

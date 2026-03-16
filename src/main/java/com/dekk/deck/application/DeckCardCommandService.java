@@ -39,6 +39,10 @@ public class DeckCardCommandService {
         deckCardRepository.delete(deckCard);
     }
 
+    /**
+     * 분산 락 AOP 내부(AopForTransaction)에서 트랜잭션을 제어하므로 @Transactional을 생략합니다.
+     * (동시성 정합성을 위해 '락 획득 -> 트랜잭션 시작 -> DB 커밋 -> 락 해제' 순서를 보장해야 함)
+     */
     @DistributedLock(key = "#customDeckId")
     public void saveToCustomDeck(Long userId, Long customDeckId, Long cardId) {
         Deck customDeck = getCustomDeckByUserId(customDeckId, userId);

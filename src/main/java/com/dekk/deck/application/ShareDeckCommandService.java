@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ShareDeckCommandService {
 
     private static final Duration TOKEN_TTL = Duration.ofHours(24);
@@ -33,6 +32,7 @@ public class ShareDeckCommandService {
     private final DeckInviteRedisRepository deckInviteRedisRepository;
     private final DeckCardRepository deckCardRepository;
 
+    @Transactional
     public ShareTokenResult turnOnShareAndGetToken(Long userId, Long deckId) {
         Deck deck = getDeckAsHost(deckId, userId);
 
@@ -45,6 +45,7 @@ public class ShareDeckCommandService {
         return getOrCreateShareToken(deckId);
     }
 
+    @Transactional
     public void turnOffShare(Long userId, Long deckId) {
         Deck deck = getDeckAsHost(deckId, userId);
 
@@ -74,6 +75,7 @@ public class ShareDeckCommandService {
         deckMemberRepository.reactivateOrSave(deckId, userId, DeckRole.GUEST);
     }
 
+    @Transactional
     public void leaveSharedDeck(Long userId, Long deckId) {
         DeckMember member = getDeckMemberOrThrow(deckId, userId);
 
@@ -82,6 +84,7 @@ public class ShareDeckCommandService {
         deckMemberRepository.delete(member);
     }
 
+    @Transactional
     public void handleHostWithdrawal(Long deckId, Long hostUserId) {
         DeckMember hostMember = getDeckMemberOrThrow(deckId, hostUserId);
 

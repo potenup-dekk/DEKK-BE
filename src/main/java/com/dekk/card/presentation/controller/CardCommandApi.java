@@ -1,7 +1,9 @@
 package com.dekk.card.presentation.controller;
 
+import com.dekk.admin.security.AdminUserDetails;
 import com.dekk.card.domain.exception.CardErrorCode;
 import com.dekk.card.presentation.request.AssignCategoriesRequest;
+import com.dekk.card.presentation.request.RequestDeleteCardRequest;
 import com.dekk.common.response.ApiResponse;
 import com.dekk.common.swagger.ApiErrorExceptions;
 import io.swagger.v3.oas.annotations.Operation;
@@ -106,4 +108,12 @@ public interface CardCommandApi {
     ResponseEntity<ApiResponse<Void>> assignCategories(
             @Parameter(description = "카테고리를 지정할 카드 ID", in = ParameterIn.PATH) Long cardId,
             AssignCategoriesRequest request);
+
+    @Operation(summary = "카드 삭제 요청", description = "카드의 상태를 DELETE_REQUESTED로 변경하고 삭제 사유를 기록합니다.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "카드 삭제 요청 성공")
+    @ApiErrorExceptions(CardErrorCode.class)
+    ResponseEntity<ApiResponse<Void>> requestDeleteCard(
+            @Parameter(description = "삭제 요청할 카드 ID", in = ParameterIn.PATH) Long cardId,
+            RequestDeleteCardRequest request,
+            @Parameter(hidden = true) AdminUserDetails adminUserDetails);
 }

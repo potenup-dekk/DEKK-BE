@@ -1,11 +1,14 @@
 package com.dekk.card.application;
 
 import com.dekk.card.application.dto.command.AssignCategoriesCommand;
+import com.dekk.card.application.dto.command.RequestDeleteCardCommand;
 import com.dekk.card.domain.exception.CardBusinessException;
 import com.dekk.card.domain.exception.CardErrorCode;
 import com.dekk.card.domain.model.Card;
 import com.dekk.card.domain.model.CardCategory;
+import com.dekk.card.domain.model.CardDeleteReason;
 import com.dekk.card.domain.repository.CardCategoryRepository;
+import com.dekk.card.domain.repository.CardDeleteReasonRepository;
 import com.dekk.card.domain.repository.CardRepository;
 import com.dekk.category.application.CategoryQueryService;
 import java.util.List;
@@ -22,6 +25,7 @@ public class CardCommandService {
 
     private final CardRepository cardRepository;
     private final CardCategoryRepository cardCategoryRepository;
+    private final CardDeleteReasonRepository cardDeleteReasonRepository;
     private final CategoryQueryService categoryQueryService;
 
     public void approveCard(Long cardId) {
@@ -32,6 +36,13 @@ public class CardCommandService {
     public void rejectCard(Long cardId) {
         Card card = findCardOrThrow(cardId);
         card.reject();
+    }
+
+    public void requestDeleteCard(RequestDeleteCardCommand command) {
+        Card card = findCardOrThrow(command.cardId());
+        card.requestDelete();
+        CardDeleteReason deleteReason = CardDeleteReason.create(command.cardId(), command.adminId(), command.reason());
+        cardDeleteReasonRepository.save(deleteReason);
     }
 
     public void assignCategories(Long cardId, AssignCategoriesCommand command) {

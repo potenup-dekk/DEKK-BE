@@ -69,8 +69,7 @@ public class ShareDeckCommandService {
         validateDeckLimit(userId);
         validateGuestLimit(deckId);
 
-        DeckMember guestMember = DeckMember.create(deckId, userId, DeckRole.GUEST);
-        deckMemberRepository.save(guestMember);
+        deckMemberRepository.reactivateOrSave(deckId, userId, DeckRole.GUEST);
     }
 
     public void leaveSharedDeck(Long userId, Long deckId) {

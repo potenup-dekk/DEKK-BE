@@ -53,4 +53,13 @@ public class DeckMemberRepositoryImpl implements DeckMemberRepository {
     public void delete(DeckMember deckMember) {
         jpaRepository.delete(deckMember);
     }
+
+    @Override
+    public void reactivateOrSave(Long deckId, Long userId, DeckRole role) {
+        int updatedCount = jpaRepository.reactivateIfDeleted(deckId, userId, role.name());
+
+        if (updatedCount == 0) {
+            jpaRepository.save(DeckMember.create(deckId, userId, role));
+        }
+    }
 }

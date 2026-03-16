@@ -6,10 +6,11 @@ import com.dekk.card.application.CardCategoryQueryService;
 import com.dekk.card.application.CardQueryService;
 import com.dekk.card.application.dto.query.RecommendCandidateQuery;
 import com.dekk.card.application.dto.result.MemberCardResult;
-import com.dekk.card.domain.model.enums.TargetGender;
+import com.dekk.card.recommend.application.dto.RecommendCardResult;
 import com.dekk.user.application.UserQueryService;
 import com.dekk.user.application.dto.result.UserInfoResult;
-import com.dekk.user.domain.model.enums.Gender;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,16 +23,41 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RecommendQueryService {
 
+    private static final double RECOMMEND_RATIO = 0.7;
+
     private final CardQueryService cardQueryService;
     private final UserQueryService userQueryService;
     private final ActiveLogQueryService activeLogQueryService;
     private final CardCategoryQueryService cardCategoryQueryService;
     private final RecommendScoringService recommendScoringService;
 
-    public List<MemberCardResult> getRecommendCandidates(Long userId) {
+    public List<RecommendCardResult> getRecommendCards(Long userId, int size) {
+        int recommendCount = (int) Math.ceil(size * RECOMMEND_RATIO);
+
+        Set<Long> swipedIds = activeLogQueryService.getAllSwipedCardIds(userId);
+
+        List<MemberCardResult> recommendCards =
+                rankCandidates(userId, swipedIds).stream().limit(recommendCount).toList();
+
+        Set<Long> excludeForNormal = new HashSet<>(swipedIds);
+        recommendCards.forEach(c -> excludeForNormal.add(c.cardId()));
+
+        int normalCount = size - recommendCards.size();
+        List<MemberCardResult> normalCards = cardQueryService.getLatestCards(excludeForNormal, normalCount);
+
+        List<RecommendCardResult> result = new ArrayList<>(recommendCards.size() + normalCards.size());
+        recommendCards.forEach(c -> result.add(RecommendCardResult.recommended(c)));
+        normalCards.forEach(c -> result.add(RecommendCardResult.normal(c)));
+
+        return result;
+    }
+
+    private List<MemberCardResult> rankCandidates(Long userId, Set<Long> swipedIds) {
         UserInfoResult userInfo = userQueryService.getMyInfo(userId);
 
-        List<MemberCardResult> candidates = excludeSwiped(fetchCandidates(userInfo), userId);
+        List<MemberCardResult> candidates = fetchCandidates(userInfo).stream()
+                .filter(card -> !swipedIds.contains(card.cardId()))
+                .toList();
 
         List<Long> likedCategoryIds = getLikedCategoryIds(userId);
         Map<Long, Double> preferences = recommendScoringService.calculateCategoryPreferenceRatios(likedCategoryIds);
@@ -45,9 +71,9 @@ public class RecommendQueryService {
     }
 
     private List<MemberCardResult> fetchCandidates(UserInfoResult userInfo) {
-        List<TargetGender> genders = resolveTargetGenders(userInfo.gender());
         return cardQueryService
-                .getRecommendCandidates(RecommendCandidateQuery.of(genders, userInfo.height(), userInfo.weight()))
+                .getRecommendCandidates(RecommendCandidateQuery.of(
+                        TargetGenderResolver.resolve(userInfo.gender()), userInfo.height(), userInfo.weight()))
                 .stream()
                 .map(MemberCardResult::from)
                 .toList();
@@ -58,23 +84,5 @@ public class RecommendQueryService {
         return cardCategoryQueryService.getCardCategoryMap(likedCardIds).values().stream()
                 .flatMap(List::stream)
                 .toList();
-    }
-
-    private List<MemberCardResult> excludeSwiped(List<MemberCardResult> candidates, Long userId) {
-        Set<Long> swipedCardIds = activeLogQueryService.getAllSwipedCardIds(userId);
-        return candidates.stream()
-                .filter(card -> !swipedCardIds.contains(card.cardId()))
-                .toList();
-    }
-
-    private List<TargetGender> resolveTargetGenders(Gender gender) {
-        if (gender == null) {
-            return List.of(TargetGender.values());
-        }
-        return switch (gender) {
-            case MALE -> List.of(TargetGender.MEN, TargetGender.OTHER);
-            case FEMALE -> List.of(TargetGender.WOMEN, TargetGender.OTHER);
-            case OTHER -> List.of(TargetGender.values());
-        };
     }
 }

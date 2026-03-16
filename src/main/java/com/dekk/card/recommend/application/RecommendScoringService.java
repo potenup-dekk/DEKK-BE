@@ -1,8 +1,5 @@
 package com.dekk.card.recommend.application;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toMap;
-
 import com.dekk.card.application.dto.result.MemberCardResult;
 import java.util.Comparator;
 import java.util.List;
@@ -35,10 +32,10 @@ public class RecommendScoringService {
 
         long total = likedCategoryIds.size();
         return likedCategoryIds.stream()
-                .collect(groupingBy(Function.identity(), Collectors.counting()))
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet()
                 .stream()
-                .collect(toMap(Map.Entry::getKey, e -> (double) e.getValue() / total));
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> (double) e.getValue() / total));
     }
 
     public List<MemberCardResult> rank(

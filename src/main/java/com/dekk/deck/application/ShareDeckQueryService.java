@@ -33,7 +33,6 @@ public class ShareDeckQueryService {
         Deck deck = validateAndGetSharedDeck(token);
 
         List<DeckCard> deckCards = deckCardRepository.findAllByDeckIdOrderByCreatedAtDesc(deck.getId());
-
         if (deckCards.isEmpty()) {
             return List.of();
         }
@@ -41,15 +40,7 @@ public class ShareDeckQueryService {
         List<Long> cardIds = deckCards.stream().map(DeckCard::getCardId).toList();
         List<MemberCardResult> cardResults = cardQueryService.getCardsByIds(cardIds);
 
-        Map<Long, MemberCardResult> cardMap =
-                cardResults.stream().collect(Collectors.toMap(MemberCardResult::cardId, Function.identity()));
-
-        return deckCards.stream()
-                .map(deckCard -> cardMap.get(deckCard.getCardId()))
-                .filter(Objects::nonNull)
-                .map(card -> new GuestSharedDeckCardResult(
-                        card.cardId(), card.cardImageUrl(), card.height(), card.weight(), card.tags()))
-                .toList();
+        return mapToGuestResults(deckCards, cardResults);
     }
 
     private Deck validateAndGetSharedDeck(String token) {
@@ -66,5 +57,23 @@ public class ShareDeckQueryService {
         }
 
         return deck;
+    }
+
+    private List<GuestSharedDeckCardResult> mapToGuestResults(
+            List<DeckCard> deckCards, List<MemberCardResult> cardResults) {
+
+        Map<Long, MemberCardResult> cardMap =
+                cardResults.stream().collect(Collectors.toMap(MemberCardResult::cardId, Function.identity()));
+
+        return deckCards.stream()
+                .map(deckCard -> cardMap.get(deckCard.getCardId()))
+                .filter(Objects::nonNull)
+                .map(this::createGuestResult)
+                .toList();
+    }
+
+    private GuestSharedDeckCardResult createGuestResult(MemberCardResult card) {
+        return new GuestSharedDeckCardResult(
+                card.cardId(), card.cardImageUrl(), card.height(), card.weight(), card.tags());
     }
 }

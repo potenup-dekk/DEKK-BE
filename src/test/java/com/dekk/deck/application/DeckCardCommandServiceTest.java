@@ -39,17 +39,16 @@ class DeckCardCommandServiceTest {
     private final Long cardId = 100L;
 
     @Test
-    @DisplayName("커스텀 보관함에 동일한 카드를 저장하려 하면 DECK_CARD_DUPLICATED 예외가 발생한다")
-    void saveToCustomDeck_throwsException_whenCardDuplicated() {
+    @DisplayName("커스텀 보관함에 동일한 카드를 저장하려 하면 예외 없이 통과(Return)하고 추가 저장하지 않는다")
+    void saveToCustomDeck_returnsEarly_whenCardDuplicated() {
+        // given
         Deck customDeck = Deck.createCustom(userId, "여름 코디");
         given(deckRepository.findByIdAndMemberUserId(customDeckId, userId))
             .willReturn(Optional.of(customDeck));
 
         given(deckCardRepository.existsByDeckIdAndCardId(any(), anyLong())).willReturn(true);
 
-        assertThatThrownBy(() -> deckCardCommandService.saveToCustomDeck(userId, customDeckId, cardId))
-            .isInstanceOf(DeckBusinessException.class)
-            .hasMessage(DeckErrorCode.DECK_CARD_DUPLICATED.message());
+        deckCardCommandService.saveToCustomDeck(userId, customDeckId, cardId);
 
         verify(deckCardRepository, never()).save(any());
     }

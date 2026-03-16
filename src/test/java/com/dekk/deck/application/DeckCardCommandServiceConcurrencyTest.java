@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dekk.common.error.BusinessException;
 import com.dekk.common.error.GlobalErrorCode;
-import com.dekk.deck.domain.exception.DeckBusinessException;
-import com.dekk.deck.domain.exception.DeckErrorCode;
 import com.dekk.deck.domain.model.Deck;
 import com.dekk.deck.domain.model.DeckMember;
 import com.dekk.deck.domain.model.enums.DeckRole;
@@ -41,7 +39,6 @@ class DeckCardCommandServiceConcurrencyTest {
     @Autowired
     private DeckCardRepository deckCardRepository;
 
-    // 💡 TransactionTemplate 의존성 주입 추가
     @Autowired
     private TransactionTemplate transactionTemplate;
 
@@ -69,25 +66,20 @@ class DeckCardCommandServiceConcurrencyTest {
     }
 
     @Test
-    @DisplayName("동시에 100번의 동일한 카드 저장 요청이 오면, 분산 락을 통해 단 1장만 저장되고 나머지는 예외가 발생한다")
+    @DisplayName("동시에 100번의 동일한 카드 저장 요청이 오면, 분산 락을 통해 1장만 실제 저장되고 나머지는 무시되거나 락 획득에 실패한다")
     void saveCardToCustomDeck_concurrency_test() throws InterruptedException {
         int threadCount = 100;
         ExecutorService executorService = Executors.newFixedThreadPool(32);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
-        AtomicInteger successCount = new AtomicInteger();
-        AtomicInteger duplicateExceptionCount = new AtomicInteger();
+        AtomicInteger successOrIgnoredCount = new AtomicInteger();
         AtomicInteger lockExceptionCount = new AtomicInteger();
 
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
                     deckCardCommandService.saveToCustomDeck(userId, customDeckId, targetCardId);
-                    successCount.incrementAndGet();
-                } catch (DeckBusinessException e) {
-                    if (e.errorCode() == DeckErrorCode.DECK_CARD_DUPLICATED) {
-                        duplicateExceptionCount.incrementAndGet();
-                    }
+                    successOrIgnoredCount.incrementAndGet();
                 } catch (BusinessException e) {
                     if (e.errorCode() == GlobalErrorCode.LOCK_ACQUISITION_FAILED) {
                         lockExceptionCount.incrementAndGet();
@@ -103,12 +95,9 @@ class DeckCardCommandServiceConcurrencyTest {
         long savedCardCount = deckCardRepository.countByDeckId(customDeckId);
         assertThat(savedCardCount).isEqualTo(1L);
 
-        assertThat(successCount.get()).isEqualTo(1);
+        assertThat(successOrIgnoredCount.get() + lockExceptionCount.get()).isEqualTo(100);
 
-        assertThat(duplicateExceptionCount.get() + lockExceptionCount.get()).isEqualTo(99);
-
-        System.out.println("성공 횟수: " + successCount.get());
-        System.out.println("중복 저장 방어(DECK_CARD_DUPLICATED) 횟수: " + duplicateExceptionCount.get());
-        System.out.println("락 획득 실패 방어(LOCK_ACQUISITION_FAILED) 횟수: " + lockExceptionCount.get());
+        System.out.println("정상 처리 횟수 (최초 1회 저장 + 나머지 중복 무시): " + successOrIgnoredCount.get());
+        System.out.println("락 획득 실패(LOCK_ACQUISITION_FAILED) 횟수: " + lockExceptionCount.get());
     }
 }

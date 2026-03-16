@@ -14,6 +14,9 @@ public class AsyncConfig {
     private static final int MAX_POOL_SIZE = 50;
     private static final int QUEUE_CAPACITY = 100;
     private static final String THREAD_NAME_PREFIX = "Worker-Async-";
+    private static final int INSPECTION_POOL_SIZE = 1;
+    private static final int INSPECTION_QUEUE_CAPACITY = 200;
+    private static final String INSPECTION_THREAD_NAME_PREFIX = "Inspection-";
 
     @Bean(name = "workerTaskExecutor")
     public Executor workerTaskExecutor() {
@@ -25,6 +28,21 @@ public class AsyncConfig {
 
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(60);
+
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(name = "inspectionTaskExecutor")
+    public Executor inspectionTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(INSPECTION_POOL_SIZE);
+        executor.setMaxPoolSize(INSPECTION_POOL_SIZE);
+        executor.setQueueCapacity(INSPECTION_QUEUE_CAPACITY);
+        executor.setThreadNamePrefix(INSPECTION_THREAD_NAME_PREFIX);
+
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(120);
 
         executor.initialize();
         return executor;

@@ -9,10 +9,13 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class RestTemplateConfig {
 
+    private static final int CONNECT_TIMEOUT_SECONDS = 3;
+    private static final int READ_TIMEOUT_SECONDS = 5;
+
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.connectTimeout(Duration.ofSeconds(5))
-                .readTimeout(Duration.ofSeconds(60))
+        return builder.connectTimeout(Duration.ofSeconds(CONNECT_TIMEOUT_SECONDS))
+                .readTimeout(Duration.ofSeconds(READ_TIMEOUT_SECONDS))
                 .build();
     }
 }

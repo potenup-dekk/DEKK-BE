@@ -44,4 +44,4 @@ management:
 
 worker:
   n8n:
-    webhook-url: ${N8N_WEBHOOK_URL:http://localhost:5678/webhook/test}
+    webhook-url: ${N8N_WEBHOOK_URL:http://localhost:5678/webhook/outfit-filter}

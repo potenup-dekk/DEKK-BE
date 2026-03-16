@@ -28,7 +28,7 @@ public class CustomDeckQueryService {
     private final CardQueryService cardQueryService;
 
     public List<CustomDeckResult> getMyCustomDecks(Long userId) {
-        List<Deck> myCustomDecks = deckRepository.findAllByUserIdAndIsDefaultFalseOrderByCreatedAtDesc(userId);
+        List<Deck> myCustomDecks = deckRepository.findCustomAndSharedDecksByUserIdOrderByCreatedAtDesc(userId);
 
         if (myCustomDecks.isEmpty()) {
             return List.of();
@@ -75,7 +75,7 @@ public class CustomDeckQueryService {
 
     public List<MyDeckCardResult> getCustomDeckCards(Long userId, Long deckId) {
         Deck deck = deckRepository
-                .findByIdAndUserId(deckId, userId)
+                .findByIdAndMemberUserId(deckId, userId)
                 .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
 
         List<DeckCard> deckCards = deckCardRepository.findAllByDeckIdOrderByCreatedAtDesc(deck.getId());
@@ -92,31 +92,7 @@ public class CustomDeckQueryService {
                 cardResults.stream().collect(Collectors.toMap(MemberCardResult::cardId, Function.identity()));
 
         return deckCards.stream()
-                .map(deckCard -> mapToMyDeckCardResult(deckCard, cardMap))
+                .map(deckCard -> MyDeckCardResult.from(deckCard.getCardId(), cardMap.get(deckCard.getCardId())))
                 .toList();
-    }
-
-    private MyDeckCardResult mapToMyDeckCardResult(DeckCard deckCard, Map<Long, MemberCardResult> cardMap) {
-        MemberCardResult cardInfo = cardMap.get(deckCard.getCardId());
-
-        if (cardInfo == null) {
-            return MyDeckCardResult.empty(deckCard.getCardId());
-        }
-
-        return convertToMyDeckCardResult(cardInfo);
-    }
-
-    private MyDeckCardResult convertToMyDeckCardResult(MemberCardResult cardInfo) {
-        List<MyDeckCardResult.ProductDetail> productDetails = cardInfo.products().stream()
-                .map(p -> new MyDeckCardResult.ProductDetail(p.brand(), p.productUrl(), p.name(), p.productImageUrl()))
-                .toList();
-
-        return new MyDeckCardResult(
-                cardInfo.cardId(),
-                cardInfo.cardImageUrl(),
-                cardInfo.height(),
-                cardInfo.weight(),
-                cardInfo.tags(),
-                productDetails);
     }
 }

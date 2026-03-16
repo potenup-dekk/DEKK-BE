@@ -67,14 +67,6 @@ public class DeckCardRepositoryImpl implements DeckCardRepository {
     }
 
     @Override
-    public List<DeckCard> findAllByDeckIdIn(List<Long> deckIds) {
-        if (deckIds == null || deckIds.isEmpty()) {
-            return List.of();
-        }
-        return deckCardJpaRepository.findAllByDeckIdIn(deckIds);
-    }
-
-    @Override
     public List<DeckCard> findTopCardsByDeckIdsIn(List<Long> deckIds, int limit) {
         if (deckIds == null || deckIds.isEmpty()) {
             return List.of();

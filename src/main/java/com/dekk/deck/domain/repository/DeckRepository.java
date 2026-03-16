@@ -7,13 +7,15 @@ import java.util.Optional;
 public interface DeckRepository {
     Deck save(Deck deck);
 
-    Optional<Deck> findByUserIdAndIsDefaultTrue(Long userId);
+    Optional<Deck> findDefaultDeckByUserId(Long userId);
 
-    long countByUserIdAndIsDefaultFalse(Long userId);
-
-    Optional<Deck> findByIdAndUserId(Long id, Long userId);
+    Optional<Deck> findByIdAndMemberUserId(Long id, Long userId);
 
     void delete(Deck deck);
 
-    List<Deck> findAllByUserIdAndIsDefaultFalseOrderByCreatedAtDesc(Long userId);
+    List<Deck> findCustomAndSharedDecksByUserIdOrderByCreatedAtDesc(Long userId);
+
+    List<Deck> findAllByUserIdOrderByTypeAndCreatedAtDesc(Long userId);
+
+    Optional<Deck> findById(Long id);
 }

@@ -3,6 +3,7 @@ package com.dekk.card.recommend.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
+import com.dekk.card.application.dto.result.MemberCardResult;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -107,56 +108,88 @@ class RecommendScoringServiceTest {
     }
 
     @Nested
-    @DisplayName("calculateCategoryScore")
-    class CalculateCategoryScore {
+    @DisplayName("rank")
+    class Rank {
 
-        @Test
-        @DisplayName("카드 카테고리가 없으면 0.0을 반환한다")
-        void shouldReturn0_whenCardHasNoCategories() {
-            Map<Long, Double> preferences = Map.of(1L, 0.6, 2L, 0.4);
-
-            double result = scoringService.calculateCategoryScore(List.of(), preferences);
-
-            assertThat(result).isEqualTo(0.0);
+        private MemberCardResult card(long cardId, Integer height, Integer weight) {
+            return new MemberCardResult(cardId, null, height, weight, List.of(), List.of());
         }
 
         @Test
-        @DisplayName("유저 LIKE 이력이 없으면(빈 맵) 0.0을 반환한다")
-        void shouldReturn0_whenPreferencesIsEmpty() {
-            double result = scoringService.calculateCategoryScore(List.of(1L, 2L), Map.of());
+        @DisplayName("후보 카드가 없으면 빈 리스트를 반환한다")
+        void shouldReturnEmpty_whenNoCandidates() {
+            List<MemberCardResult> result = scoringService.rank(
+                    175, 70, List.of(), Map.of(), Map.of());
 
-            assertThat(result).isEqualTo(0.0);
+            assertThat(result).isEmpty();
         }
 
         @Test
-        @DisplayName("카드 카테고리가 유저 선호 맵에 모두 존재하면 선호 비율의 평균을 반환한다")
-        void shouldReturnAverageOfPreferences_whenAllCategoriesMatched() {
-            // 카테고리 1 → 0.6, 카테고리 2 → 0.4 → 평균 = 0.5
-            Map<Long, Double> preferences = Map.of(1L, 0.6, 2L, 0.4);
+        @DisplayName("카테고리 선호도가 높은 카드가 앞에 정렬된다")
+        void shouldRankByCategoryScore_whenBodySizeIsSame() {
+            MemberCardResult cardA = card(1L, 175, 70);
+            MemberCardResult cardB = card(2L, 175, 70);
 
-            double result = scoringService.calculateCategoryScore(List.of(1L, 2L), preferences);
+            Map<Long, List<Long>> categoryMap = Map.of(
+                    1L, List.of(1L),
+                    2L, List.of(2L));
+            Map<Long, Double> preferences = Map.of(1L, 0.8, 2L, 0.2);
 
-            assertThat(result).isCloseTo(0.5, within(0.001));
+            List<MemberCardResult> result = scoringService.rank(175, 70, List.of(cardA, cardB), categoryMap, preferences);
+
+            assertThat(result.get(0).cardId()).isEqualTo(1L);
+            assertThat(result.get(1).cardId()).isEqualTo(2L);
         }
 
         @Test
-        @DisplayName("카드 카테고리 일부가 유저 선호 맵에 없으면 매칭된 카테고리만 평균을 낸다")
-        void shouldAverageOnlyMatchedCategories() {
-            Map<Long, Double> preferences = Map.of(1L, 0.6, 2L, 0.4);
+        @DisplayName("체형 점수가 높은 카드가 앞에 정렬된다 (카테고리 선호 이력 없을 때)")
+        void shouldRankByBodyScore_whenNoCategoryPreferences() {
+            // 선호 이력 없음 → categoryScore = 0.0 동일
+            // 카드 A: 체형 완전 일치 (bodyScore = 1.0) → totalScore = 0.4
+            // 카드 B: 체형 차이 큼   (bodyScore = 0.0) → totalScore = 0.0
+            MemberCardResult cardA = card(1L, 175, 70);
+            MemberCardResult cardB = card(2L, 190, 90);
 
-            double result = scoringService.calculateCategoryScore(List.of(1L, 3L), preferences);
+            List<MemberCardResult> result = scoringService.rank(
+                    175, 70, List.of(cardB, cardA), Map.of(), Map.of());
 
-            assertThat(result).isCloseTo(0.6, within(0.001));
+            assertThat(result.getFirst().cardId()).isEqualTo(1L);
         }
 
         @Test
-        @DisplayName("카드 카테고리가 유저 선호 맵에 전혀 없으면 0.0을 반환한다")
-        void shouldReturn0_whenNoCategoryMatched() {
-            Map<Long, Double> preferences = Map.of(1L, 0.6, 2L, 0.4);
+        @DisplayName("유저 체형 정보가 없으면 모든 카드의 bodyScore를 1.0으로 계산한다")
+        void shouldTreatBodyScoreAs1_whenUserBodyInfoIsNull() {
+            // userHeight/Weight = null → bodyScore = 1.0
+            // 카드 A: 카테고리 1(선호도 0.8) → totalScore = 0.8 * 0.6 + 1.0 * 0.4 = 0.88
+            // 카드 B: 카테고리 2(선호도 0.2) → totalScore = 0.2 * 0.6 + 1.0 * 0.4 = 0.52
+            MemberCardResult cardA = card(1L, null, null);
+            MemberCardResult cardB = card(2L, null, null);
 
-            double result = scoringService.calculateCategoryScore(List.of(3L, 4L), preferences);
+            Map<Long, List<Long>> categoryMap = Map.of(
+                    1L, List.of(1L),
+                    2L, List.of(2L));
+            Map<Long, Double> preferences = Map.of(1L, 0.8, 2L, 0.2);
 
-            assertThat(result).isEqualTo(0.0);
+            List<MemberCardResult> result = scoringService.rank(null, null, List.of(cardB, cardA), categoryMap, preferences);
+
+            assertThat(result.getFirst().cardId()).isEqualTo(1L);
+        }
+
+        @Test
+        @DisplayName("totalScore가 같으면 원래 순서를 유지한다")
+        void shouldMaintainOrder_whenScoresAreEqual() {
+            // 두 카드 모두 카테고리·체형 동일 → totalScore 동일
+            MemberCardResult cardA = card(1L, 175, 70);
+            MemberCardResult cardB = card(2L, 175, 70);
+
+            Map<Long, List<Long>> categoryMap = Map.of(
+                    1L, List.of(1L),
+                    2L, List.of(1L));
+            Map<Long, Double> preferences = Map.of(1L, 0.5);
+
+            List<MemberCardResult> result = scoringService.rank(175, 70, List.of(cardA, cardB), categoryMap, preferences);
+
+            assertThat(result).hasSize(2);
         }
     }
 }

@@ -114,6 +114,11 @@ public class Card extends BaseTimeEntity {
         this.status = CardStatus.REJECTED;
     }
 
+    public void requestDelete() {
+        validateStatusChangeable();
+        this.status = CardStatus.DELETE_REQUESTED;
+    }
+
     private void validateStatusChangeable() {
         if (!this.status.canChangeStatus()) {
             throw new CardBusinessException(CardErrorCode.CANNOT_CHANGE_STATUS_OF_DELETE_REQUESTED);

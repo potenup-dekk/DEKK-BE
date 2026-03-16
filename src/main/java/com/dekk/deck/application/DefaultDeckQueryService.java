@@ -30,7 +30,7 @@ public class DefaultDeckQueryService {
 
     public Page<MyDeckCardResult> getMyDefaultDeckCards(Long userId, Pageable pageable) {
         Deck defaultDeck = deckRepository
-                .findByUserIdAndIsDefaultTrue(userId)
+                .findDefaultDeckByUserId(userId)
                 .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_NOT_FOUND));
 
         Page<DeckCard> deckCards = deckCardRepository.findAllByDeckId(defaultDeck.getId(), pageable);
@@ -43,30 +43,7 @@ public class DefaultDeckQueryService {
         Map<Long, MemberCardResult> cardMap =
                 cardResults.stream().collect(Collectors.toMap(MemberCardResult::cardId, Function.identity()));
 
-        return deckCards.map(deckCard -> mapToMyDeckCardResult(deckCard, cardMap));
-    }
-
-    private MyDeckCardResult mapToMyDeckCardResult(DeckCard deckCard, Map<Long, MemberCardResult> cardMap) {
-        MemberCardResult cardInfo = cardMap.get(deckCard.getCardId());
-
-        if (cardInfo == null) {
-            return MyDeckCardResult.empty(deckCard.getCardId());
-        }
-
-        return convertToMyDeckCardResult(cardInfo);
-    }
-
-    private MyDeckCardResult convertToMyDeckCardResult(MemberCardResult cardInfo) {
-        List<MyDeckCardResult.ProductDetail> productDetails = cardInfo.products().stream()
-                .map(p -> new MyDeckCardResult.ProductDetail(p.brand(), p.productUrl(), p.name(), p.productImageUrl()))
-                .toList();
-
-        return new MyDeckCardResult(
-                cardInfo.cardId(),
-                cardInfo.cardImageUrl(),
-                cardInfo.height(),
-                cardInfo.weight(),
-                cardInfo.tags(),
-                productDetails);
+        return deckCards.map(
+                deckCard -> MyDeckCardResult.from(deckCard.getCardId(), cardMap.get(deckCard.getCardId())));
     }
 }

@@ -24,8 +24,6 @@ public interface DeckCardRepository {
 
     long countByDeckId(Long deckId);
 
-    List<DeckCard> findAllByDeckIdIn(List<Long> deckIds);
-
     List<DeckCard> findTopCardsByDeckIdsIn(List<Long> deckIds, int limit);
 
     List<DeckCard> findAllByDeckIdOrderByCreatedAtDesc(Long deckId);

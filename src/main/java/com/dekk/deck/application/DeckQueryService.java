@@ -3,17 +3,13 @@ package com.dekk.deck.application;
 import com.dekk.card.application.CardQueryService;
 import com.dekk.card.application.dto.result.MemberCardResult;
 import com.dekk.deck.application.dto.result.DeckResult;
-import com.dekk.deck.domain.exception.DeckBusinessException;
-import com.dekk.deck.domain.exception.DeckErrorCode;
 import com.dekk.deck.domain.model.Deck;
 import com.dekk.deck.domain.model.DeckCard;
-import com.dekk.deck.domain.model.enums.DeckType;
 import com.dekk.deck.domain.repository.DeckCardRepository;
 import com.dekk.deck.domain.repository.DeckRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,29 +26,23 @@ public class DeckQueryService {
     private final CardQueryService cardQueryService;
 
     public List<DeckResult> getDecks(Long userId) {
-        List<Deck> allDecks = getAllDecks(userId);
-        List<Long> deckIds = allDecks.stream().map(Deck::getId).toList();
+        List<Deck> decks = deckRepository.findAllByUserIdOrderByTypeAndCreatedAtDesc(userId);
 
+        if (decks.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> deckIds = decks.stream().map(Deck::getId).toList();
         Map<Long, Long> cardCountMap = deckCardRepository.countCardsByDeckIds(deckIds);
 
         List<DeckCard> topDeckCards = deckCardRepository.findTopCardsByDeckIdsIn(deckIds, MAX_PREVIEW_CARD_COUNT);
-        Map<Long, List<Long>> topCardIdsPerDeck = extractTopCardIdsPerDeck(topDeckCards);
 
+        Map<Long, List<Long>> topCardIdsPerDeck = extractTopCardIdsPerDeck(topDeckCards);
         Map<Long, String> cardImageUrlMap = getCardImageUrlMap(topCardIdsPerDeck);
 
-        return allDecks.stream()
+        return decks.stream()
                 .map(deck -> mapToDeckResult(deck, cardCountMap, topCardIdsPerDeck, cardImageUrlMap))
                 .toList();
-    }
-
-    private List<Deck> getAllDecks(Long userId) {
-        Deck defaultDeck = deckRepository
-                .findByUserIdAndIsDefaultTrue(userId)
-                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_NOT_FOUND));
-
-        List<Deck> customDecks = deckRepository.findAllByUserIdAndIsDefaultFalseOrderByCreatedAtDesc(userId);
-
-        return Stream.concat(Stream.of(defaultDeck), customDecks.stream()).toList();
     }
 
     private Map<Long, List<Long>> extractTopCardIdsPerDeck(List<DeckCard> topDeckCards) {
@@ -72,7 +62,10 @@ public class DeckQueryService {
         }
 
         List<MemberCardResult> cardResults = cardQueryService.getCardsByIds(allTopCardIds);
-        return cardResults.stream().collect(Collectors.toMap(MemberCardResult::cardId, MemberCardResult::cardImageUrl));
+
+        return cardResults.stream()
+                .filter(card -> card.cardImageUrl() != null)
+                .collect(Collectors.toMap(MemberCardResult::cardId, MemberCardResult::cardImageUrl));
     }
 
     private DeckResult mapToDeckResult(
@@ -89,7 +82,7 @@ public class DeckQueryService {
         return new DeckResult(
                 deck.getId(),
                 deck.getName(),
-                deck.isDefault() ? DeckType.DEFAULT : DeckType.CUSTOM,
+                deck.getDeckType(),
                 cardCountMap.getOrDefault(deck.getId(), 0L),
                 previewUrls);
     }

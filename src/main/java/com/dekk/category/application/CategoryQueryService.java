@@ -1,6 +1,7 @@
 package com.dekk.category.application;
 
 import com.dekk.category.application.dto.CategoryListResult;
+import com.dekk.category.domain.model.Category;
 import com.dekk.category.domain.repository.CategoryRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +23,18 @@ public class CategoryQueryService {
 
     public long countChildCategoryByIds(List<Long> categoryIds) {
         return categoryRepository.countChildCategoryByIdIn(categoryIds);
+    }
+
+    public List<CategoryListResult> getCategoriesByIds(List<Long> categoryIds) {
+        if (categoryIds.isEmpty()) {
+            return List.of();
+        }
+        return categoryRepository.findAllByIdInWithParent(categoryIds).stream()
+                .filter(Category::isChild)
+                .collect(java.util.stream.Collectors.groupingBy(Category::getParent))
+                .entrySet()
+                .stream()
+                .map(entry -> CategoryListResult.fromParentWithFilteredChildren(entry.getKey(), entry.getValue()))
+                .toList();
     }
 }

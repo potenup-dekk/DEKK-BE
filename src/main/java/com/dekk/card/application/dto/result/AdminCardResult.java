@@ -18,6 +18,7 @@ public record AdminCardResult(
         Integer height,
         Integer weight,
         List<String> tags,
+        String imageUrl,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {
 
@@ -31,6 +32,7 @@ public record AdminCardResult(
                 card.getHeight(),
                 card.getWeight(),
                 parseTags(card.getTags()),
+                card.getCardImage() != null ? card.getCardImage().getImageUrl() : null,
                 card.getCreatedAt(),
                 card.getUpdatedAt());
     }

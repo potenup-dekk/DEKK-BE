@@ -1,6 +1,7 @@
 package com.dekk.deck.infrastructure;
 
 import com.dekk.deck.domain.model.Deck;
+import com.dekk.deck.domain.model.enums.DeckType;
 import com.dekk.deck.domain.repository.DeckRepository;
 import com.dekk.deck.infrastructure.jpa.DeckJpaRepository;
 import java.util.List;
@@ -20,18 +21,13 @@ public class DeckRepositoryImpl implements DeckRepository {
     }
 
     @Override
-    public Optional<Deck> findByUserIdAndIsDefaultTrue(Long userId) {
-        return deckJpaRepository.findByUserIdAndIsDefaultTrue(userId);
+    public Optional<Deck> findDefaultDeckByUserId(Long userId) {
+        return deckJpaRepository.findByUserIdAndDeckType(userId, DeckType.DEFAULT);
     }
 
     @Override
-    public long countByUserIdAndIsDefaultFalse(Long userId) {
-        return deckJpaRepository.countByUserIdAndIsDefaultFalse(userId);
-    }
-
-    @Override
-    public Optional<Deck> findByIdAndUserId(Long id, Long userId) {
-        return deckJpaRepository.findByIdAndUserId(id, userId);
+    public Optional<Deck> findByIdAndMemberUserId(Long id, Long userId) {
+        return deckJpaRepository.findByIdAndMemberUserId(id, userId);
     }
 
     @Override
@@ -40,7 +36,17 @@ public class DeckRepositoryImpl implements DeckRepository {
     }
 
     @Override
-    public List<Deck> findAllByUserIdAndIsDefaultFalseOrderByCreatedAtDesc(Long userId) {
-        return deckJpaRepository.findAllByUserIdAndIsDefaultFalseOrderByCreatedAtDesc(userId);
+    public List<Deck> findCustomAndSharedDecksByUserIdOrderByCreatedAtDesc(Long userId) {
+        return deckJpaRepository.findByUserIdAndDeckTypeNotOrderByCreatedAtDesc(userId, DeckType.DEFAULT);
+    }
+
+    @Override
+    public List<Deck> findAllByUserIdOrderByTypeAndCreatedAtDesc(Long userId) {
+        return deckJpaRepository.findAllByUserIdOrderByTypeAndCreatedAtDesc(userId, DeckType.DEFAULT);
+    }
+
+    @Override
+    public Optional<Deck> findById(Long id) {
+        return deckJpaRepository.findById(id);
     }
 }

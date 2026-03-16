@@ -1,5 +1,6 @@
 package com.dekk.deck.application;
 
+import com.dekk.common.lock.DistributedLock;
 import com.dekk.deck.domain.exception.DeckBusinessException;
 import com.dekk.deck.domain.exception.DeckErrorCode;
 import com.dekk.deck.domain.model.Deck;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class DeckCardCommandService {
 
@@ -20,6 +20,7 @@ public class DeckCardCommandService {
     private final DeckRepository deckRepository;
     private final DeckCardRepository deckCardRepository;
 
+    @Transactional
     public void saveToDefaultDeck(Long userId, Long cardId) {
         Deck defaultDeck = getDefaultDeckByUserId(userId);
 
@@ -30,6 +31,7 @@ public class DeckCardCommandService {
         deckCardRepository.save(DeckCard.create(defaultDeck.getId(), cardId));
     }
 
+    @Transactional
     public void removeFromDefaultDeck(Long userId, Long cardId) {
         Deck defaultDeck = getDefaultDeckByUserId(userId);
         DeckCard deckCard = getDeckCardByDeckIdAndCardId(defaultDeck.getId(), cardId);
@@ -37,6 +39,11 @@ public class DeckCardCommandService {
         deckCardRepository.delete(deckCard);
     }
 
+    /**
+     * 분산 락 AOP 내부(AopForTransaction)에서 트랜잭션을 제어하므로 @Transactional을 생략합니다.
+     * (동시성 정합성을 위해 '락 획득 -> 트랜잭션 시작 -> DB 커밋 -> 락 해제' 순서를 보장해야 함)
+     */
+    @DistributedLock(key = "#customDeckId")
     public void saveToCustomDeck(Long userId, Long customDeckId, Long cardId) {
         Deck customDeck = getCustomDeckByUserId(customDeckId, userId);
 
@@ -49,6 +56,7 @@ public class DeckCardCommandService {
         deckCardRepository.save(DeckCard.create(customDeck.getId(), cardId));
     }
 
+    @Transactional
     public void removeFromCustomDeck(Long userId, Long customDeckId, Long cardId) {
         Deck customDeck = getCustomDeckByUserId(customDeckId, userId);
         DeckCard deckCard = getDeckCardByDeckIdAndCardId(customDeck.getId(), cardId);
@@ -62,14 +70,20 @@ public class DeckCardCommandService {
 
     private Deck getDefaultDeckByUserId(Long userId) {
         return deckRepository
-                .findByUserIdAndIsDefaultTrue(userId)
+                .findDefaultDeckByUserId(userId)
                 .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_NOT_FOUND));
     }
 
     private Deck getCustomDeckByUserId(Long deckId, Long userId) {
-        return deckRepository
-                .findByIdAndUserId(deckId, userId)
+        Deck deck = deckRepository
+                .findByIdAndMemberUserId(deckId, userId)
                 .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
+
+        if (deck.isDefault()) {
+            throw new DeckBusinessException(DeckErrorCode.DEFAULT_DECK_CANNOT_BE_MODIFIED);
+        }
+
+        return deck;
     }
 
     private DeckCard getDeckCardByDeckIdAndCardId(Long deckId, Long cardId) {

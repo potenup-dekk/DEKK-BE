@@ -21,6 +21,7 @@ public record AdminCardResponse(
         @Schema(description = "태그 목록", example = "[\"캐주얼\", \"스트릿\"]")
         List<String> tags,
 
+        @Schema(description = "카드 이미지 URL") String imageUrl,
         @Schema(description = "생성일시") LocalDateTime createdAt,
         @Schema(description = "수정일시") LocalDateTime updatedAt) {
 
@@ -34,6 +35,7 @@ public record AdminCardResponse(
                 result.height(),
                 result.weight(),
                 result.tags(),
+                result.imageUrl(),
                 result.createdAt(),
                 result.updatedAt());
     }

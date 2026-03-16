@@ -7,6 +7,7 @@ import com.dekk.card.domain.model.enums.CardStatus;
 import com.dekk.card.domain.model.enums.Platform;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -27,7 +28,11 @@ public interface CardRepository {
 
     Optional<Card> findById(Long id);
 
+    Optional<Card> findByIdWithDetails(Long id);
+
     boolean existsById(Long id);
 
     Page<Card> searchCards(AdminCardSearchQuery condition, Pageable pageable);
+
+    List<Card> findLatestApprovedCardsExcluding(Set<Long> excludeCardIds, int size);
 }

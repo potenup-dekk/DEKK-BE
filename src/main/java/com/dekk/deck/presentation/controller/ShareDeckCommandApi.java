@@ -24,20 +24,20 @@ public interface ShareDeckCommandApi {
     @ApiErrorExceptions({DeckErrorCode.class})
     ResponseEntity<ApiResponse<ShareTokenResult>> turnOnShare(
             @Parameter(hidden = true) CustomUserDetails userDetails,
-            @Parameter(description = "공유를 켤 커스텀 보관함 ID", in = ParameterIn.PATH) Long customDeckId);
+            @Parameter(description = "공유를 켤 커스텀덱 ID", in = ParameterIn.PATH) Long customDeckId);
 
     @Operation(
             summary = "쉐어덱 공유 끄기 (호스트 전용)",
-            description = "보관함 상태를 CUSTOM으로 되돌리고, 발급된 토큰을 파기하며, 참여 중인 GUEST들을 모두 내보내기(Soft Delete) 처리합니다.")
+            description = "덱 상태를 CUSTOM으로 되돌리고, 발급된 토큰을 파기하며, 참여 중인 GUEST들을 모두 내보내기(Soft Delete) 처리합니다.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공 (SD20014)")
     @ApiErrorExceptions({DeckErrorCode.class})
     ResponseEntity<ApiResponse<Void>> turnOffShare(
             @Parameter(hidden = true) CustomUserDetails userDetails,
-            @Parameter(description = "공유를 끌 쉐어덱 보관함 ID", in = ParameterIn.PATH) Long customDeckId);
+            @Parameter(description = "공유를 끌 쉐어덱 ID", in = ParameterIn.PATH) Long customDeckId);
 
     @Operation(
             summary = "초대 링크로 쉐어덱 참여 (게스트 전용)",
-            description = "초대 링크의 토큰을 사용하여 쉐어덱에 GUEST 권한으로 참여합니다. 보관함 총량(9개) 제한의 영향을 받습니다.")
+            description = "초대 링크의 토큰을 사용하여 쉐어덱에 GUEST 권한으로 참여합니다. 덱 총량(9개) 제한의 영향을 받습니다.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공 (SD20015)")
     @ApiErrorExceptions({DeckErrorCode.class})
     ResponseEntity<ApiResponse<Void>> joinSharedDeck(
@@ -47,10 +47,10 @@ public interface ShareDeckCommandApi {
     @Operation(
             summary = "쉐어덱 자진 퇴장 (게스트 전용)",
             description =
-                    "GUEST 권한을 가진 사용자가 쉐어덱에서 자진 퇴장(Soft Delete)합니다. HOST는 이 API를 사용할 수 없으며 '공유 끄기' 또는 '보관함 삭제'를 이용해야 합니다.")
+                    "GUEST 권한을 가진 사용자가 쉐어덱에서 자진 퇴장(Soft Delete)합니다. HOST는 이 API를 사용할 수 없으며 '공유 끄기' 또는 '덱 삭제'를 이용해야 합니다.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공 (SD20016)")
     @ApiErrorExceptions({DeckErrorCode.class})
     ResponseEntity<ApiResponse<Void>> leaveSharedDeck(
             @Parameter(hidden = true) CustomUserDetails userDetails,
-            @Parameter(description = "퇴장할 쉐어덱 보관함 ID", in = ParameterIn.PATH) Long sharedDeckId);
+            @Parameter(description = "퇴장할 쉐어덱 ID", in = ParameterIn.PATH) Long sharedDeckId);
 }

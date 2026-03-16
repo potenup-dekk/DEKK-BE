@@ -8,17 +8,24 @@ import com.dekk.card.domain.model.enums.Platform;
 import com.dekk.card.domain.repository.CardRepository;
 import com.dekk.card.infrastructure.jpa.CardJpaRepository;
 import com.dekk.card.infrastructure.jpa.CardSpecification;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
 public class CardRepositoryImpl implements CardRepository {
+    private static final int MAX_FETCH_SIZE = 100;
+    private static final int MAX_EXCLUDE_SIZE = 1000;
+    private static final long NON_EXISTENT_CARD_ID = 0L;
+
     private final CardJpaRepository cardJpaRepository;
 
     @Override
@@ -84,5 +91,23 @@ public class CardRepositoryImpl implements CardRepository {
     @Override
     public Page<Card> searchCards(AdminCardSearchQuery condition, Pageable pageable) {
         return cardJpaRepository.findAll(CardSpecification.searchByCondition(condition), pageable);
+    }
+
+    @Override
+    public List<Card> findLatestApprovedCardsExcluding(Set<Long> excludeCardIds, int size) {
+        int fetchSize = Math.min(size, MAX_FETCH_SIZE);
+        List<Long> safeExcludeIds = excludeCardIds.isEmpty()
+                ? List.of(NON_EXISTENT_CARD_ID)
+                : new ArrayList<>(excludeCardIds).subList(0, Math.min(excludeCardIds.size(), MAX_EXCLUDE_SIZE));
+
+        Pageable pageable = PageRequest.of(0, fetchSize);
+
+        List<Long> cardIds = cardJpaRepository.findLatestApprovedCardIdsExcluding(safeExcludeIds, pageable);
+
+        if (cardIds.isEmpty()) {
+            return List.of();
+        }
+
+        return cardJpaRepository.findAllByIdInWithProductsOrderByUpdatedAt(cardIds);
     }
 }

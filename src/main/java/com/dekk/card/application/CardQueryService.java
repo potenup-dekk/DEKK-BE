@@ -14,6 +14,7 @@ import com.dekk.card.domain.repository.CardRepository;
 import com.dekk.category.application.CategoryQueryService;
 import com.dekk.category.application.dto.CategoryListResult;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CardQueryService {
-
     private final CardRepository cardRepository;
     private final CardCategoryQueryService cardCategoryQueryService;
     private final CategoryQueryService categoryQueryService;
@@ -67,5 +67,11 @@ public class CardQueryService {
 
     public List<Card> getRecommendCandidates(RecommendCandidateQuery query) {
         return cardRepository.findRecommendCandidates(query);
+    }
+
+    public List<MemberCardResult> getLatestCards(Set<Long> excludeCardIds, int size) {
+        return cardRepository.findLatestApprovedCardsExcluding(excludeCardIds, size).stream()
+                .map(MemberCardResult::from)
+                .toList();
     }
 }

@@ -1,7 +1,6 @@
 package com.dekk.deck.application;
 
 import com.dekk.deck.domain.model.Deck;
-import com.dekk.deck.domain.model.DeckMember;
 import com.dekk.deck.domain.repository.DeckCardRepository;
 import com.dekk.deck.domain.repository.DeckMemberRepository;
 import com.dekk.deck.domain.repository.DeckRepository;
@@ -53,17 +52,6 @@ public class DeckWithdrawalCommandService {
     }
 
     private void handleSharedDeckWithdrawal(Long userId, Long deckId) {
-        deckMemberRepository
-                .findByDeckIdAndUserId(deckId, userId)
-                .ifPresent(member -> executeSharedDeckActionByRole(userId, deckId, member));
-    }
-
-    private void executeSharedDeckActionByRole(Long userId, Long deckId, DeckMember member) {
-        if (member.isHost()) {
-            shareDeckCommandService.handleHostWithdrawal(deckId, userId);
-            return;
-        }
-
-        shareDeckCommandService.leaveSharedDeck(userId, deckId);
+        shareDeckCommandService.withdrawFromSharedDeck(userId, deckId);
     }
 }

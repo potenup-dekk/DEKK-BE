@@ -5,7 +5,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.dekk.deck.domain.model.Deck;
-import com.dekk.deck.domain.model.DeckMember;
 import com.dekk.deck.domain.repository.DeckCardRepository;
 import com.dekk.deck.domain.repository.DeckMemberRepository;
 import com.dekk.deck.domain.repository.DeckRepository;
@@ -38,7 +37,7 @@ class DeckWithdrawalCommandServiceTest {
     private ShareDeckCommandService shareDeckCommandService;
 
     @Test
-    @DisplayName("유저 탈퇴 시 덱 타입과 권한에 따라 알맞은 정리 로직이 호출된다")
+    @DisplayName("유저 탈퇴 시 덱 타입에 따라 알맞은 정리 로직이 호출된다")
     void processWithdrawal_routesCorrectly() {
         Long userId = 1L;
 
@@ -50,29 +49,16 @@ class DeckWithdrawalCommandServiceTest {
         given(customDeck.getId()).willReturn(20L);
         given(customDeck.isCustom()).willReturn(true);
 
-        Deck sharedHostDeck = mock(Deck.class);
-        given(sharedHostDeck.getId()).willReturn(30L);
-        given(sharedHostDeck.isShared()).willReturn(true);
-
-        Deck sharedGuestDeck = mock(Deck.class);
-        given(sharedGuestDeck.getId()).willReturn(40L);
-        given(sharedGuestDeck.isShared()).willReturn(true);
+        Deck sharedDeck = mock(Deck.class);
+        given(sharedDeck.getId()).willReturn(30L);
+        given(sharedDeck.isShared()).willReturn(true);
 
         given(deckRepository.findAllByUserIdOrderByTypeAndCreatedAtDesc(userId))
-            .willReturn(List.of(defaultDeck, customDeck, sharedHostDeck, sharedGuestDeck));
-
-        DeckMember hostMember = mock(DeckMember.class);
-        given(hostMember.isHost()).willReturn(true);
-        given(deckMemberRepository.findByDeckIdAndUserId(30L, userId)).willReturn(Optional.of(hostMember));
-
-        DeckMember guestMember = mock(DeckMember.class);
-        given(guestMember.isHost()).willReturn(false);
-        given(deckMemberRepository.findByDeckIdAndUserId(40L, userId)).willReturn(Optional.of(guestMember));
+            .willReturn(List.of(defaultDeck, customDeck, sharedDeck));
 
         given(deckRepository.findById(10L)).willReturn(Optional.of(defaultDeck));
 
         deckWithdrawalCommandService.processWithdrawal(userId);
-
 
         verify(deckCardRepository).deleteAllByDeckId(10L);
         verify(deckMemberRepository).deleteAllByDeckId(10L);
@@ -80,8 +66,6 @@ class DeckWithdrawalCommandServiceTest {
 
         verify(customDeckCommandService).deleteCustomDeck(userId, 20L);
 
-        verify(shareDeckCommandService).handleHostWithdrawal(30L, userId);
-
-        verify(shareDeckCommandService).leaveSharedDeck(userId, 40L);
+        verify(shareDeckCommandService).withdrawFromSharedDeck(userId, 30L);
     }
 }

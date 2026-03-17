@@ -85,13 +85,18 @@ public class ShareDeckCommandService {
     }
 
     @Transactional
-    public void handleHostWithdrawal(Long deckId, Long hostUserId) {
-        DeckMember hostMember = getDeckMemberOrThrow(deckId, hostUserId);
+    public void withdrawFromSharedDeck(Long userId, Long deckId) {
+        DeckMember member = getDeckMemberOrThrow(deckId, userId);
 
-        if (!hostMember.isHost()) {
+        if (member.isHost()) {
+            handleHostWithdrawal(deckId, member);
             return;
         }
 
+        deckMemberRepository.delete(member);
+    }
+
+    private void handleHostWithdrawal(Long deckId, DeckMember hostMember) {
         Optional<DeckMember> oldestGuest =
                 deckMemberRepository.findFirstByDeckIdAndRoleOrderByCreatedAtAsc(deckId, DeckRole.GUEST);
 

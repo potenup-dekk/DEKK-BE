@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -27,6 +28,7 @@ import org.hibernate.annotations.Where;
         })
 @SQLDelete(sql = "UPDATE image_inspections SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
+@Slf4j
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ImageInspection extends BaseTimeEntity {
@@ -65,7 +67,11 @@ public class ImageInspection extends BaseTimeEntity {
 
     public void updateAiResult(InspectionStatus targetStatus, String aiComment) {
         if (this.status == targetStatus) {
+            log.debug("중복 AI 콜백 무시 - inspectionId: {}, status: {}", this.id, this.status);
             return;
+        }
+        if (!targetStatus.isAiResult()) {
+            throw new AdminBusinessException(AdminErrorCode.INVALID_TARGET_INSPECTION_STATUS);
         }
         if (!this.status.isProcessableByAi()) {
             throw new AdminBusinessException(AdminErrorCode.INVALID_INSPECTION_STATUS_TRANSITION);
@@ -76,12 +82,13 @@ public class ImageInspection extends BaseTimeEntity {
 
     public void updateAdminStatus(InspectionStatus targetStatus, Long adminId) {
         if (this.status == targetStatus) {
+            log.debug("중복 관리자 상태 변경 무시 - inspectionId: {}, status: {}", this.id, this.status);
             return;
         }
         if (!this.status.isProcessableByAdmin()) {
             throw new AdminBusinessException(AdminErrorCode.INVALID_INSPECTION_STATUS_TRANSITION);
         }
-        if (!this.status.canTransitionToAdminStatus(targetStatus)) {
+        if (!targetStatus.isAdminResult()) {
             throw new AdminBusinessException(AdminErrorCode.INVALID_TARGET_INSPECTION_STATUS);
         }
         this.status = targetStatus;

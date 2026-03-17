@@ -15,11 +15,15 @@ public enum InspectionStatus {
 
     private final String description;
 
-    public boolean canTransitionToAdminStatus(InspectionStatus targetStatus) {
-        return targetStatus == ADMIN_APPROVED || targetStatus == ADMIN_REJECTED;
+    public boolean isAdminResult() {
+        return this == ADMIN_APPROVED || this == ADMIN_REJECTED;
     }
 
     public boolean isProcessableByAdmin() {
+        return this == AI_PASSED || this == AI_FLAGGED;
+    }
+
+    public boolean isAiResult() {
         return this == AI_PASSED || this == AI_FLAGGED;
     }
 

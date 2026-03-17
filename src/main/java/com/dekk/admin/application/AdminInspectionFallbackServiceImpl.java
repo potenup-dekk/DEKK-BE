@@ -28,7 +28,9 @@ public class AdminInspectionFallbackServiceImpl implements InspectionFallbackHan
                                 inspection.updateAiResult(InspectionStatus.WORKER_ERROR, "AI 서버 통신 실패로 검수 지연");
                                 log.info("[Admin Fallback] 검수 상태 WORKER_ERROR로 업데이트 완료 - cardImageId: {}", cardImageId);
                             },
-                            () -> log.warn("[Admin Fallback] 검수 정보를 찾을 수 없습니다. 상태 업데이트 실패 - cardImageId: {}", cardImageId));
+                            () -> log.warn(
+                                    "[Admin Fallback] 검수 정보를 찾을 수 없습니다. 상태 업데이트 실패 - cardImageId: {}",
+                                    cardImageId));
         } catch (Exception e) {
             log.error("[Admin Fallback] 검수 상태 업데이트 실패 - cardImageId: {}, Reason: {}", cardImageId, e.getMessage(), e);
         }

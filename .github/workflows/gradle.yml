@@ -48,7 +48,6 @@ jobs:
           LOKI_HOST: ${{ secrets.LOKI_HOST }}
           PROMETHEUS_PORT: ${{ secrets.PROMETHEUS_PORT }}
         run: |
-          # 템플릿 파일의 빈칸을 env 변수로 채워서 진짜 파일로 덮어씁니다.
           envsubst < src/main/resources/application-prod.yml > src/main/resources/application-prod-injected.yml
           mv src/main/resources/application-prod-injected.yml src/main/resources/application-prod.yml
 

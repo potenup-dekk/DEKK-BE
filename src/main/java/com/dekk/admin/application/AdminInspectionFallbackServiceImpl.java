@@ -29,8 +29,7 @@ public class AdminInspectionFallbackServiceImpl implements InspectionFallbackHan
                                 log.info("[Admin Fallback] 검수 상태 WORKER_ERROR로 업데이트 완료 - cardImageId: {}", cardImageId);
                             },
                             () -> log.warn(
-                                    "[Admin Fallback] 검수 정보를 찾을 수 없습니다. 상태 업데이트 실패 - cardImageId: {}",
-                                    cardImageId));
+                                    "[Admin Fallback] 검수 정보를 찾을 수 없습니다. 상태 업데이트 실패 - cardImageId: {}", cardImageId));
         } catch (Exception e) {
             log.error("[Admin Fallback] 검수 상태 업데이트 실패 - cardImageId: {}, Reason: {}", cardImageId, e.getMessage(), e);
         }

@@ -53,7 +53,7 @@ public class UserCommandService {
     }
 
     private void validateDuplicateNickname(String nickname) {
-        if (nickname != null && profileRepository.existsByNickname(nickname)) {
+        if (profileRepository.existsByNickname(nickname)) {
             throw new UserBusinessException(UserErrorCode.DUPLICATE_NICKNAME);
         }
     }

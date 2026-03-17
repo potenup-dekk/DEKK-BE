@@ -7,6 +7,7 @@ import com.dekk.admin.domain.model.InspectionStatus;
 import com.dekk.admin.domain.repository.ImageInspectionRepository;
 import com.dekk.admin.infrastructure.jpa.ImageInspectionJpaRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,11 @@ public class ImageInspectionRepositoryImpl implements ImageInspectionRepository 
         return imageInspectionJpaRepository
                 .findByCardImageId(cardImageId)
                 .orElseThrow(() -> new AdminBusinessException(AdminErrorCode.INSPECTION_NOT_FOUND));
+    }
+
+    @Override
+    public Optional<ImageInspection> findByCardImageId(Long cardImageId) {
+        return imageInspectionJpaRepository.findByCardImageId(cardImageId);
     }
 
     @Override

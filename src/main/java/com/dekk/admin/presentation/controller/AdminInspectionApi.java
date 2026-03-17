@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Tag(name = "이미지 검수 관리 API", description = "관리자 백오피스용 이미지 검수 관리 API입니다.")
+@Tag(name = "이미지 검수 관리 API", description = "관리자 백오피스용 이미지 검수 관리 API")
 public interface AdminInspectionApi {
 
     @Operation(summary = "상태별 이미지 검수 목록 조회 (기본값: AI_PASSED, 복수 상태 가능)")

@@ -1,5 +1,6 @@
 package com.dekk.user.application;
 
+import com.dekk.deck.application.DeckWithdrawalCommandService;
 import com.dekk.deck.application.DefaultDeckCommandService;
 import com.dekk.user.application.command.UserOnboardingCommand;
 import com.dekk.user.application.command.UserProfileUpdateCommand;
@@ -20,16 +21,14 @@ public class UserCommandService {
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
     private final DefaultDeckCommandService deckCommandService;
+    private final DeckWithdrawalCommandService deckWithdrawalCommandService;
 
     public void onboardUser(Long userId, UserOnboardingCommand command) {
         User user = getUser(userId);
 
-        if (profileRepository.existsByNickname(command.nickname())) {
-            throw new UserBusinessException(UserErrorCode.DUPLICATE_NICKNAME);
-        }
+        validateDuplicateNickname(command.nickname());
 
         user.completeOnboarding(command);
-
         userRepository.save(user);
 
         deckCommandService.createDefaultDeck(user.getId());
@@ -38,20 +37,29 @@ public class UserCommandService {
     public void updateProfileInfo(Long userId, UserProfileUpdateCommand command) {
         User user = getUserWithProfile(userId);
 
-        if (command.nickname() != null
-                && !command.nickname().equals(user.getProfile().getNickname())) {
-            if (profileRepository.existsByNickname(command.nickname())) {
-                throw new UserBusinessException(UserErrorCode.DUPLICATE_NICKNAME);
-            }
+        if (isNicknameChanged(user, command.nickname())) {
+            validateDuplicateNickname(command.nickname());
         }
 
         user.updateProfileInfo(command);
     }
 
     public void deleteUser(Long userId) {
+        deckWithdrawalCommandService.processWithdrawal(userId);
+
         User user = getUser(userId);
 
         user.deleteUser();
+    }
+
+    private void validateDuplicateNickname(String nickname) {
+        if (profileRepository.existsByNickname(nickname)) {
+            throw new UserBusinessException(UserErrorCode.DUPLICATE_NICKNAME);
+        }
+    }
+
+    private boolean isNicknameChanged(User user, String newNickname) {
+        return newNickname != null && !newNickname.equals(user.getProfile().getNickname());
     }
 
     private User getUser(Long userId) {

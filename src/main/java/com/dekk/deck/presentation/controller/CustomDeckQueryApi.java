@@ -2,8 +2,8 @@ package com.dekk.deck.presentation.controller;
 
 import com.dekk.common.response.ApiResponse;
 import com.dekk.common.swagger.ApiErrorExceptions;
+import com.dekk.deck.application.dto.result.CustomDeckCardsResult;
 import com.dekk.deck.application.dto.result.CustomDeckResult;
-import com.dekk.deck.application.dto.result.MyDeckCardResult;
 import com.dekk.deck.domain.exception.DeckErrorCode;
 import com.dekk.security.oauth2.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,16 +16,18 @@ import org.springframework.http.ResponseEntity;
 @Tag(name = "커스텀덱 조회 API", description = "커스텀덱 목록 및 상태 조회 API")
 public interface CustomDeckQueryApi {
 
-    @Operation(summary = "내 커스텀덱 목록 조회", description = "사용자가 생성한 커스텀덱 목록과 최신 카드 썸네일(imageUrl) 1장을 최신순으로 조회합니다.")
+    @Operation(summary = "내 커스텀덱(쉐어덱) 목록 조회", description = "사용자가 생성한 커스텀덱 목록과 최신 카드 썸네일(imageUrl) 1장을 최신순으로 조회합니다.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공 (SD20008)")
     @ApiErrorExceptions({DeckErrorCode.class})
     ResponseEntity<ApiResponse<List<CustomDeckResult>>> getMyCustomDecks(
             @Parameter(hidden = true) CustomUserDetails userDetails);
 
-    @Operation(summary = "커스텀덱 내부 카드 목록 조회", description = "특정 커스텀덱에 담긴 카드 목록을 최신순으로 전체 조회합니다. (최대 50장)")
+    @Operation(
+            summary = "커스텀덱(쉐어덱) 내부 카드 목록 조회",
+            description = "특정 커스텀덱(쉐어덱)에 담긴 카드 목록을 덱의 메타데이터(타입, 공유 토큰 등)와 함께 최신순으로 전체 조회합니다. (최대 50장)")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공 (SD20011)")
     @ApiErrorExceptions({DeckErrorCode.class})
-    ResponseEntity<ApiResponse<List<MyDeckCardResult>>> getCustomDeckCards(
+    ResponseEntity<ApiResponse<CustomDeckCardsResult>> getCustomDeckCards(
             @Parameter(hidden = true) CustomUserDetails userDetails,
             @Parameter(description = "조회할 커스텀덱 ID", in = ParameterIn.PATH) Long customDeckId);
 }

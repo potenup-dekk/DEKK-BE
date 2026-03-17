@@ -1,22 +1,26 @@
 version: 0.0
 os: linux
-
-# S3에서 다운받은 파일을 어디에 풀지 결정
 files:
   - source: /
-    destination: /home/ubuntu/dekk-was
+    destination: /home/ec2-user/dekk-was
     overwrite: yes
 
-# 복사된 파일들의 소유권 설정
 permissions:
   - object: /
     pattern: "**"
-    owner: ubuntu
-    group: ubuntu
+    owner: ec2-user
+    group: ec2-user
 
-# 배포 생명주기 정의
 hooks:
+  ApplicationStop:
+    - location: scripts/stop.sh
+      timeout: 60
+      runas: ec2-user
   ApplicationStart:
     - location: scripts/deploy.sh
       timeout: 60
-      runas: ubuntu
+      runas: ec2-user
+  ValidateService:
+    - location: scripts/health_check.sh
+      timeout: 60
+      runas: ec2-user

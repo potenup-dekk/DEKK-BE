@@ -64,13 +64,13 @@ public class UserCommandService {
 
     private User getUser(Long userId) {
         return userRepository
-            .findById(userId)
-            .orElseThrow(() -> new UserBusinessException(UserErrorCode.USER_NOT_FOUND));
+                .findById(userId)
+                .orElseThrow(() -> new UserBusinessException(UserErrorCode.USER_NOT_FOUND));
     }
 
     private User getUserWithProfile(Long userId) {
         return userRepository
-            .findWithProfileById(userId)
-            .orElseThrow(() -> new UserBusinessException(UserErrorCode.USER_NOT_FOUND));
+                .findWithProfileById(userId)
+                .orElseThrow(() -> new UserBusinessException(UserErrorCode.USER_NOT_FOUND));
     }
 }

@@ -5,9 +5,7 @@ import com.dekk.deck.domain.model.DeckMember;
 import com.dekk.deck.domain.repository.DeckCardRepository;
 import com.dekk.deck.domain.repository.DeckMemberRepository;
 import com.dekk.deck.domain.repository.DeckRepository;
-
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,8 +53,9 @@ public class DeckWithdrawalCommandService {
     }
 
     private void handleSharedDeckWithdrawal(Long userId, Long deckId) {
-        deckMemberRepository.findByDeckIdAndUserId(deckId, userId)
-            .ifPresent(member -> executeSharedDeckActionByRole(userId, deckId, member));
+        deckMemberRepository
+                .findByDeckIdAndUserId(deckId, userId)
+                .ifPresent(member -> executeSharedDeckActionByRole(userId, deckId, member));
     }
 
     private void executeSharedDeckActionByRole(Long userId, Long deckId, DeckMember member) {

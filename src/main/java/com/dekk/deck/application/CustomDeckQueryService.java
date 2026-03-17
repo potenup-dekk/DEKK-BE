@@ -9,7 +9,9 @@ import com.dekk.deck.domain.exception.DeckBusinessException;
 import com.dekk.deck.domain.exception.DeckErrorCode;
 import com.dekk.deck.domain.model.Deck;
 import com.dekk.deck.domain.model.DeckCard;
+import com.dekk.deck.domain.model.DeckMember;
 import com.dekk.deck.domain.repository.DeckCardRepository;
+import com.dekk.deck.domain.repository.DeckMemberRepository;
 import com.dekk.deck.domain.repository.DeckRepository;
 import com.dekk.deck.infrastructure.redis.DeckInviteRedisRepository;
 import java.util.List;
@@ -27,6 +29,7 @@ public class CustomDeckQueryService {
 
     private final DeckRepository deckRepository;
     private final DeckCardRepository deckCardRepository;
+    private final DeckMemberRepository deckMemberRepository; // DeckRole 파악을 위해 의존성 추가
     private final CardQueryService cardQueryService;
     private final DeckInviteRedisRepository deckInviteRedisRepository;
 
@@ -40,7 +43,6 @@ public class CustomDeckQueryService {
         List<Long> deckIds = myCustomDecks.stream().map(Deck::getId).toList();
 
         Map<Long, Long> cardCountMap = deckCardRepository.countCardsByDeckIds(deckIds);
-
         Map<Long, String> imageUrlMap = getLatestImageUrlMap(deckIds);
 
         return myCustomDecks.stream()
@@ -62,7 +64,6 @@ public class CustomDeckQueryService {
 
         List<Long> cardIds =
                 latestCards.stream().map(DeckCard::getCardId).distinct().toList();
-
         List<MemberCardResult> cardResults = cardQueryService.getCardsByIds(cardIds);
 
         Map<Long, String> cardImageMap = cardResults.stream()
@@ -82,6 +83,10 @@ public class CustomDeckQueryService {
                 .findByIdAndMemberUserId(deckId, userId)
                 .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
 
+        DeckMember deckMember = deckMemberRepository
+                .findByDeckIdAndUserId(deckId, userId)
+                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.DECK_MEMBER_NOT_FOUND));
+
         String token = deck.isShared()
                 ? deckInviteRedisRepository.getTokenByDeckId(deckId).orElse(null)
                 : null;
@@ -91,11 +96,11 @@ public class CustomDeckQueryService {
         List<DeckCard> deckCards = deckCardRepository.findAllByDeckIdOrderByCreatedAtDesc(deck.getId());
 
         if (deckCards.isEmpty()) {
-            return CustomDeckCardsResult.of(deck.getDeckType(), token, expiredInSeconds, List.of());
+            return CustomDeckCardsResult.of(
+                    deck.getDeckType(), deckMember.getRole(), token, expiredInSeconds, List.of());
         }
 
         List<Long> cardIds = deckCards.stream().map(DeckCard::getCardId).toList();
-
         List<MemberCardResult> cardResults = cardQueryService.getCardsByIds(cardIds);
 
         Map<Long, MemberCardResult> cardMap =
@@ -105,6 +110,6 @@ public class CustomDeckQueryService {
                 .map(deckCard -> MyDeckCardResult.from(deckCard.getCardId(), cardMap.get(deckCard.getCardId())))
                 .toList();
 
-        return CustomDeckCardsResult.of(deck.getDeckType(), token, expiredInSeconds, cards);
+        return CustomDeckCardsResult.of(deck.getDeckType(), deckMember.getRole(), token, expiredInSeconds, cards);
     }
 }

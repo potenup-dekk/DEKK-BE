@@ -29,7 +29,7 @@ public class CustomDeckQueryService {
 
     private final DeckRepository deckRepository;
     private final DeckCardRepository deckCardRepository;
-    private final DeckMemberRepository deckMemberRepository; // DeckRole 파악을 위해 의존성 추가
+    private final DeckMemberRepository deckMemberRepository;
     private final CardQueryService cardQueryService;
     private final DeckInviteRedisRepository deckInviteRedisRepository;
 

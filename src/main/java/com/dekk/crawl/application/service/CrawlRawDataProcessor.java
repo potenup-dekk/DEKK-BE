@@ -1,8 +1,12 @@
 package com.dekk.crawl.application.service;
 
+import com.dekk.admin.domain.model.ImageInspection;
+import com.dekk.admin.infrastructure.jpa.ImageInspectionJpaRepository;
 import com.dekk.card.application.command.CardCreateCommand;
 import com.dekk.card.domain.model.Card;
+import com.dekk.card.domain.model.CardImage;
 import com.dekk.card.domain.repository.CardRepository;
+import com.dekk.common.worker.InspectionWorkerClient;
 import com.dekk.crawl.domain.exception.CrawlBusinessException;
 import com.dekk.crawl.domain.exception.CrawlErrorCode;
 import com.dekk.crawl.domain.model.CrawlRawData;
@@ -27,6 +31,8 @@ public class CrawlRawDataProcessor {
     private final CrawlDataParserFactory parsers;
     private final CardRepository cardRepository;
     private final CrawlRawDataRepository rawDataRepository;
+    private final ImageInspectionJpaRepository imageInspectionRepository;
+    private final InspectionWorkerClient inspectionWorkerClient;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void process(Long rawDataId) {
@@ -38,8 +44,9 @@ public class CrawlRawDataProcessor {
 
         try {
             List<CardCreateCommand> commands = parseRawData(rawData);
-            saveNewCards(commands);
+            List<Card> savedCards = saveNewCards(commands);
             rawData.markAsCompleted();
+            requestInspections(savedCards);
         } catch (JsonProcessingException e) {
             log.error("raw data 처리 실패: rawDataId={}", rawDataId, e);
             rawData.fail();
@@ -50,7 +57,7 @@ public class CrawlRawDataProcessor {
         return parsers.getParser(rawData.getPlatform()).parse(rawData.getRawData());
     }
 
-    private void saveNewCards(List<CardCreateCommand> commands) {
+    private List<Card> saveNewCards(List<CardCreateCommand> commands) {
         List<Card> cards = commands.stream()
                 .collect(Collectors.toMap(
                         cmd -> cmd.platform() + "_" + cmd.originId(), cmd -> cmd, (existing, replacement) -> existing))
@@ -59,6 +66,23 @@ public class CrawlRawDataProcessor {
                 .filter(cmd -> !cardRepository.existsByPlatformAndOriginId(cmd.platform(), cmd.originId()))
                 .map(Card::create)
                 .toList();
-        cardRepository.saveAll(cards);
+        return cardRepository.saveAll(cards);
+    }
+
+    private void requestInspections(List<Card> cards) {
+        for (Card card : cards) {
+            CardImage img = card.getCardImage();
+            if (img == null || img.getOriginUrl() == null) {
+                continue;
+            }
+            try {
+                imageInspectionRepository.save(
+                        ImageInspection.create(img.getId(), img.getOriginUrl(), card.getOriginId()));
+                inspectionWorkerClient.sendInspectionRequest(
+                        img.getId(), img.getOriginUrl(), img.getImageUrl());
+            } catch (Exception e) {
+                log.warn("검수 요청 실패 - cardId: {}, cardImageId: {}", card.getId(), img.getId(), e);
+            }
+        }
     }
 }

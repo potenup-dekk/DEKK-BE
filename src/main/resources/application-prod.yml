@@ -1,0 +1,86 @@
+server:
+  forward-headers-strategy: native
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  docker:
+    compose:
+      enabled: false
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      ssl:
+        enabled: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            redirect-uri: ${KAKAO_REDIRECT_URI}
+            client-name: Kakao
+            scope:
+              - profile_nickname
+              - account_email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+jwt:
+  secret: ${JWT_SECRET_KEY}
+  access-token-validity-in-seconds: ${JWT_ACCESS_TOKEN_EXPIRATION}
+  refresh-token-validity-in-seconds: ${JWT_REFRESH_TOKEN_EXPIRATION}
+  admin-access-token-validity-in-seconds: ${JWT_ADMIN_TOKEN_EXPIRATION}
+
+app:
+  oauth2:
+    redirect-uri: "https://www.dekk.co.kr/oauth2/redirect"
+    login-page: "https://www.dekk.co.kr/login"
+    join-page: "https://www.dekk.co.kr/join"
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS}
+  cookie:
+    domain: ${APP_COOKIE_DOMAIN}
+    secure: true
+
+loki:
+  host: ${LOKI_HOST}
+
+management:
+  server:
+    port: ${PROMETHEUS_PORT}
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus

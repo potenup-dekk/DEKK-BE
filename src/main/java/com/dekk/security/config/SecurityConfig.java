@@ -51,6 +51,7 @@ public class SecurityConfig {
                                 "/v3/api-docs",
                                 "/actuator/**",
                                 "/i/v1/crawl/**",
+                                "/i/v1/inspections/**",
                                 "/w/v1/cards",
                                 "/w/v1/auth/refresh",
                                 "/w/v1/decks/shared/*/cards")

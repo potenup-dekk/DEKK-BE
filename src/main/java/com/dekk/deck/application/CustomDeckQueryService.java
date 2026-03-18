@@ -2,14 +2,18 @@ package com.dekk.deck.application;
 
 import com.dekk.card.application.CardQueryService;
 import com.dekk.card.application.dto.result.MemberCardResult;
+import com.dekk.deck.application.dto.result.CustomDeckCardsResult;
 import com.dekk.deck.application.dto.result.CustomDeckResult;
 import com.dekk.deck.application.dto.result.MyDeckCardResult;
 import com.dekk.deck.domain.exception.DeckBusinessException;
 import com.dekk.deck.domain.exception.DeckErrorCode;
 import com.dekk.deck.domain.model.Deck;
 import com.dekk.deck.domain.model.DeckCard;
+import com.dekk.deck.domain.model.DeckMember;
 import com.dekk.deck.domain.repository.DeckCardRepository;
+import com.dekk.deck.domain.repository.DeckMemberRepository;
 import com.dekk.deck.domain.repository.DeckRepository;
+import com.dekk.deck.infrastructure.redis.DeckInviteRedisRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -25,7 +29,9 @@ public class CustomDeckQueryService {
 
     private final DeckRepository deckRepository;
     private final DeckCardRepository deckCardRepository;
+    private final DeckMemberRepository deckMemberRepository;
     private final CardQueryService cardQueryService;
+    private final DeckInviteRedisRepository deckInviteRedisRepository;
 
     public List<CustomDeckResult> getMyCustomDecks(Long userId) {
         List<Deck> myCustomDecks = deckRepository.findCustomAndSharedDecksByUserIdOrderByCreatedAtDesc(userId);
@@ -37,13 +43,13 @@ public class CustomDeckQueryService {
         List<Long> deckIds = myCustomDecks.stream().map(Deck::getId).toList();
 
         Map<Long, Long> cardCountMap = deckCardRepository.countCardsByDeckIds(deckIds);
-
         Map<Long, String> imageUrlMap = getLatestImageUrlMap(deckIds);
 
         return myCustomDecks.stream()
                 .map(deck -> CustomDeckResult.of(
                         deck.getId(),
                         deck.getName(),
+                        deck.getDeckType(),
                         cardCountMap.getOrDefault(deck.getId(), 0L),
                         imageUrlMap.get(deck.getId())))
                 .toList();
@@ -58,7 +64,6 @@ public class CustomDeckQueryService {
 
         List<Long> cardIds =
                 latestCards.stream().map(DeckCard::getCardId).distinct().toList();
-
         List<MemberCardResult> cardResults = cardQueryService.getCardsByIds(cardIds);
 
         Map<Long, String> cardImageMap = cardResults.stream()
@@ -73,26 +78,38 @@ public class CustomDeckQueryService {
                         (existing, replacement) -> existing));
     }
 
-    public List<MyDeckCardResult> getCustomDeckCards(Long userId, Long deckId) {
+    public CustomDeckCardsResult getCustomDeckCards(Long userId, Long deckId) {
         Deck deck = deckRepository
                 .findByIdAndMemberUserId(deckId, userId)
                 .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.CUSTOM_DECK_NOT_FOUND));
 
+        DeckMember deckMember = deckMemberRepository
+                .findByDeckIdAndUserId(deckId, userId)
+                .orElseThrow(() -> new DeckBusinessException(DeckErrorCode.DECK_MEMBER_NOT_FOUND));
+
+        String token = deck.isShared()
+                ? deckInviteRedisRepository.getTokenByDeckId(deckId).orElse(null)
+                : null;
+
+        Long expiredInSeconds = token != null ? deckInviteRedisRepository.getRemainingSeconds(deckId) : null;
+
         List<DeckCard> deckCards = deckCardRepository.findAllByDeckIdOrderByCreatedAtDesc(deck.getId());
 
         if (deckCards.isEmpty()) {
-            return List.of();
+            return CustomDeckCardsResult.of(
+                    deck.getDeckType(), deckMember.getRole(), token, expiredInSeconds, List.of());
         }
 
         List<Long> cardIds = deckCards.stream().map(DeckCard::getCardId).toList();
-
         List<MemberCardResult> cardResults = cardQueryService.getCardsByIds(cardIds);
 
         Map<Long, MemberCardResult> cardMap =
                 cardResults.stream().collect(Collectors.toMap(MemberCardResult::cardId, Function.identity()));
 
-        return deckCards.stream()
+        List<MyDeckCardResult> cards = deckCards.stream()
                 .map(deckCard -> MyDeckCardResult.from(deckCard.getCardId(), cardMap.get(deckCard.getCardId())))
                 .toList();
+
+        return CustomDeckCardsResult.of(deck.getDeckType(), deckMember.getRole(), token, expiredInSeconds, cards);
     }
 }

@@ -14,4 +14,20 @@ public enum InspectionStatus {
     ADMIN_REJECTED("관리자 최종 반려");
 
     private final String description;
+
+    public boolean isAdminResult() {
+        return this == ADMIN_APPROVED || this == ADMIN_REJECTED;
+    }
+
+    public boolean isProcessableByAdmin() {
+        return this == AI_PASSED || this == AI_FLAGGED;
+    }
+
+    public boolean isAiResult() {
+        return this == AI_PASSED || this == AI_FLAGGED;
+    }
+
+    public boolean isProcessableByAi() {
+        return this == PENDING || this == WORKER_ERROR;
+    }
 }

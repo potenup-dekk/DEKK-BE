@@ -2,8 +2,9 @@ package com.dekk.deck.presentation.controller;
 
 import com.dekk.common.response.ApiResponse;
 import com.dekk.deck.application.CustomDeckQueryService;
+import com.dekk.deck.application.dto.result.CustomDeckCardsResult;
 import com.dekk.deck.application.dto.result.CustomDeckResult;
-import com.dekk.deck.application.dto.result.MyDeckCardResult;
+import com.dekk.deck.presentation.response.CustomDeckCardsResponse;
 import com.dekk.deck.presentation.response.DeckResultCode;
 import com.dekk.security.oauth2.CustomUserDetails;
 import java.util.List;
@@ -33,10 +34,12 @@ public class CustomDeckQueryController implements CustomDeckQueryApi {
 
     @Override
     @GetMapping("/{customDeckId}/cards")
-    public ResponseEntity<ApiResponse<List<MyDeckCardResult>>> getCustomDeckCards(
+    public ResponseEntity<ApiResponse<CustomDeckCardsResponse>> getCustomDeckCards(
             @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable("customDeckId") Long customDeckId) {
-        List<MyDeckCardResult> result = customDeckQueryService.getCustomDeckCards(userDetails.getId(), customDeckId);
 
-        return ResponseEntity.ok(ApiResponse.of(DeckResultCode.CUSTOM_DECK_CARD_LIST_SUCCESS, result));
+        CustomDeckCardsResult result = customDeckQueryService.getCustomDeckCards(userDetails.getId(), customDeckId);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(DeckResultCode.CUSTOM_DECK_CARD_LIST_SUCCESS, CustomDeckCardsResponse.from(result)));
     }
 }

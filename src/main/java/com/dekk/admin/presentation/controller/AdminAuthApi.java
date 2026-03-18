@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "관리자 인증 API", description = "관리자 인증 관련 API입니다.")
+@Tag(name = "관리자 인증 API", description = "관리자 인증 관련 API")
 public interface AdminAuthApi {
 
     @Operation(summary = "관리자 로그인", description = "이메일과 비밀번호를 사용하여 관리자 액세스 토큰을 발급받습니다.")

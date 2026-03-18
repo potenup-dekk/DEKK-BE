@@ -3,12 +3,14 @@
 PROJECT_ROOT="/home/ec2-user/dekk-was"
 JAR_NAME=$(ls -tr $PROJECT_ROOT/*.jar | grep -v plain | tail -n 1)
 
+mkdir -p $PROJECT_ROOT/logs
 echo "> 발견된 JAR Name: $JAR_NAME"
 
 echo "> $JAR_NAME 에 실행 권한 추가"
 chmod +x $JAR_NAME
 
 echo "> 애플리케이션 실행"
+cd $PROJECT_ROOT
 
 nohup java -jar \
   -Duser.timezone=Asia/Seoul \

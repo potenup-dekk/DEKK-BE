@@ -3,7 +3,7 @@ echo "Health Check 시작"
 
 for RETRY_COUNT in {1..10}
 do
-  RESPONSE=$(curl -s http://localhost:8080/actuator/health)
+  RESPONSE=$(curl -s http://localhost:8081/actuator/health)
   UP_COUNT=$(echo $RESPONSE | grep 'UP' | wc -l)
 
   if [ $UP_COUNT -ge 1 ]; then

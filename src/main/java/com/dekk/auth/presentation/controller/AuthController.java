@@ -6,9 +6,11 @@ import com.dekk.auth.application.dto.result.TokenRefreshResult;
 import com.dekk.auth.presentation.response.AuthResultCode;
 import com.dekk.auth.presentation.util.CookieUtil;
 import com.dekk.common.response.ApiResponse;
+import com.dekk.security.oauth2.CustomUserDetails;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,8 +51,10 @@ public class AuthController implements AuthApi {
 
     @Override
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(HttpServletResponse response) {
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @AuthenticationPrincipal CustomUserDetails userDetails, HttpServletResponse response) {
 
+        authCommandService.logout(userDetails.getId());
         cookieUtil.deleteCookie(response, CookieUtil.ACCESS_TOKEN_NAME);
         cookieUtil.deleteCookie(response, CookieUtil.REFRESH_TOKEN_NAME);
 

@@ -78,8 +78,7 @@ public class CrawlRawDataProcessor {
             }
 
             try {
-                imageInspectionRepository.save(
-                        ImageInspection.create(img.getId(), img.getOriginUrl(), card.getOriginId()));
+                imageInspectionRepository.save(ImageInspection.create(img.getId(), img.getOriginUrl()));
                 inspectionWorkerClient.sendInspectionRequest(img.getId(), img.getOriginUrl(), img.getImageUrl());
             } catch (Exception e) {
                 log.warn("검수 요청 실패 - cardId: {}, cardImageId: {}", card.getId(), img.getId(), e);

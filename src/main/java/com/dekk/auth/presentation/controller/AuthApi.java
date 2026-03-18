@@ -1,12 +1,14 @@
 package com.dekk.auth.presentation.controller;
 
 import com.dekk.common.response.ApiResponse;
+import com.dekk.security.oauth2.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CookieValue;
 
 @Tag(name = "인증 API", description = "토큰 재발급 및 로그아웃 API (HttpOnly 쿠키 기반)")
@@ -33,5 +35,7 @@ public interface AuthApi {
                         responseCode = "200",
                         description = "로그아웃 성공 (SA20002)")
             })
-    ResponseEntity<ApiResponse<Void>> logout(@Parameter(hidden = true) HttpServletResponse response);
+    ResponseEntity<ApiResponse<Void>> logout(
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Parameter(hidden = true) HttpServletResponse response);
 }

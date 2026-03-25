@@ -6,8 +6,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-import com.dekk.activelog.domain.model.SwipeType;
-import com.dekk.activelog.domain.repository.ActiveLogRepository;
+import com.dekk.app.activelog.application.ActiveLogQueryService;
+import com.dekk.app.activelog.domain.model.SwipeType;
+import com.dekk.app.activelog.domain.repository.ActiveLogRepository;
 
 import java.util.List;
 import java.util.Set;

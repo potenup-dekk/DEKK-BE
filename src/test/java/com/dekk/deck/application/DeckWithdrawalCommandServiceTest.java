@@ -4,10 +4,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.dekk.deck.domain.model.Deck;
-import com.dekk.deck.domain.repository.DeckCardRepository;
-import com.dekk.deck.domain.repository.DeckMemberRepository;
-import com.dekk.deck.domain.repository.DeckRepository;
+import com.dekk.app.deck.application.CustomDeckCommandService;
+import com.dekk.app.deck.application.DeckWithdrawalCommandService;
+import com.dekk.app.deck.application.ShareDeckCommandService;
+import com.dekk.app.deck.domain.model.Deck;
+import com.dekk.app.deck.domain.repository.DeckCardRepository;
+import com.dekk.app.deck.domain.repository.DeckMemberRepository;
+import com.dekk.app.deck.domain.repository.DeckRepository;
 
 import java.util.List;
 import java.util.Optional;

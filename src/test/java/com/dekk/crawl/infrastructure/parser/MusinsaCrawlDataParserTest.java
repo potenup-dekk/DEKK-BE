@@ -1,8 +1,9 @@
 package com.dekk.crawl.infrastructure.parser;
 
-import com.dekk.card.application.command.CardCreateCommand;
-import com.dekk.card.application.command.ProductCreateCommand;
-import com.dekk.card.domain.model.enums.Platform;
+import com.dekk.app.card.application.command.CardCreateCommand;
+import com.dekk.app.card.application.command.ProductCreateCommand;
+import com.dekk.app.card.domain.model.enums.Platform;
+import com.dekk.app.crawl.infrastructure.parser.MusinsaCrawlDataParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

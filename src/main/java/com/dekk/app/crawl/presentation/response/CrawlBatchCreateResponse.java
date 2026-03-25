@@ -1,4 +1,4 @@
-package com.dekk.app.crawl.presentation.dto.response;
+package com.dekk.app.crawl.presentation.response;
 
 import com.dekk.app.card.domain.model.enums.Platform;
 import com.dekk.app.crawl.application.result.CrawlBatchResult;

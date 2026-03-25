@@ -1,9 +1,9 @@
 package com.dekk.app.crawl.presentation.controller;
 
-import com.dekk.app.crawl.presentation.dto.request.CrawlBatchCreateRequest;
-import com.dekk.app.crawl.presentation.dto.request.CrawlRawDataCreateRequest;
-import com.dekk.app.crawl.presentation.dto.response.CrawlBatchCreateResponse;
-import com.dekk.app.crawl.presentation.dto.response.CrawlRawDataCreateResponse;
+import com.dekk.app.crawl.presentation.request.CrawlBatchCreateRequest;
+import com.dekk.app.crawl.presentation.request.CrawlRawDataCreateRequest;
+import com.dekk.app.crawl.presentation.response.CrawlBatchCreateResponse;
+import com.dekk.app.crawl.presentation.response.CrawlRawDataCreateResponse;
 import com.dekk.global.error.ErrorResponse;
 import com.dekk.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;

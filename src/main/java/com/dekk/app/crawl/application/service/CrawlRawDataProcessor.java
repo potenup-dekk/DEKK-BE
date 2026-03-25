@@ -11,7 +11,7 @@ import com.dekk.app.crawl.domain.exception.CrawlErrorCode;
 import com.dekk.app.crawl.domain.model.CrawlRawData;
 import com.dekk.app.crawl.domain.repository.CrawlRawDataRepository;
 import com.dekk.app.crawl.infrastructure.parser.CrawlDataParserFactory;
-import com.dekk.global.worker.InspectionWorkerClient;
+import com.dekk.app.crawl.infrastructure.worker.InspectionWorkerClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import java.util.stream.Collectors;

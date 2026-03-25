@@ -1,6 +1,6 @@
-package com.dekk.global.worker;
+package com.dekk.app.crawl.infrastructure.worker;
 
-import com.dekk.global.worker.dto.CardImageInspectionPayload;
+import com.dekk.app.crawl.infrastructure.worker.dto.CardImageInspectionPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package com.dekk.global.worker;
+package com.dekk.app.crawl.infrastructure.worker;
 
 public interface InspectionFallbackHandler {
     void handleFailure(Long targetId);

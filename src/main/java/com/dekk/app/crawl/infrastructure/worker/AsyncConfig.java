@@ -1,4 +1,4 @@
-package com.dekk.global.worker;
+package com.dekk.app.crawl.infrastructure.worker;
 
 import java.util.concurrent.Executor;
 import org.springframework.context.annotation.Bean;

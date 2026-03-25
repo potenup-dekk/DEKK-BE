@@ -2,7 +2,7 @@ package com.dekk.app.admin.application;
 
 import com.dekk.app.admin.domain.model.InspectionStatus;
 import com.dekk.app.admin.domain.repository.ImageInspectionRepository;
-import com.dekk.global.worker.InspectionFallbackHandler;
+import com.dekk.app.crawl.infrastructure.worker.InspectionFallbackHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

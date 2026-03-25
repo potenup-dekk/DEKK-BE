@@ -1,8 +1,8 @@
 package com.dekk.app.card.presentation.controller;
 
 import com.dekk.app.card.application.CardQueryService;
-import com.dekk.app.card.presentation.dto.response.GuestCardResponse;
-import com.dekk.app.card.presentation.dto.response.MemberCardResponse;
+import com.dekk.app.card.presentation.response.GuestCardResponse;
+import com.dekk.app.card.presentation.response.MemberCardResponse;
 import com.dekk.app.card.presentation.response.CardResultCode;
 import com.dekk.global.response.ApiResponse;
 import com.dekk.global.response.PageResponse;

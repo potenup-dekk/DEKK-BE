@@ -1,8 +1,8 @@
 package com.dekk.app.card.presentation.controller;
 
 import com.dekk.app.card.domain.model.enums.CardStatus;
-import com.dekk.app.card.presentation.dto.response.AdminCardDetailResponse;
-import com.dekk.app.card.presentation.dto.response.AdminCardResponse;
+import com.dekk.app.card.presentation.response.AdminCardDetailResponse;
+import com.dekk.app.card.presentation.response.AdminCardResponse;
 import com.dekk.global.response.ApiResponse;
 import com.dekk.global.response.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,4 +1,4 @@
-package com.dekk.global.aop;
+package com.dekk.global.jpa;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

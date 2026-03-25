@@ -1,7 +1,7 @@
 package com.dekk.app.card.presentation.controller;
 
-import com.dekk.app.card.presentation.dto.response.GuestCardResponse;
-import com.dekk.app.card.presentation.dto.response.MemberCardResponse;
+import com.dekk.app.card.presentation.response.GuestCardResponse;
+import com.dekk.app.card.presentation.response.MemberCardResponse;
 import com.dekk.global.response.ApiResponse;
 import com.dekk.global.response.PageResponse;
 import com.dekk.global.security.oauth2.CustomUserDetails;

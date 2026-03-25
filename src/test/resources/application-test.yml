@@ -6,6 +6,12 @@ spring:
     password: ''
   flyway:
     enabled: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      ssl:
+        enabled: false
   jpa:
     hibernate:
       ddl-auto: create-drop

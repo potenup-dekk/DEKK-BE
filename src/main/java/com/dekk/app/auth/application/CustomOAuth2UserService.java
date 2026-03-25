@@ -1,13 +1,13 @@
 package com.dekk.app.auth.application;
 
 import com.dekk.app.auth.domain.exception.AuthErrorCode;
-import com.dekk.global.security.oauth2.CustomUserDetails;
-import com.dekk.global.security.oauth2.OAuth2UserInfoFactory;
-import com.dekk.global.security.oauth2.dto.OAuth2UserInfo;
 import com.dekk.app.user.application.command.UserCreateCommand;
 import com.dekk.app.user.domain.model.User;
 import com.dekk.app.user.domain.model.enums.Provider;
 import com.dekk.app.user.domain.repository.UserRepository;
+import com.dekk.global.security.oauth2.CustomUserDetails;
+import com.dekk.global.security.oauth2.OAuth2UserInfoFactory;
+import com.dekk.global.security.oauth2.dto.OAuth2UserInfo;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

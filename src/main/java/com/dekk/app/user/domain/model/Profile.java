@@ -2,9 +2,9 @@ package com.dekk.app.user.domain.model;
 
 import com.dekk.app.user.application.command.UserOnboardingCommand;
 import com.dekk.app.user.application.command.UserProfileUpdateCommand;
+import com.dekk.app.user.domain.exception.UserBusinessException;
 import com.dekk.app.user.domain.exception.UserErrorCode;
 import com.dekk.app.user.domain.model.enums.Gender;
-import com.dekk.app.user.domain.exception.UserBusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

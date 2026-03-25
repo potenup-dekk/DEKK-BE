@@ -1,9 +1,9 @@
 package com.dekk.app.deck.application;
 
 import com.dekk.app.deck.domain.model.Deck;
-import com.dekk.app.deck.domain.repository.DeckMemberRepository;
 import com.dekk.app.deck.domain.model.DeckMember;
 import com.dekk.app.deck.domain.model.enums.DeckRole;
+import com.dekk.app.deck.domain.repository.DeckMemberRepository;
 import com.dekk.app.deck.domain.repository.DeckRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

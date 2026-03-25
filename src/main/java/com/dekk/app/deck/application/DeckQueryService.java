@@ -1,12 +1,12 @@
 package com.dekk.app.deck.application;
 
+import com.dekk.app.card.application.CardQueryService;
+import com.dekk.app.card.application.dto.result.MemberCardResult;
 import com.dekk.app.deck.application.dto.result.DeckResult;
 import com.dekk.app.deck.domain.model.Deck;
 import com.dekk.app.deck.domain.model.DeckCard;
 import com.dekk.app.deck.domain.repository.DeckCardRepository;
 import com.dekk.app.deck.domain.repository.DeckRepository;
-import com.dekk.app.card.application.CardQueryService;
-import com.dekk.app.card.application.dto.result.MemberCardResult;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

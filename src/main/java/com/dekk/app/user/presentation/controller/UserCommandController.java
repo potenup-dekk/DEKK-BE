@@ -1,11 +1,11 @@
 package com.dekk.app.user.presentation.controller;
 
 import com.dekk.app.user.application.UserCommandService;
+import com.dekk.app.user.presentation.request.UserOnboardingRequest;
 import com.dekk.app.user.presentation.request.UserProfileUpdateRequest;
 import com.dekk.app.user.presentation.response.UserResultCode;
 import com.dekk.global.response.ApiResponse;
 import com.dekk.global.security.oauth2.CustomUserDetails;
-import com.dekk.app.user.presentation.request.UserOnboardingRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

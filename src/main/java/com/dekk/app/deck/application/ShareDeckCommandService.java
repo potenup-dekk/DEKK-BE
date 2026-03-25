@@ -1,7 +1,5 @@
 package com.dekk.app.deck.application;
 
-import com.dekk.app.deck.domain.repository.DeckMemberRepository;
-import com.dekk.global.lock.DistributedLock;
 import com.dekk.app.deck.application.dto.result.ShareTokenResult;
 import com.dekk.app.deck.domain.exception.DeckBusinessException;
 import com.dekk.app.deck.domain.exception.DeckErrorCode;
@@ -9,8 +7,10 @@ import com.dekk.app.deck.domain.model.Deck;
 import com.dekk.app.deck.domain.model.DeckMember;
 import com.dekk.app.deck.domain.model.enums.DeckRole;
 import com.dekk.app.deck.domain.repository.DeckCardRepository;
+import com.dekk.app.deck.domain.repository.DeckMemberRepository;
 import com.dekk.app.deck.domain.repository.DeckRepository;
 import com.dekk.app.deck.infrastructure.redis.DeckInviteRedisRepository;
+import com.dekk.global.lock.DistributedLock;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;

@@ -1,8 +1,8 @@
 package com.dekk.app.crawl.infrastructure;
 
-import com.dekk.app.crawl.domain.repository.CrawlRawDataRepository;
 import com.dekk.app.crawl.domain.model.CrawlRawData;
 import com.dekk.app.crawl.domain.model.enums.RawDataStatus;
+import com.dekk.app.crawl.domain.repository.CrawlRawDataRepository;
 import com.dekk.app.crawl.infrastructure.jpa.CrawlRawDataJpaRepository;
 import java.util.List;
 import java.util.Optional;

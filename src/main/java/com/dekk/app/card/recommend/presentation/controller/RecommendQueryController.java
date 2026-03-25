@@ -1,7 +1,7 @@
 package com.dekk.app.card.recommend.presentation.controller;
 
-import com.dekk.app.card.recommend.presentation.dto.response.RecommendCardResponse;
 import com.dekk.app.card.recommend.application.RecommendQueryService;
+import com.dekk.app.card.recommend.presentation.dto.response.RecommendCardResponse;
 import com.dekk.app.card.recommend.presentation.response.RecommendResultCode;
 import com.dekk.global.response.ApiResponse;
 import com.dekk.global.response.PageResponse;

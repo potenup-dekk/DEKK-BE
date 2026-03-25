@@ -2,9 +2,9 @@ package com.dekk.global.security.jwt.filter;
 
 import com.dekk.app.auth.domain.exception.AuthBusinessException;
 import com.dekk.app.auth.domain.exception.AuthErrorCode;
+import com.dekk.global.error.ErrorResponse;
 import com.dekk.global.security.jwt.JwtTokenProvider;
 import com.dekk.global.security.util.CookieUtil;
-import com.dekk.global.error.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

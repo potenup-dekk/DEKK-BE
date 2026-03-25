@@ -4,8 +4,8 @@ import static java.util.Collections.emptyMap;
 
 import com.dekk.app.deck.domain.model.DeckCard;
 import com.dekk.app.deck.domain.repository.DeckCardRepository;
-import com.dekk.app.deck.infrastructure.jpa.DeckCardJpaRepository;
 import com.dekk.app.deck.infrastructure.jpa.DeckCardCountProjection;
+import com.dekk.app.deck.infrastructure.jpa.DeckCardJpaRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

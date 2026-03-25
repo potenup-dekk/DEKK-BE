@@ -1,9 +1,9 @@
 package com.dekk.app.category.presentation.controller;
 
 import com.dekk.app.category.application.CategoryCommandService;
-import com.dekk.app.category.presentation.response.CategoryResultCode;
 import com.dekk.app.category.presentation.request.CreateCategoryRequest;
 import com.dekk.app.category.presentation.request.UpdateCategoryNameRequest;
+import com.dekk.app.category.presentation.response.CategoryResultCode;
 import com.dekk.app.category.presentation.response.CreateCategoryResponse;
 import com.dekk.global.response.ApiResponse;
 import jakarta.validation.Valid;

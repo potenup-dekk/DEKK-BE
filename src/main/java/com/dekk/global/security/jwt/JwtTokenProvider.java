@@ -2,8 +2,8 @@ package com.dekk.global.security.jwt;
 
 import com.dekk.app.auth.domain.exception.AuthBusinessException;
 import com.dekk.app.auth.domain.exception.AuthErrorCode;
-import com.dekk.global.security.oauth2.CustomUserDetails;
 import com.dekk.app.user.domain.model.enums.UserStatus;
+import com.dekk.global.security.oauth2.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

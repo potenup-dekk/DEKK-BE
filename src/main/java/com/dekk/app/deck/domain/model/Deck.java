@@ -2,8 +2,8 @@ package com.dekk.app.deck.domain.model;
 
 import com.dekk.app.deck.domain.exception.DeckBusinessException;
 import com.dekk.app.deck.domain.exception.DeckErrorCode;
-import com.dekk.global.entity.BaseTimeEntity;
 import com.dekk.app.deck.domain.model.enums.DeckType;
+import com.dekk.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -1,7 +1,7 @@
 package com.dekk.app.crawl.infrastructure;
 
-import com.dekk.app.crawl.domain.repository.CrawlBatchRepository;
 import com.dekk.app.crawl.domain.model.CrawlBatch;
+import com.dekk.app.crawl.domain.repository.CrawlBatchRepository;
 import com.dekk.app.crawl.infrastructure.jpa.CrawlBatchJpaRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

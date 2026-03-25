@@ -1,9 +1,9 @@
 package com.dekk.app.card.domain.repository;
 
-import com.dekk.app.card.domain.model.enums.CardStatus;
 import com.dekk.app.card.application.dto.query.AdminCardSearchQuery;
 import com.dekk.app.card.application.dto.query.RecommendCandidateQuery;
 import com.dekk.app.card.domain.model.Card;
+import com.dekk.app.card.domain.model.enums.CardStatus;
 import com.dekk.app.card.domain.model.enums.Platform;
 import java.util.List;
 import java.util.Optional;

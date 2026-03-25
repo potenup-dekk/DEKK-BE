@@ -1,13 +1,13 @@
 package com.dekk.app.card.infrastructure;
 
+import com.dekk.app.card.application.dto.query.AdminCardSearchQuery;
 import com.dekk.app.card.application.dto.query.RecommendCandidateQuery;
+import com.dekk.app.card.domain.model.Card;
 import com.dekk.app.card.domain.model.enums.CardStatus;
+import com.dekk.app.card.domain.model.enums.Platform;
 import com.dekk.app.card.domain.repository.CardRepository;
 import com.dekk.app.card.infrastructure.jpa.CardJpaRepository;
 import com.dekk.app.card.infrastructure.jpa.CardSpecification;
-import com.dekk.app.card.application.dto.query.AdminCardSearchQuery;
-import com.dekk.app.card.domain.model.Card;
-import com.dekk.app.card.domain.model.enums.Platform;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

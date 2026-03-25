@@ -1,10 +1,10 @@
 package com.dekk.app.deck.presentation.controller;
 
 import com.dekk.app.deck.application.ShareDeckCommandService;
+import com.dekk.app.deck.application.dto.result.ShareTokenResult;
 import com.dekk.app.deck.presentation.request.SharedDeckJoinRequest;
 import com.dekk.app.deck.presentation.response.DeckResultCode;
 import com.dekk.global.response.ApiResponse;
-import com.dekk.app.deck.application.dto.result.ShareTokenResult;
 import com.dekk.global.security.oauth2.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -45,8 +45,7 @@ public interface CrawlApi {
                                     {"code": "ECR40004", "message": "플랫폼은 필수 값입니다"}
                                     """)))
             })
-    ResponseEntity<ApiResponse<CrawlBatchCreateResponse>> createBatch(
-        CrawlBatchCreateRequest request);
+    ResponseEntity<ApiResponse<CrawlBatchCreateResponse>> createBatch(CrawlBatchCreateRequest request);
 
     @Operation(summary = "원본 데이터 추가", description = "배치에 크롤링 원본 데이터를 추가합니다.")
     @ApiResponses(

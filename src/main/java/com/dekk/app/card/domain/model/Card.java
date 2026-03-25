@@ -1,11 +1,11 @@
 package com.dekk.app.card.domain.model;
 
-import com.dekk.app.card.domain.model.enums.CardStatus;
-import com.dekk.app.card.domain.model.enums.Platform;
-import com.dekk.app.card.domain.model.enums.TargetGender;
 import com.dekk.app.card.application.command.CardCreateCommand;
 import com.dekk.app.card.domain.exception.CardBusinessException;
 import com.dekk.app.card.domain.exception.CardErrorCode;
+import com.dekk.app.card.domain.model.enums.CardStatus;
+import com.dekk.app.card.domain.model.enums.Platform;
+import com.dekk.app.card.domain.model.enums.TargetGender;
 import com.dekk.global.entity.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

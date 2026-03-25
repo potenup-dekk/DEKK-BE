@@ -1,11 +1,11 @@
 package com.dekk.app.deck.presentation.controller;
 
+import com.dekk.app.deck.application.dto.result.ShareTokenResult;
 import com.dekk.app.deck.domain.exception.DeckErrorCode;
 import com.dekk.app.deck.presentation.request.SharedDeckJoinRequest;
 import com.dekk.global.response.ApiResponse;
-import com.dekk.global.swagger.ApiErrorExceptions;
-import com.dekk.app.deck.application.dto.result.ShareTokenResult;
 import com.dekk.global.security.oauth2.CustomUserDetails;
+import com.dekk.global.swagger.ApiErrorExceptions;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

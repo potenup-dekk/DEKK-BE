@@ -1,8 +1,8 @@
 package com.dekk.global.security.oauth2.dto;
 
+import com.dekk.app.user.domain.model.enums.Provider;
 import com.dekk.global.security.oauth2.exception.CustomOAuth2Exception;
 import com.dekk.global.security.oauth2.exception.OAuth2ErrorCode;
-import com.dekk.app.user.domain.model.enums.Provider;
 import java.util.Map;
 
 public class GoogleOAuth2UserInfo implements OAuth2UserInfo {

@@ -1,7 +1,7 @@
 package com.dekk.app.card.infrastructure.jpa;
 
-import com.dekk.app.card.domain.repository.CardCategoryProjection;
 import com.dekk.app.card.domain.model.CardCategory;
+import com.dekk.app.card.domain.repository.CardCategoryProjection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

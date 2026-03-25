@@ -1,8 +1,8 @@
 package com.dekk.app.user.presentation.controller;
 
+import com.dekk.app.user.presentation.response.UserInfoResponse;
 import com.dekk.global.response.ApiResponse;
 import com.dekk.global.security.oauth2.CustomUserDetails;
-import com.dekk.app.user.presentation.response.UserInfoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,9 +1,9 @@
 package com.dekk.app.card.application.dto.result;
 
-import com.dekk.app.card.domain.model.enums.CardStatus;
-import com.dekk.app.card.domain.model.enums.TargetGender;
 import com.dekk.app.card.domain.model.Card;
+import com.dekk.app.card.domain.model.enums.CardStatus;
 import com.dekk.app.card.domain.model.enums.Platform;
+import com.dekk.app.card.domain.model.enums.TargetGender;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;

@@ -1,10 +1,10 @@
 package com.dekk.app.user.presentation.controller;
 
+import com.dekk.app.user.presentation.request.UserOnboardingRequest;
+import com.dekk.app.user.presentation.request.UserProfileUpdateRequest;
 import com.dekk.global.error.ErrorResponse;
 import com.dekk.global.response.ApiResponse;
 import com.dekk.global.security.oauth2.CustomUserDetails;
-import com.dekk.app.user.presentation.request.UserOnboardingRequest;
-import com.dekk.app.user.presentation.request.UserProfileUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,18 +28,15 @@ public interface UserCommandApi {
                 @io.swagger.v3.oas.annotations.responses.ApiResponse(
                         responseCode = "400",
                         description = "잘못된 요청(EG001) / 이미 온보딩 됨(EU40001) / 닉네임 규칙 위반(EU40003) / 신체 정보 범위 오류(EU40006)",
-                        content =
-                                @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                        content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
                 @io.swagger.v3.oas.annotations.responses.ApiResponse(
                         responseCode = "404",
                         description = "사용자를 찾을 수 없음(EU40401)",
-                        content =
-                                @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                        content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
                 @io.swagger.v3.oas.annotations.responses.ApiResponse(
                         responseCode = "409",
                         description = "이미 사용 중인 닉네임(EU40901)",
-                        content =
-                                @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             })
     ResponseEntity<ApiResponse<Void>> onboardUser(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -54,13 +51,11 @@ public interface UserCommandApi {
                 @io.swagger.v3.oas.annotations.responses.ApiResponse(
                         responseCode = "404",
                         description = "사용자를 찾을 수 없음(EU40401)",
-                        content =
-                                @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                        content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
                 @io.swagger.v3.oas.annotations.responses.ApiResponse(
                         responseCode = "409",
                         description = "이미 사용 중인 닉네임(EU40901)",
-                        content =
-                                @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             })
     ResponseEntity<ApiResponse<Void>> updateProfile(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -75,8 +70,7 @@ public interface UserCommandApi {
                 @io.swagger.v3.oas.annotations.responses.ApiResponse(
                         responseCode = "404",
                         description = "사용자를 찾을 수 없음(EU40401)",
-                        content =
-                                @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             })
     ResponseEntity<ApiResponse<Void>> deleteUser(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails);

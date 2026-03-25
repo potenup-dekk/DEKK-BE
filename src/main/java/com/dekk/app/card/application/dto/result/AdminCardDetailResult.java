@@ -1,13 +1,13 @@
 package com.dekk.app.card.application.dto.result;
 
+import com.dekk.app.card.domain.model.Card;
 import com.dekk.app.card.domain.model.CardImage;
+import com.dekk.app.card.domain.model.CardProduct;
 import com.dekk.app.card.domain.model.Product;
 import com.dekk.app.card.domain.model.ProductImage;
 import com.dekk.app.card.domain.model.enums.CardStatus;
-import com.dekk.app.card.domain.model.enums.TargetGender;
-import com.dekk.app.card.domain.model.Card;
-import com.dekk.app.card.domain.model.CardProduct;
 import com.dekk.app.card.domain.model.enums.Platform;
+import com.dekk.app.card.domain.model.enums.TargetGender;
 import com.dekk.app.category.application.dto.CategoryListResult;
 import java.time.LocalDateTime;
 import java.util.Arrays;

@@ -1,7 +1,7 @@
 package com.dekk.app.card.infrastructure.jpa;
 
-import com.dekk.app.card.domain.model.enums.CardStatus;
 import com.dekk.app.card.domain.model.Card;
+import com.dekk.app.card.domain.model.enums.CardStatus;
 import com.dekk.app.card.domain.model.enums.Platform;
 import com.dekk.app.card.domain.model.enums.TargetGender;
 import java.util.List;

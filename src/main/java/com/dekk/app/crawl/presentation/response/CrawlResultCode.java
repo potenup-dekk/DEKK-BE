@@ -6,10 +6,10 @@ import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 public enum CrawlResultCode implements ResultCode {
-    BATCH_COLLECTION_COMPLETED(HttpStatus.OK, "SCR20001", "수집이 완료되었습니다"),
+    BATCH_COLLECTION_COMPLETED(HttpStatus.OK, "SCR20001", "수집이 완료되었습니다."),
 
-    BATCH_CREATED(HttpStatus.CREATED, "SCR20101", "배치가 생성되었습니다"),
-    RAW_DATA_RECEIVED(HttpStatus.CREATED, "SCR20102", "원본 데이터가 수신되었습니다"),
+    BATCH_CREATED(HttpStatus.CREATED, "SCR20101", "배치가 생성되었습니다."),
+    RAW_DATA_RECEIVED(HttpStatus.CREATED, "SCR20102", "원본 데이터가 수신되었습니다."),
     ;
 
     private final HttpStatus status;

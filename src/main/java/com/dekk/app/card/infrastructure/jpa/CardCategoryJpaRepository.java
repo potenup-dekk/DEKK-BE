@@ -1,7 +1,6 @@
 package com.dekk.app.card.infrastructure.jpa;
 
 import com.dekk.app.card.domain.model.CardCategory;
-import com.dekk.app.card.domain.repository.CardCategoryProjection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -28,7 +27,7 @@ public interface CardCategoryJpaRepository extends JpaRepository<CardCategory, L
     List<CardCategory> findAllByCardId(Long cardId);
 
     @Query(
-            "SELECT new com.dekk.app.card.domain.repository.CardCategoryProjection(cc.cardId, cc.categoryId) FROM CardCategory cc WHERE cc.cardId IN :cardIds")
+            "SELECT new com.dekk.app.card.infrastructure.jpa.CardCategoryProjection(cc.cardId, cc.categoryId) FROM CardCategory cc WHERE cc.cardId IN :cardIds")
     List<CardCategoryProjection> findCardCategoryProjectionsByCardIdIn(@Param("cardIds") List<Long> cardIds);
 
     @Query("SELECT cc.categoryId FROM CardCategory cc WHERE cc.cardId = :cardId")

@@ -1,6 +1,6 @@
 package com.dekk.app.card.domain.model;
 
-import com.dekk.app.card.application.command.ProductCreateCommand;
+import com.dekk.app.card.application.dto.command.ProductCreateCommand;
 import com.dekk.app.card.domain.exception.CardBusinessException;
 import com.dekk.app.card.domain.exception.CardErrorCode;
 import com.dekk.global.entity.BaseTimeEntity;

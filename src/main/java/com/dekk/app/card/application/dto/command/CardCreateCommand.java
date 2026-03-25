@@ -1,4 +1,4 @@
-package com.dekk.app.card.application.command;
+package com.dekk.app.card.application.dto.command;
 
 import com.dekk.app.card.domain.model.enums.Platform;
 import com.dekk.app.card.domain.model.enums.TargetGender;

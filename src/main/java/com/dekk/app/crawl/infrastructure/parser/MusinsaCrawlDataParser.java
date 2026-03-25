@@ -1,9 +1,9 @@
 package com.dekk.app.crawl.infrastructure.parser;
 
-import com.dekk.app.card.application.command.CardCreateCommand;
-import com.dekk.app.card.application.command.CardImageCreateCommand;
-import com.dekk.app.card.application.command.ProductCreateCommand;
-import com.dekk.app.card.application.command.ProductImageCreateCommand;
+import com.dekk.app.card.application.dto.command.CardCreateCommand;
+import com.dekk.app.card.application.dto.command.CardImageCreateCommand;
+import com.dekk.app.card.application.dto.command.ProductCreateCommand;
+import com.dekk.app.card.application.dto.command.ProductImageCreateCommand;
 import com.dekk.app.card.domain.model.enums.Platform;
 import com.dekk.app.card.domain.model.enums.TargetGender;
 import com.dekk.app.crawl.domain.parser.CrawlDataParser;

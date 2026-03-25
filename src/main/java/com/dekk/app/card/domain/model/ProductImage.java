@@ -1,6 +1,6 @@
 package com.dekk.app.card.domain.model;
 
-import com.dekk.app.card.application.command.ProductImageCreateCommand;
+import com.dekk.app.card.application.dto.command.ProductImageCreateCommand;
 import com.dekk.app.card.domain.exception.CardBusinessException;
 import com.dekk.app.card.domain.exception.CardErrorCode;
 import jakarta.persistence.Column;

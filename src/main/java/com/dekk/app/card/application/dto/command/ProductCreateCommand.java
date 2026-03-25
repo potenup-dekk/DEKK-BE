@@ -1,4 +1,4 @@
-package com.dekk.app.card.application.command;
+package com.dekk.app.card.application.dto.command;
 
 public record ProductCreateCommand(
         ProductImageCreateCommand productImage,

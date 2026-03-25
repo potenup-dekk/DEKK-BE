@@ -2,7 +2,7 @@ package com.dekk.app.crawl.application.service;
 
 import com.dekk.app.admin.domain.model.ImageInspection;
 import com.dekk.app.admin.infrastructure.jpa.ImageInspectionJpaRepository;
-import com.dekk.app.card.application.command.CardCreateCommand;
+import com.dekk.app.card.application.dto.command.CardCreateCommand;
 import com.dekk.app.card.domain.model.Card;
 import com.dekk.app.card.domain.model.CardImage;
 import com.dekk.app.card.domain.repository.CardRepository;

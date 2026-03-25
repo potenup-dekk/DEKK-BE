@@ -3,7 +3,8 @@ package com.dekk.card.recommend.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
-import com.dekk.card.application.dto.result.MemberCardResult;
+import com.dekk.app.card.application.dto.result.MemberCardResult;
+import com.dekk.app.card.recommend.application.RecommendScoringService;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;

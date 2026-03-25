@@ -7,11 +7,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import com.dekk.deck.domain.exception.DeckBusinessException;
-import com.dekk.deck.domain.exception.DeckErrorCode;
-import com.dekk.deck.domain.model.Deck;
-import com.dekk.deck.domain.repository.DeckCardRepository;
-import com.dekk.deck.domain.repository.DeckRepository;
+import com.dekk.app.deck.application.DeckCardCommandService;
+import com.dekk.app.deck.domain.exception.DeckBusinessException;
+import com.dekk.app.deck.domain.exception.DeckErrorCode;
+import com.dekk.app.deck.domain.model.Deck;
+import com.dekk.app.deck.domain.repository.DeckCardRepository;
+import com.dekk.app.deck.domain.repository.DeckRepository;
 
 import java.util.Optional;
 

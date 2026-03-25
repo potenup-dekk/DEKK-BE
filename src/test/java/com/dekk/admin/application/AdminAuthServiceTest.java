@@ -1,13 +1,15 @@
 package com.dekk.admin.application;
 
-import com.dekk.admin.application.dto.command.AdminLoginCommand;
-import com.dekk.admin.application.dto.result.AdminLoginResult;
-import com.dekk.admin.domain.exception.AdminBusinessException;
-import com.dekk.admin.domain.exception.AdminErrorCode;
-import com.dekk.admin.domain.model.Admin;
-import com.dekk.admin.domain.repository.AdminRepository;
-import com.dekk.admin.security.AdminJwtTokenProvider;
-import com.dekk.admin.security.AdminUserDetails;
+import com.dekk.app.admin.application.AdminAuthService;
+import com.dekk.app.admin.application.dto.command.AdminLoginCommand;
+import com.dekk.app.admin.application.dto.result.AdminLoginResult;
+import com.dekk.app.admin.domain.exception.AdminBusinessException;
+import com.dekk.app.admin.domain.exception.AdminErrorCode;
+import com.dekk.app.admin.domain.model.Admin;
+import com.dekk.app.admin.domain.model.AdminRole;
+import com.dekk.app.admin.domain.repository.AdminRepository;
+import com.dekk.app.admin.security.AdminJwtTokenProvider;
+import com.dekk.app.admin.security.AdminUserDetails;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,7 +55,7 @@ class AdminAuthServiceTest {
         given(passwordEncoder.matches(password, "encodedPassword")).willReturn(true);
         given(admin.getId()).willReturn(1L);
         given(admin.getEmail()).willReturn(email);
-        given(admin.getAdminRole()).willReturn(com.dekk.admin.domain.model.AdminRole.ADMIN);
+        given(admin.getAdminRole()).willReturn(AdminRole.ADMIN);
         given(adminJwtTokenProvider.createAccessToken(any(AdminUserDetails.class))).willReturn("test-token");
 
         // when

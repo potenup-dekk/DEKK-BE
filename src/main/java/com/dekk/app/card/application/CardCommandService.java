@@ -2,15 +2,19 @@ package com.dekk.app.card.application;
 
 import com.dekk.app.card.application.dto.command.AssignCategoriesCommand;
 import com.dekk.app.card.application.dto.command.RequestDeleteCardCommand;
+import com.dekk.app.card.application.dto.command.UserCardCreateCommand;
 import com.dekk.app.card.domain.exception.CardBusinessException;
 import com.dekk.app.card.domain.exception.CardErrorCode;
 import com.dekk.app.card.domain.model.Card;
 import com.dekk.app.card.domain.model.CardCategory;
 import com.dekk.app.card.domain.model.CardDeleteReason;
+import com.dekk.app.card.domain.model.enums.TargetGender;
 import com.dekk.app.card.domain.repository.CardCategoryRepository;
 import com.dekk.app.card.domain.repository.CardDeleteReasonRepository;
 import com.dekk.app.card.domain.repository.CardRepository;
 import com.dekk.app.category.application.CategoryQueryService;
+import com.dekk.app.user.application.UserQueryService;
+import com.dekk.app.user.application.dto.result.UserInfoResult;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,6 +31,24 @@ public class CardCommandService {
     private final CardCategoryRepository cardCategoryRepository;
     private final CardDeleteReasonRepository cardDeleteReasonRepository;
     private final CategoryQueryService categoryQueryService;
+    private final UserQueryService userQueryService;
+
+    public Long createCardByUser(UserCardCreateCommand command) {
+        UserInfoResult userInfo = userQueryService.getMyInfo(command.userId());
+        TargetGender targetGender = TargetGender.fromGender(userInfo.gender());
+
+        Card card = Card.createByUser(
+                command.userId(),
+                command.cardImage(),
+                command.productCreateCommands(),
+                command.tags(),
+                userInfo.height(),
+                userInfo.weight(),
+                targetGender);
+
+        Card savedCard = cardRepository.save(card);
+        return savedCard.getId();
+    }
 
     public void approveCard(Long cardId) {
         Card card = findCardOrThrow(cardId);

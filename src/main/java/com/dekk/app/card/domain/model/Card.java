@@ -1,6 +1,8 @@
 package com.dekk.app.card.domain.model;
 
 import com.dekk.app.card.application.dto.command.CardCreateCommand;
+import com.dekk.app.card.application.dto.command.CardImageCreateCommand;
+import com.dekk.app.card.application.dto.command.ProductCreateCommand;
 import com.dekk.app.card.domain.exception.CardBusinessException;
 import com.dekk.app.card.domain.exception.CardErrorCode;
 import com.dekk.app.card.domain.model.enums.CardStatus;
@@ -43,7 +45,10 @@ public class Card extends BaseTimeEntity {
     @Column(name = "tags")
     private String tags;
 
-    @Column(name = "origin_id", nullable = false, updatable = false)
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Column(name = "origin_id", updatable = false)
     private String originId;
 
     @Enumerated(EnumType.STRING)
@@ -51,7 +56,7 @@ public class Card extends BaseTimeEntity {
     private CardStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column
     private Platform platform;
 
     @Enumerated(EnumType.STRING)
@@ -65,6 +70,7 @@ public class Card extends BaseTimeEntity {
     private Card(
             CardImage cardImage,
             String tags,
+            Long userId,
             String originId,
             Platform platform,
             TargetGender targetGender,
@@ -72,6 +78,7 @@ public class Card extends BaseTimeEntity {
             Integer weight) {
         this.cardImage = cardImage;
         this.tags = tags;
+        this.userId = userId;
         this.originId = originId;
         this.status = CardStatus.PENDING;
         this.platform = platform;
@@ -85,11 +92,16 @@ public class Card extends BaseTimeEntity {
             throw new CardBusinessException(CardErrorCode.CARD_ORIGIN_ID_IS_REQUIRED_TO_CREATE);
         }
 
+        if (command.platform() == null) {
+            throw new CardBusinessException(CardErrorCode.CARD_PLATFORM_IS_REQUIRED_TO_CREATE);
+        }
+
         CardImage cardImage = CardImage.create(command.cardImage());
 
         Card card = new Card(
                 cardImage,
                 command.tags(),
+                null,
                 command.originId(),
                 command.platform(),
                 command.targetGender(),
@@ -98,6 +110,30 @@ public class Card extends BaseTimeEntity {
 
         cardImage.setCard(card);
         command.productCreateCommands().stream()
+                .map(Product::create)
+                .map(product -> CardProduct.create(card, product))
+                .forEach(card.cardProducts::add);
+        return card;
+    }
+
+    public static Card createByUser(
+            Long userId,
+            CardImageCreateCommand cardImageCommand,
+            List<ProductCreateCommand> productCommands,
+            String tags,
+            Integer height,
+            Integer weight,
+            TargetGender targetGender) {
+        if (userId == null) {
+            throw new CardBusinessException(CardErrorCode.CARD_USER_ID_IS_REQUIRED_TO_CREATE);
+        }
+
+        CardImage cardImage = CardImage.create(cardImageCommand);
+
+        Card card = new Card(cardImage, tags, userId, null, null, targetGender, height, weight);
+
+        cardImage.setCard(card);
+        productCommands.stream()
                 .map(Product::create)
                 .map(product -> CardProduct.create(card, product))
                 .forEach(card.cardProducts::add);

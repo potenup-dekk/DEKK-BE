@@ -1,5 +1,6 @@
 package com.dekk.app.card.domain.model.enums;
 
+import com.dekk.app.user.domain.model.enums.Gender;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,6 +13,18 @@ public enum TargetGender {
     UNDEFINED("미정");
 
     private final String description;
+
+    public static TargetGender fromGender(Gender gender) {
+        if (gender == null) {
+            return UNDEFINED;
+        }
+
+        return switch (gender) {
+            case MALE -> MEN;
+            case FEMALE -> WOMEN;
+            case OTHER -> OTHER;
+        };
+    }
 
     public static TargetGender musinsaParse(String value) {
         if (value == null || value.isBlank()) {

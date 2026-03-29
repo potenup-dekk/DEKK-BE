@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +34,9 @@ public class RecommendQueryService {
     private final CardCategoryQueryService cardCategoryQueryService;
     private final RecommendScoringService recommendScoringService;
 
-    public List<RecommendCardResult> getRecommendCards(Long userId, int size) {
-        int recommendCount = (int) Math.ceil(size * RECOMMEND_RATIO);
+    public Page<RecommendCardResult> getRecommendCards(Long userId, Pageable pageable) {
+        int totalNeeded = (int) (pageable.getOffset() + pageable.getPageSize());
+        int recommendCount = (int) Math.ceil(totalNeeded * RECOMMEND_RATIO);
 
         Set<Long> swipedIds = activeLogQueryService.getAllSwipedCardIds(userId);
 
@@ -42,14 +46,18 @@ public class RecommendQueryService {
         Set<Long> excludeForNormal = new HashSet<>(swipedIds);
         recommendCards.forEach(c -> excludeForNormal.add(c.cardId()));
 
-        int normalCount = size - recommendCards.size();
+        int normalCount = totalNeeded - recommendCards.size();
         List<MemberCardResult> normalCards = cardQueryService.getLatestCards(excludeForNormal, normalCount);
 
-        List<RecommendCardResult> result = new ArrayList<>(recommendCards.size() + normalCards.size());
-        recommendCards.forEach(c -> result.add(RecommendCardResult.recommended(c)));
-        normalCards.forEach(c -> result.add(RecommendCardResult.normal(c)));
+        List<RecommendCardResult> allResults = new ArrayList<>(recommendCards.size() + normalCards.size());
+        recommendCards.forEach(c -> allResults.add(RecommendCardResult.recommended(c)));
+        normalCards.forEach(c -> allResults.add(RecommendCardResult.normal(c)));
 
-        return result;
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), allResults.size());
+        List<RecommendCardResult> pageContent = start >= allResults.size() ? List.of() : allResults.subList(start, end);
+
+        return new PageImpl<>(pageContent, pageable, allResults.size());
     }
 
     private List<MemberCardResult> rankCandidates(Long userId, Set<Long> swipedIds) {

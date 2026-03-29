@@ -1,0 +1,46 @@
+package com.dekk.app.deck.presentation.response;
+
+import com.dekk.global.response.ResultCode;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+
+@RequiredArgsConstructor
+public enum DeckResultCode implements ResultCode {
+    DEFAULT_DECK_CREATE_SUCCESS(HttpStatus.OK, "SD20001", "기본 보관함 생성에 성공했습니다."),
+    CARD_SAVE_SUCCESS(HttpStatus.OK, "SD20002", "보관함 카드 저장에 성공했습니다."),
+    DECK_CARD_LIST_SUCCESS(HttpStatus.OK, "SD20003", "보관함 카드 목록 조회에 성공했습니다."),
+    DECK_CARD_DELETED_SUCCESS(HttpStatus.OK, "SD20004", "보관함 내 카드 저장 취소에 성공했습니다."),
+    CUSTOM_DECK_CREATE_SUCCESS(HttpStatus.OK, "SD20005", "커스텀 보관함 생성에 성공했습니다."),
+    CUSTOM_DECK_UPDATE_SUCCESS(HttpStatus.OK, "SD20006", "커스텀 보관함 이름 수정에 성공했습니다."),
+    CUSTOM_DECK_DELETE_SUCCESS(HttpStatus.OK, "SD20007", "커스텀 보관함 삭제에 성공했습니다."),
+    CUSTOM_DECK_LIST_SUCCESS(HttpStatus.OK, "SD20008", "커스텀 보관함 목록 조회에 성공했습니다."),
+    CUSTOM_DECK_CARD_SAVE_SUCCESS(HttpStatus.OK, "SD20009", "커스텀 보관함 카드 저장에 성공했습니다."),
+    CUSTOM_DECK_CARD_DELETE_SUCCESS(HttpStatus.OK, "SD20010", "커스텀 보관함 내 카드 삭제에 성공했습니다."),
+    CUSTOM_DECK_CARD_LIST_SUCCESS(HttpStatus.OK, "SD20011", "커스텀 보관함 카드 목록 조회에 성공했습니다."),
+    DECK_LIST_SUCCESS(HttpStatus.OK, "SD20012", "보관함 통합 목록 조회에 성공했습니다."),
+    SHARE_DECK_ON_SUCCESS(HttpStatus.OK, "SD20013", "쉐어덱 공유 상태 켜기 및 토큰 발급에 성공했습니다."),
+    SHARE_DECK_OFF_SUCCESS(HttpStatus.OK, "SD20014", "쉐어덱 공유 상태 끄기를 성공했습니다"),
+    SHARE_DECK_JOIN_SUCCESS(HttpStatus.OK, "SD20015", "초대 링크를 통한 쉐어덱 참여에 성공했습니다."),
+    SHARE_DECK_LEAVE_SUCCESS(HttpStatus.OK, "SD20016", "쉐어덱 자진 퇴장에 성공했습니다."),
+    SHARE_DECK_PREVIEW_SUCCESS(HttpStatus.OK, "SD20017", "쉐어덱 프리뷰 조회에 성공했습니다."),
+    ;
+
+    private final HttpStatus status;
+    private final String code;
+    private final String message;
+
+    @Override
+    public HttpStatus status() {
+        return status;
+    }
+
+    @Override
+    public String code() {
+        return code;
+    }
+
+    @Override
+    public String message() {
+        return message;
+    }
+}

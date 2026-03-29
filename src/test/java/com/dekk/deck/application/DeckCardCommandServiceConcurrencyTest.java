@@ -2,14 +2,15 @@ package com.dekk.deck.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.dekk.common.error.BusinessException;
-import com.dekk.common.error.GlobalErrorCode;
-import com.dekk.deck.domain.model.Deck;
-import com.dekk.deck.domain.model.DeckMember;
-import com.dekk.deck.domain.model.enums.DeckRole;
-import com.dekk.deck.domain.repository.DeckCardRepository;
-import com.dekk.deck.domain.repository.DeckMemberRepository;
-import com.dekk.deck.domain.repository.DeckRepository;
+import com.dekk.app.deck.application.DeckCardCommandService;
+import com.dekk.global.error.BusinessException;
+import com.dekk.global.error.GlobalErrorCode;
+import com.dekk.app.deck.domain.model.Deck;
+import com.dekk.app.deck.domain.model.DeckMember;
+import com.dekk.app.deck.domain.model.enums.DeckRole;
+import com.dekk.app.deck.domain.repository.DeckCardRepository;
+import com.dekk.app.deck.domain.repository.DeckMemberRepository;
+import com.dekk.app.deck.domain.repository.DeckRepository;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -22,9 +23,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class DeckCardCommandServiceConcurrencyTest {
 
     @Autowired

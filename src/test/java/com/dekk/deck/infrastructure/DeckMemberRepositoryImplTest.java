@@ -5,9 +5,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import com.dekk.deck.domain.model.DeckMember;
-import com.dekk.deck.domain.model.enums.DeckRole;
-import com.dekk.deck.infrastructure.jpa.DeckMemberJpaRepository;
+import com.dekk.app.deck.domain.model.DeckMember;
+import com.dekk.app.deck.domain.model.enums.DeckRole;
+import com.dekk.app.deck.infrastructure.DeckMemberRepositoryImpl;
+import com.dekk.app.deck.infrastructure.jpa.DeckMemberJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

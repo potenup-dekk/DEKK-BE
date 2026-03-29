@@ -5,10 +5,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.dekk.deck.application.DeckWithdrawalCommandService;
-import com.dekk.user.domain.model.User;
-import com.dekk.user.domain.model.enums.UserStatus;
-import com.dekk.user.domain.repository.UserRepository;
+import com.dekk.app.deck.application.DeckWithdrawalCommandService;
+import com.dekk.app.user.application.UserCommandService;
+import com.dekk.app.user.domain.model.User;
+import com.dekk.app.user.domain.repository.UserRepository;
 
 import java.util.Optional;
 

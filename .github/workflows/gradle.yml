@@ -1,0 +1,90 @@
+name: CD Pipeline - Blue/Green Deploy
+
+on:
+  push:
+    branches:
+      - staging
+
+env:
+  S3_BUCKET_NAME: dekk-deploy-bucket
+  CODE_DEPLOY_APP_NAME: dekk-api-prod-server
+  CODE_DEPLOY_GROUP_NAME: dekk-api-prod-dg
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. 저장소 코드 Checkout
+        uses: actions/checkout@v4
+
+      - name: 2. JDK 설정
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          cache: 'gradle'
+
+      - name: 3. application-prod.yml 생성
+        env:
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_ACCESS_TOKEN_EXPIRATION: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION }}
+          JWT_REFRESH_TOKEN_EXPIRATION: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION }}
+          JWT_ADMIN_TOKEN_EXPIRATION: ${{ secrets.JWT_ADMIN_TOKEN_EXPIRATION }}
+          ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
+          APP_COOKIE_DOMAIN: ${{ secrets.APP_COOKIE_DOMAIN }}
+          LOKI_HOST: ${{ secrets.LOKI_HOST }}
+          PROMETHEUS_PORT: ${{ secrets.PROMETHEUS_PORT }}
+        run: |
+          envsubst < src/main/resources/application-prod.yml > src/main/resources/application-prod-injected.yml
+          mv src/main/resources/application-prod-injected.yml src/main/resources/application-prod.yml
+
+      - name: 4. gradlew 실행 권한 부여
+        run: chmod +x gradlew
+
+      - name: 5. 프로젝트 빌드 (테스트 코드는 제외하여 배포 속도 향상)
+        run: ./gradlew clean build -x test
+
+      - name: 6. AWS 인증
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 7. CodeDeploy 배포용 압축 파일 생성
+        run: |
+          DATE=$(date +'%Y%m%d')
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          VERSION="${DATE}-${{ github.run_number }}-${SHORT_SHA}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          mkdir -p deploy-package
+          cp build/libs/*.jar deploy-package/
+          cp appspec.yml deploy-package/
+          cp -r scripts deploy-package/
+          cd deploy-package
+          zip -r deploy-$VERSION.zip .
+
+      - name: 8. S3 버킷 파일 업로드
+        run: |
+          aws s3 cp deploy-package/deploy-${{ env.VERSION }}.zip s3://${{ env.S3_BUCKET_NAME }}/deploy/deploy-${{ env.VERSION }}.zip
+
+      - name: 9. CodeDeploy 배포
+        run: >
+          aws deploy create-deployment 
+          --application-name ${{ env.CODE_DEPLOY_APP_NAME }} 
+          --deployment-config-name CodeDeployDefault.OneAtATime 
+          --deployment-group-name ${{ env.CODE_DEPLOY_GROUP_NAME }} 
+          --s3-location bucket=${{ env.S3_BUCKET_NAME }},bundleType=zip,key=deploy/deploy-${{ env.VERSION }}.zip

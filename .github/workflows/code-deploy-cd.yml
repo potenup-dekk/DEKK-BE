@@ -1,9 +1,9 @@
-name: CD Pipeline - Blue/Green Deploy
+name: CD Pipeline
 
 on:
   push:
     branches:
-      - staging
+      - main
 
 env:
   S3_BUCKET_NAME: dekk-deploy-bucket

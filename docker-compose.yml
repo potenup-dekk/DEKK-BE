@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - dekk-network
+      - db-network
 
   redis:
     image: redis:7-alpine
@@ -22,8 +22,6 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    networks:
-      - dekk-network
 
   n8n:
     image: n8nio/n8n:latest
@@ -52,7 +50,7 @@ services:
       - ./monitoring/prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
       - prometheus-data:/prometheus
     networks:
-      - dekk-network
+      - monitoring-network
 
   loki:
     image: grafana/loki:3.1.0
@@ -63,7 +61,7 @@ services:
     volumes:
       - loki-data:/loki
     networks:
-      - dekk-network
+      - monitoring-network
 
   grafana:
     image: grafana/grafana:11.1.0
@@ -81,7 +79,7 @@ services:
       - prometheus
       - loki
     networks:
-      - dekk-network
+      - monitoring-network
 
 volumes:
   postgres_data:
@@ -92,5 +90,7 @@ volumes:
   grafana-data:
 
 networks:
-  dekk-network:
+  db-network:
+    driver: bridge
+  monitoring-network:
     driver: bridge

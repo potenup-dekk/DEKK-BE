@@ -28,6 +28,6 @@ public interface RecommendQueryApi {
             })
     ResponseEntity<ApiResponse<PageResponse<RecommendCardResponse>>> getRecommendCards(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Parameter(description = "반환할 총 카드 수 (최대 50)", example = "10") @RequestParam(defaultValue = "10") @Max(50)
-                    int size);
+            @Parameter(description = "페이지 번호", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "페이지 당 카드 수 (최대 50)", example = "10") @RequestParam(defaultValue = "10") @Max(50) int size);
 }

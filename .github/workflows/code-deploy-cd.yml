@@ -6,8 +6,8 @@ on:
       - main
 
 env:
-  S3_BUCKET_NAME: dekk-deploy-bucket
-  CODE_DEPLOY_APP_NAME: dekk-api-prod-server
+  S3_BUCKET_NAME: dekk-api-prod-deploy-bucket
+  CODE_DEPLOY_APP_NAME: dekk-api-prod
   CODE_DEPLOY_GROUP_NAME: dekk-api-prod-dg
 
 jobs:

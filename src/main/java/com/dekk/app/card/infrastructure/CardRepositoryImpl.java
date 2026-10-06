@@ -12,11 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -46,6 +48,11 @@ public class CardRepositoryImpl implements CardRepository {
     @Override
     public Page<Card> findCardsWithImageByStatus(CardStatus status, Pageable pageable) {
         return cardJpaRepository.findCardsWithImageByStatus(status, pageable);
+    }
+
+    @Override
+    public Slice<Card> findCardsWithImageByStatusRandom(CardStatus status, Pageable pageable) {
+        return cardJpaRepository.findCardsWithImageByStatusRandom(status, pageable);
     }
 
     @Override
@@ -109,5 +116,15 @@ public class CardRepositoryImpl implements CardRepository {
         }
 
         return cardJpaRepository.findAllByIdInWithProductsOrderByUpdatedAt(cardIds);
+    }
+
+    @Override
+    public Optional<Card> findByPublicId(UUID publicId) {
+        return cardJpaRepository.findByPublicIdWithProducts(publicId);
+    }
+
+    @Override
+    public Optional<Long> findIdByPublicId(UUID publicId) {
+        return cardJpaRepository.findIdByPublicId(publicId);
     }
 }

@@ -1,0 +1,72 @@
+name: Deploy DEKK API to DEV (Mac Mini)
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: 1. 최신 코드 가져오기
+        uses: actions/checkout@v4
+
+      - name: 2. Java 21 (Corretto) 세팅
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+
+      - name: 3. 도커 환경변수(.env) 파일 생성
+        run: |
+          echo "DEV_DB_HOST=${{ secrets.DEV_DB_HOST }}" >> .env
+          echo "DEV_DB_PORT=${{ secrets.DEV_DB_PORT }}" >> .env
+          echo "DEV_DB_USERNAME=${{ secrets.DEV_DB_USERNAME }}" >> .env
+          echo "DEV_DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}" >> .env          
+          
+          echo "DEV_REDIS_HOST=${{ secrets.DEV_REDIS_HOST }}" >> .env
+          echo "DEV_REDIS_PORT=${{ secrets.DEV_REDIS_PORT }}" >> .env
+          
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+          echo "DEV_GOOGLE_REDIRECT_URI=${{ secrets.DEV_GOOGLE_REDIRECT_URI }}" >> .env
+          
+          echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+          echo "KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> .env
+          echo "DEV_KAKAO_REDIRECT_URI=${{ secrets.DEV_KAKAO_REDIRECT_URI }}" >> .env
+          
+          echo "DEV_JWT_SECRET_KEY=${{ secrets.DEV_JWT_SECRET_KEY }}" >> .env
+          echo "DEV_ALLOWED_ORIGINS=${{ secrets.DEV_ALLOWED_ORIGINS }}" >> .env
+          echo "DEV_COOKIE_DOMAIN=${{ secrets.DEV_COOKIE_DOMAIN }}" >> .env
+          echo "DEV_FRONTEND_URL=${{ secrets.DEV_FRONTEND_URL }}" >> .env
+          
+          echo "DEV_LOKI_HOST=${{ secrets.DEV_LOKI_HOST }}" >> .env
+          echo "DEV_PROMETHEUS_PORT=${{ secrets.DEV_PROMETHEUS_PORT }}" >> .env
+          
+          echo "DEV_AWS_S3_REGION=${{ secrets.DEV_AWS_S3_REGION }}" >> .env
+          echo "DEV_AWS_S3_RESOURCE_BUCKET=${{ secrets.DEV_AWS_S3_RESOURCE_BUCKET }}" >> .env
+          echo "DEV_AWS_ACCESS_KEY_ID=${{ secrets.DEV_AWS_ACCESS_KEY_ID }}" >> .env
+          echo "DEV_AWS_SECRET_ACCESS_KEY=${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}" >> .env
+          echo "DEV_AWS_REGION=${{ secrets.DEV_AWS_REGION }}" >> .env
+          echo "DEV_CDN_BASE_URL=${{ secrets.DEV_CDN_BASE_URL }}" >> .env
+
+      - name: 4. Spring Boot 빌드 (테스트 제외)
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build -x test
+
+      - name: 5. Flyway 마이그레이션 실행
+        run: |
+          ./gradlew flywayMigrate \
+            -Dflyway.url=jdbc:postgresql://${{ secrets.DEV_DB_EXTERNAL_HOST }}:${{ secrets.DEV_DB_EXTERNAL_PORT }}/dekk \
+            -Dflyway.user=${{ secrets.DEV_FLYWAY_USERNAME }} \
+            -Dflyway.password=${{ secrets.DEV_FLYWAY_PASSWORD }}
+
+      - name: 6. Docker Compose로 Dev 서버 재실행
+        run: |
+          docker compose -f docker-compose-dev.yml down
+          docker compose -f docker-compose-dev.yml build --no-cache
+          docker compose -f docker-compose-dev.yml up -d
+          docker image prune -f

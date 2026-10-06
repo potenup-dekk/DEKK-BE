@@ -14,10 +14,13 @@ import com.dekk.app.card.domain.repository.CardRepository;
 import com.dekk.app.category.application.CategoryQueryService;
 import com.dekk.app.category.application.dto.CategoryListResult;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,12 @@ public class CardQueryService {
     public Page<GuestCardResult> getCardsForGuest(Pageable pageable) {
         return cardRepository
                 .findCardsWithImageByStatus(CardStatus.APPROVED, pageable)
+                .map(GuestCardResult::from);
+    }
+
+    public Slice<GuestCardResult> getCardsForGuestRandom(Pageable pageable) {
+        return cardRepository
+                .findCardsWithImageByStatusRandom(CardStatus.APPROVED, pageable)
                 .map(GuestCardResult::from);
     }
 
@@ -73,5 +82,19 @@ public class CardQueryService {
         return cardRepository.findLatestApprovedCardsExcluding(excludeCardIds, size).stream()
                 .map(MemberCardResult::from)
                 .toList();
+    }
+
+    public Optional<MemberCardResult> findByPublicId(UUID publicId) {
+        return cardRepository.findByPublicId(publicId).map(MemberCardResult::from);
+    }
+
+    public Optional<GuestCardResult> findByPublicIdForGuest(UUID publicId) {
+        return cardRepository.findByPublicId(publicId).map(GuestCardResult::from);
+    }
+
+    public Long getCardIdByPublicId(UUID publicId) {
+        return cardRepository
+                .findIdByPublicId(publicId)
+                .orElseThrow(() -> new CardBusinessException(CardErrorCode.CARD_NOT_FOUND));
     }
 }

@@ -19,10 +19,16 @@ springdoc:
   api-docs:
     path: /v3/api-docs
 
+recommend:
+  ratio: 0.7
+  deep-scroll-page-threshold: 10
+  large-candidate-threshold: 500
+
 jwt:
   access-token-validity-in-seconds: 3600
   refresh-token-validity-in-seconds: 1209600
   admin-access-token-validity-in-seconds: 3600
+  admin-refresh-token-validity-in-seconds: 1209600
 
 management:
   endpoints:
@@ -42,7 +48,3 @@ management:
         http.server.requests: 0.5, 0.95, 0.99
       slo:
         http.server.requests: 100ms, 250ms, 500ms, 1s, 5s
-
-worker:
-  n8n:
-    webhook-url: ${N8N_WEBHOOK_URL:http://localhost:5678/webhook/outfit-filter}

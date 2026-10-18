@@ -35,6 +35,12 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
 
+  mail:
+    host: localhost
+    port: 587
+    username: test-admin@dekk.com
+    password: dummy-password
+
 cloud:
   aws:
     credentials:
@@ -60,7 +66,10 @@ jwt:
   access-token-validity-in-seconds: 3600
   refresh-token-validity-in-seconds: 604800
   admin-access-token-validity-in-seconds: 3600
+  admin-refresh-token-validity-in-seconds: 1209600
 
-worker:
-  n8n:
-    webhook-url: "http://dummy-n8n-url/webhook"
+storage:
+  region: ap-northeast-2
+  bucket: test-bucket
+  presigned-url-expiration: 5m
+  cdn-base-url: https://test-cdn.example.com

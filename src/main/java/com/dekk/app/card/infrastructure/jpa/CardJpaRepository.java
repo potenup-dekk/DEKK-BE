@@ -6,8 +6,10 @@ import com.dekk.app.card.domain.model.enums.Platform;
 import com.dekk.app.card.domain.model.enums.TargetGender;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +22,9 @@ public interface CardJpaRepository extends JpaRepository<Card, Long>, JpaSpecifi
             value = "SELECT c FROM Card c JOIN FETCH c.cardImage WHERE c.status = :status ORDER BY c.createdAt DESC",
             countQuery = "SELECT COUNT(c) FROM Card c WHERE c.status = :status")
     Page<Card> findCardsWithImageByStatus(@Param("status") CardStatus status, Pageable pageable);
+
+    @Query("SELECT c FROM Card c JOIN FETCH c.cardImage WHERE c.status = :status ORDER BY FUNCTION('random')")
+    Slice<Card> findCardsWithImageByStatusRandom(@Param("status") CardStatus status, Pageable pageable);
 
     @Query(
             value = "SELECT c.id FROM Card c WHERE c.status = :status ORDER BY c.createdAt DESC",
@@ -40,6 +45,17 @@ public interface CardJpaRepository extends JpaRepository<Card, Long>, JpaSpecifi
             + "LEFT JOIN FETCH p.productImage "
             + "WHERE c.id = :id")
     Optional<Card> findByIdWithDetails(@Param("id") Long id);
+
+    @Query("SELECT DISTINCT c FROM Card c "
+            + "JOIN FETCH c.cardImage "
+            + "LEFT JOIN FETCH c.cardProducts cp "
+            + "LEFT JOIN FETCH cp.product p "
+            + "LEFT JOIN FETCH p.productImage "
+            + "WHERE c.publicId = :publicId AND c.status = 'APPROVED'")
+    Optional<Card> findByPublicIdWithProducts(@Param("publicId") UUID publicId);
+
+    @Query("SELECT c.id FROM Card c WHERE c.publicId = :publicId")
+    Optional<Long> findIdByPublicId(@Param("publicId") UUID publicId);
 
     // TODO: approvedAt 정렬로 변경 필요
     @Query("SELECT c.id FROM Card c WHERE c.status = 'APPROVED' AND c.id NOT IN :excludeIds ORDER BY c.updatedAt DESC")
